@@ -5,7 +5,7 @@ if __name__ == "__main__":
   xml_path = "xml/example.xml"
   folder_name = None
   smart_folder_name = "Box2"
-  output_path = "dag.py"
+  output_path = "output/dag.py"
 
   controlm_parser = ControlMParser(xml_path = xml_path,
                                    folder_name = folder_name,
