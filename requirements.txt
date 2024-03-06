@@ -1,0 +1,11 @@
+attrs==23.2.0
+click==7.1.2
+colorama==0.4.4
+iniconfig==2.0.0
+packaging==23.2
+pluggy==0.13.1
+py==1.11.0
+pytest==6.2.4
+shellingham==1.4.0
+toml==0.10.2
+typer==0.3.2
