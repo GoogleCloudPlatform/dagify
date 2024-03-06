@@ -1,4 +1,4 @@
-"""RP To-Do entry point script."""
+"""CNTRLM-TO-AIRFLOW entry point script."""
 # controlm_parser/__main__.py
 
 from controlm_parser import cli, __app_name__

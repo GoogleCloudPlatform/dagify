@@ -25,10 +25,10 @@ def main(
 
 @app.command()
 def parse(
-  xml_path: str = typer.Option("xml/example.xml", "--xml_path"),
-  folder_name: str = typer.Option(None, "--folder_name"),
-  smart_folder_name: str = typer.Option(None, "--smart_folder_name"),
-  output_path: str = typer.Option("output/dag.py", "--output_path"),
+  xml_path: str = typer.Option("xml/example.xml", "--xml_path", "-i"),
+  folder_name: str = typer.Option(None, "--folder_name", "-f"),
+  smart_folder_name: str = typer.Option(None, "--smart_folder_name", "-s"),
+  output_path: str = typer.Option("output/dag.py", "--output_path", "-o"),
 ) -> None:
     """Run Control-M XML to Airflow DAG Conversion"""
     typer.echo(f"Running Control-M XML to Airflow DAG Conversion with parameters:")
