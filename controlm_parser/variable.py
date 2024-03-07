@@ -6,13 +6,13 @@ class Variable():
         self.name = name
         self.value = value
     
-    def setName(self, name):
+    def set_name(self, name):
         self.name = name
         
     def setValue(self, value):
         self.value = value
         
-    def getName(self):
+    def get_name(self):
         return self.name
     
     def getValue(self):

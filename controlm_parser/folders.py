@@ -1,5 +1,3 @@
-import time
-
 class Folder:
     def __init__(self, datacenter, version, platform, folder_name, modified, last_upload, folder_order_method, real_folder_id, type, used_by_code):
         self.datacenter = datacenter
@@ -14,66 +12,76 @@ class Folder:
         self.used_by_code = used_by_code
         self.jobs = []
         return
-    
-    def addJob(self, job):
+
+    def add_job(self, job):
         self.jobs.append(job)
-    
-    def getJobs(self):
+
+    def get_jobs(self):
         return self.jobs
-    
-    def getJobCount(self):
+
+    def get_job_count(self):
         return len(self.jobs)
-    
-    def getFolderName(self):
+
+    def get_folder_name(self):
         return self.folder_name
-    
-    def getRealFolderId(self):
+
+    def get_folder_name_safe(self):
+        safe_name = self.get_folder_name()
+        safe_name = safe_name.replace("-", "_")
+        safe_name = safe_name.replace(":", "")
+        safe_name = safe_name.replace(".", "")
+        safe_name = safe_name.replace(",", "")
+        safe_name = safe_name.replace("#", "_")
+        safe_name = safe_name.replace(" ", "_")
+        safe_name = "JOB_" + safe_name
+        return safe_name.upper()
+
+    def get_real_folder_id(self):
         return self.real_folder_id
-    
-    def getJobsOperatorAsStringList(self):
+
+    def get_jobs_operator_as_string_list(self):
         jobs = []
         for job in self.jobs:
             jobs.append(job.getMetadata())
-            jobs.append(job.getOperator().output(task_name=job.getJobNameSafe()))
+            jobs.append(job.get_operator()
+                        .output(task_name=job.get_job_name_safe()))
         return jobs
 
-    def calculateImports(self): 
+    def calculate_imports(self):
         imports = []
-        imports.append("#System Imports\nimport datetime\n\n# Base Airflow Imports\nimport airflow\nfrom airflow import DAG")
-        for job in self.getJobs():
-            if job.getOperator().getImports() != "":
-                if job.getOperator().getImports() not in imports:
-                    
-                    imports.append(job.getOperator().getImports())
+        imports.append("#System Imports\nfrom datetime import datetime\n\n# Base Airflow Imports\nimport airflow\nfrom airflow import DAG")
+        for job in self.get_jobs():
+            if job.get_operator().getImports() != "":
+                if job.get_operator().getImports() not in imports:
+
+                    imports.append(job.get_operator().getImports())
         return imports
 
-    
-    def calculateJobDependencies(self): 
+    def calculate_job_dependencies(self):
         deps = []
-        #Calculate Job Dependencies for every job.
-        for job in self.getJobs():
+        # Calculate Job Dependencies for every job.
+        for job in self.get_jobs():
             dep = ""
             out_conds = job.getOutConditions()
             out_conds_positive = []
-            
+
             for out_cond in out_conds:
                 if out_cond.getSign() == "+":
                     out_conds_positive.append(out_cond)
-            
+
             if len(out_conds_positive) > 0:
                 items = ""
-                
-                for poutcon in out_conds_positive:                    
-                    for job in self.getJobs():
+
+                for poutcon in out_conds_positive:
+                    for job in self.get_jobs():
                         for incon in job.getInConditions():
-                            if incon.getName() == poutcon.getName():
-                                items += job.getJobNameSafe() + ", "
+                            if incon.get_name() == poutcon.get_name():
+                                items += job.get_job_name_safe() + ", "
                 if items != "":
-                    dep = job.getJobNameSafe() + " >> [" + items + "]" 
-                    dep = dep.replace(", ]", "]")     
-            
+                    dep = job.get_job_name_safe() + " >> [" + items + "]"
+                    dep = dep.replace(", ]", "]")
+
             if dep != "":
                 deps.append(dep)
-        
+
         return deps
-   

@@ -1,28 +1,28 @@
 class InCondition():
     name = None
     odate = None
-    andOr = None
+    and_or = None
     
-    def __init__(self, name=None, odate=None, andOr=None):
+    def __init__(self, name=None, odate=None, and_or=None):
         self.name = name
         self.odate = odate
-        self.andOr = andOr
+        self.and_or = and_or
     
-    def setName(self, name):
+    def set_name(self, name):
         self.name = name
         
-    def setOdate(self, odate):
+    def set_odate(self, odate):
         self.odate = odate
     
-    def setAndOr(self, andOr):
-        self.andOr = andOr
+    def set_and_or(self, and_or):
+        self.and_or = and_or
         
-    def getName(self):
+    def get_name(self):
         return self.name
     
-    def getOdate(self):
+    def get_odate(self):
         return self.odate
     
-    def getAndOr(self):
-        return self.andOr
+    def get_and_or(self):
+        return self.and_or
         

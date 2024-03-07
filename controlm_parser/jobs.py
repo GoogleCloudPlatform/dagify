@@ -126,55 +126,55 @@ class Job:
         self.operator = None
         return
 
-    def setOperator(self, op): 
+    def set_operator(self, op): 
         self.operator = op
         return
 
-    def getOperator(self): 
+    def get_operator(self): 
         return self.operator
 
-    def getJobType(self):
+    def get_job_type(self):
         if self.tasktype is None: 
             return "UNKNOWN"
         return self.tasktype
 
-    def getJobName(self):
+    def get_job_name(self):
         if self.job_name is None: 
             return "UNKNOWN"
         return self.job_name
 
-    def getJobNameSafe(self):
-        safeName = self.getJobName()
-        safeName = safeName.replace("-", "_")
-        safeName = safeName.replace(":", "")
-        safeName = safeName.replace(".", "")
-        safeName = safeName.replace(",", "")
-        safeName = safeName.replace("#", "_")
-        safeName = safeName.replace(" ", "_")
-        safeName = "JOB_" + safeName
-        return safeName.upper()
+    def get_job_name_safe(self):
+        safe_name = self.get_job_name()
+        safe_name = safe_name.replace("-", "_")
+        safe_name = safe_name.replace(":", "")
+        safe_name = safe_name.replace(".", "")
+        safe_name = safe_name.replace(",", "")
+        safe_name = safe_name.replace("#", "_")
+        safe_name = safe_name.replace(" ", "_")
+        safe_name = "JOB_" + safe_name
+        return safe_name.upper()
 
     def getCmdLine(self):
         return self.cmd_line
         
-    def getCmdLineSafe(self):
-        safeName = self.getCmdLine()
-        safeName = safeName.replace("\"", "'")
-        return safeName
+    def get_cmd_line_safe(self):
+        safe_name = self.getCmdLine()
+        safe_name = safe_name.replace("\"", "'")
+        return safe_name
     
-    def addInCondition(self, cond):
+    def add_in_condition(self, cond):
         self.inCondition.append(cond)
         return
 
-    def addOutCondition(self, cond):
+    def add_out_condition(self, cond):
         self.outCondition.append(cond)
         return
 
-    def addShout(self, shout):
+    def add_shout(self, shout):
         self.shout.append(shout)
         return
 
-    def addVariable(self, var):
+    def add_variable(self, var):
         self.variables.append(var)
         return
 
@@ -201,10 +201,10 @@ class Job:
 \t# Control-M Job Type: {control_m_job_type} \t-->\t  Airflow Operator Type: {airflow_operator_type}\n\
 \t#\n\
 \t# ---- End Task Metadata -------------------------------------------".format(
-    job_name = self.getJobNameSafe(),
-    control_m_job_name = self.getJobName(),
-    airflow_job_name = self.getJobNameSafe(),
-    control_m_job_type = self.getJobType(),
-    airflow_operator_type = self.getOperator().getType(),
+    job_name = self.get_job_name_safe(),
+    control_m_job_name = self.get_job_name(),
+    airflow_job_name = self.get_job_name_safe(),
+    control_m_job_type = self.get_job_type(),
+    airflow_operator_type = self.get_operator().getType(),
     
 )

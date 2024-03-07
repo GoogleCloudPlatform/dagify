@@ -5,10 +5,10 @@ class Workflow:
         self.filename = filename
         self.folders = []
 
-    def addFolder(self, folder):
+    def add_folder(self, folder):
         self.folders.append(folder)
     
-    def getFolders(self):
+    def get_folders(self):
         return self.folders
     
     def getFolderCount(self):

@@ -11,7 +11,7 @@ class BaseOperator:
             return "UNKNOWN"
         return self.task_id
 
-    def getName(self):
+    def get_name(self):
         return self.name
 
     def getType(self):

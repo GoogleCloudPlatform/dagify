@@ -4,15 +4,12 @@
 
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime(2023, 5, 19)
 }
 
 with DAG(
     dag_id="{{dag_id}}",
-    schedule=None,
-    start_date=None,
-    catchup=False,
-    tags=None,
+    start_date=datetime.datetime(2021, 1, 1),
+    schedule="@daily",
 ) as dag:
 
 # DAG Tasks

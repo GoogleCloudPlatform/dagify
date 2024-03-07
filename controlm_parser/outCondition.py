@@ -8,19 +8,19 @@ class OutCondition():
         self.odate = odate
         self.sign = sign
     
-    def setName(self, name):
+    def set_name(self, name):
         self.name = name
         
-    def setOdate(self, odate):
+    def set_odate(self, odate):
         self.odate = odate
     
     def setSign(self, sign):
         self.sign = sign
         
-    def getName(self):
+    def get_name(self):
         return self.name
     
-    def getOdate(self):
+    def get_odate(self):
         return self.odate
     
     def getSign(self):
