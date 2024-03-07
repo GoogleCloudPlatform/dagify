@@ -63,12 +63,12 @@ class Job:
         self.description = description
         self.jobISN = jobISN
         self.application = application
-        self.sub_application = sub_application 
-        self.memname = memname 
+        self.sub_application = sub_application
+        self.memname = memname
         self.created_by = created_by
-        self.run_as = run_as 
+        self.run_as = run_as
         self.priority = priority
-        self.critical = critical 
+        self.critical = critical
         self.tasktype = tasktype
         self.cyclic = cyclic
         self.node_id = node_id
@@ -126,20 +126,20 @@ class Job:
         self.operator = None
         return
 
-    def set_operator(self, op): 
+    def set_operator(self, op):
         self.operator = op
         return
 
-    def get_operator(self): 
+    def get_operator(self):
         return self.operator
 
     def get_job_type(self):
-        if self.tasktype is None: 
+        if self.tasktype is None:
             return "UNKNOWN"
         return self.tasktype
 
     def get_job_name(self):
-        if self.job_name is None: 
+        if self.job_name is None:
             return "UNKNOWN"
         return self.job_name
 
@@ -154,14 +154,14 @@ class Job:
         safe_name = "JOB_" + safe_name
         return safe_name.upper()
 
-    def getCmdLine(self):
+    def get_cmd_line(self):
         return self.cmd_line
-        
+
     def get_cmd_line_safe(self):
-        safe_name = self.getCmdLine()
+        safe_name = self.get_cmd_line()
         safe_name = safe_name.replace("\"", "'")
         return safe_name
-    
+
     def add_in_condition(self, cond):
         self.inCondition.append(cond)
         return
@@ -186,14 +186,14 @@ class Job:
 
     def getShouts(self):
         return self.shout
-    
+
     def getVariables(self):
         return self.variables
 
     def getDependencies(self):
         return self.dependencies
 
-    def getMetadata(self):
+    def get_metadata(self):
         return "\
 # ---- Task Metadata ---- {job_name} ------\n\
 \t#\n\
@@ -201,10 +201,9 @@ class Job:
 \t# Control-M Job Type: {control_m_job_type} \t-->\t  Airflow Operator Type: {airflow_operator_type}\n\
 \t#\n\
 \t# ---- End Task Metadata -------------------------------------------".format(
-    job_name = self.get_job_name_safe(),
-    control_m_job_name = self.get_job_name(),
-    airflow_job_name = self.get_job_name_safe(),
-    control_m_job_type = self.get_job_type(),
-    airflow_operator_type = self.get_operator().getType(),
-    
-)
+            job_name=self.get_job_name_safe(),
+            control_m_job_name=self.get_job_name(),
+            airflow_job_name=self.get_job_name_safe(),
+            control_m_job_type=self.get_job_type(),
+            airflow_operator_type=self.get_operator().getType(),
+            )

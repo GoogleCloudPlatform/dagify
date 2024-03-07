@@ -42,7 +42,7 @@ class Folder:
     def get_jobs_operator_as_string_list(self):
         jobs = []
         for job in self.jobs:
-            jobs.append(job.getMetadata())
+            jobs.append(job.get_metadata())
             jobs.append(job.get_operator()
                         .output(task_name=job.get_job_name_safe()))
         return jobs
