@@ -39,7 +39,7 @@ class Folder:
 
     def calculateImports(self): 
         imports = []
-        imports.append("# Base Aiflow Imports\nimport airflow\nfrom airflow import DAG")
+        imports.append("#System Imports\nimport datetime\n\n# Base Airflow Imports\nimport airflow\nfrom airflow import DAG")
         for job in self.getJobs():
             if job.getOperator().getImports() != "":
                 if job.getOperator().getImports() not in imports:
