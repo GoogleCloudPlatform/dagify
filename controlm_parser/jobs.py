@@ -147,6 +147,8 @@ class Job:
         safeName = self.getJobName()
         safeName = safeName.replace("-", "_")
         safeName = safeName.replace(":", "")
+        safeName = safeName.replace(".", "")
+        safeName = safeName.replace(",", "")
         safeName = safeName.replace("#", "_")
         safeName = safeName.replace(" ", "_")
         safeName = "JOB_" + safeName
