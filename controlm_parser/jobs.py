@@ -1,14 +1,5 @@
 class Job:
-    
     # Holds the Airflow Operator Object
-    operator = None
-    variables = []
-    inCondition = []
-    outCondition = []
-    shout = []
-    
-    
-
     def __init__(self,
         job_name = None,
         description = None,
@@ -127,6 +118,12 @@ class Job:
         self.cyclic_tolerance = cyclic_tolerance
         self.cyclic_type = cyclic_type
         self.parent_folder = parent_folder
+        self.inCondition = []
+        self.outCondition = []
+        self.shout = []
+        self.variables = []
+        self.dependencies = []
+        self.operator = None
         return
 
     def setOperator(self, op): 
@@ -149,9 +146,19 @@ class Job:
     def getJobNameSafe(self):
         safeName = self.getJobName()
         safeName = safeName.replace("-", "_")
+        safeName = safeName.replace(":", "")
+        safeName = safeName.replace("#", "_")
         safeName = safeName.replace(" ", "_")
         safeName = "JOB_" + safeName
         return safeName.upper()
+
+    def getCmdLine(self):
+        return self.cmd_line
+        
+    def getCmdLineSafe(self):
+        safeName = self.getCmdLine()
+        safeName = safeName.replace("\"", "'")
+        return safeName
     
     def addInCondition(self, cond):
         self.inCondition.append(cond)
@@ -181,25 +188,21 @@ class Job:
     def getVariables(self):
         return self.variables
 
-    def getJobDependencies(self):
-        dep = ""
-        ocpos = []
-        for oc in self.getOutConditions(): 
-            if oc.getSign() == "+":
-                ocpos.append(oc)
-        
-        if len(ocpos) > 0:
-            dep += self.getJobNameSafe() + " >> "
-            
-            dep += self.getJobNameSafe() + "["
-            for ocp in ocpos: 
-                dep += ocp.getName() 
-                if ocp != ocpos[-1]:
-                    dep += ", "
-            dep += "]"
-        return dep
-            
+    def getDependencies(self):
+        return self.dependencies
 
-        
-        
-        
+    def getMetadata(self):
+        return "\
+# ---- Task Metadata ---- {job_name} ------\n\
+\t#\n\
+\t# Control-M Job Name: {control_m_job_name} \t-->\t Airflow Job Name: {airflow_job_name}\n\
+\t# Control-M Job Type: {control_m_job_type} \t-->\t  Airflow Operator Type: {airflow_operator_type}\n\
+\t#\n\
+\t# ---- End Task Metadata -------------------------------------------".format(
+    job_name = self.getJobNameSafe(),
+    control_m_job_name = self.getJobName(),
+    airflow_job_name = self.getJobNameSafe(),
+    control_m_job_type = self.getJobType(),
+    airflow_operator_type = self.getOperator().getType(),
+    
+)
