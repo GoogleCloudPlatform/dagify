@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Home</h1>
+<p>This is the home page.</p>
+
+<form action="/upload" method="POST" enctype="multipart/form-data">
+  {{ form.csrf_token }}
+  <p>
+    {{ form.file.label }}<br>
+    {{ form.file }}
+  </p>
+  <p>
+    {{ form.submit }}
+  </p>
+</form>
+{% endblock %}

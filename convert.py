@@ -2,7 +2,7 @@ from controlm_parser.controlm_parser import ControlMParser
 
 if __name__ == "__main__":
 
-  xml_path = "xml/example.xml"
+  xml_path = "xml/xxx.xml"
   folder_name = None
   smart_folder_name = "Box2"
   output_path = "output/dag.py"

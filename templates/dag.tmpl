@@ -1,0 +1,28 @@
+{% for import in imports %}
+    {{import}}
+{% endfor %}
+
+default_args = {
+    'owner': 'airflow',
+    'start_date': datetime(2023, 5, 19)
+}
+
+with DAG(
+    dag_id="{{dag_id}}",
+    schedule=None,
+    start_date=None,
+    catchup=False,
+    tags=None,
+) as dag:
+
+# DAG Tasks
+
+{% for task in tasks %}
+    {{task}}
+{% endfor %}
+
+# Task Dependencies
+
+{% for dependency in dependencies %}
+    {{dependency}}
+{% endfor %}
