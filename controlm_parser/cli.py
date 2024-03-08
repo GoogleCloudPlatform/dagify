@@ -5,11 +5,13 @@ from controlm_parser.controlm_parser import ControlMParser
 
 app = typer.Typer()
 
+
 def _version_callback(value: bool) -> None:
-  if value:
-    typer.echo(f"{__app_name__} v{__version__}")
-    raise typer.Exit()
-  
+    if value:
+        typer.echo(f"{__app_name__} v{__version__}")
+        raise typer.Exit()
+
+
 @app.callback()
 def main(
     version: Optional[bool] = typer.Option(
@@ -23,6 +25,7 @@ def main(
 ) -> None:
     return
 
+
 @app.command()
 def parse(
   xml_path: str = typer.Option("xml/example.xml", "--xml_path", "-i"),
@@ -31,21 +34,20 @@ def parse(
   output_path: str = typer.Option("output/dag.py", "--output_path", "-o"),
 ) -> None:
     """Run Control-M XML to Airflow DAG Conversion"""
-    typer.echo(f"Running Control-M XML to Airflow DAG Conversion with parameters:")
-    typer.echo(f"---")
+    typer.echo("Running Control-M XML to Airflow DAG Conversion with params:")
+    typer.echo("---")
     typer.echo(f"XML Path:          {xml_path}")
     typer.echo(f"Folder Name:       {folder_name}")
     typer.echo(f"Smart Folder Name: {smart_folder_name}")
     typer.echo(f"Output Path:       {output_path}")
-    typer.echo(f"---")
+    typer.echo("---")
 
-    controlm_parser = ControlMParser(xml_path = xml_path,
-                                folder_name = folder_name,
-                                smart_folder_name = smart_folder_name,
-                                output_path = output_path
-                                )
+    controlm_parser = ControlMParser(xml_path=xml_path,
+                                     folder_name=folder_name,
+                                     smart_folder_name=smart_folder_name,
+                                     output_path=output_path
+                                     )
 
     controlm_parser.parse()
 
     raise typer.Exit()
-

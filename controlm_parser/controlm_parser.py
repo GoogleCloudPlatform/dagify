@@ -9,6 +9,7 @@ from .inCondition import InCondition
 from .outCondition import OutCondition
 from .shout import Shout
 
+
 class ControlMParser():
     def __init__(
         self,
@@ -83,7 +84,7 @@ def convert_operators(workflow):
                     # Airflow Operator: ????
                     print(
                         "Job Type: " + job.get_job_type() +
-                        "for job: " + job.get_job_name() +
+                        " for job: " + job.get_job_name() +
                         " is not currently supported.")
                     op = UnknownOperator()
 
@@ -162,7 +163,8 @@ def parse_struct(root_node, parent):
                     change_userid=node.get("CHANGE_USERID"),
                     change_date=node.get("CHANGE_DATE"),
                     change_time=node.get("CHANGE_TIME"),
-                    rule_based_calendar_relationship=node.get("RULE_BASED_CALENDAR_RELATIONSHIP"),
+                    rule_based_calendar_relationship=node.get(
+                        "RULE_BASED_CALENDAR_RELATIONSHIP"),
                     appl_type=node.get("APPL_TYPE"),
                     multy_agent=node.get("MULTY_AGENT"),
                     use_instream_jcl=node.get("USE_INSTREAM_JCL"),
