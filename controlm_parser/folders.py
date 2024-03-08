@@ -49,7 +49,8 @@ class Folder:
 
     def calculate_imports(self):
         imports = []
-        imports.append("#System Imports\nfrom datetime import datetime\n\n# Base Airflow Imports\nimport airflow\nfrom airflow import DAG")
+        imports.append("#System Imports\nfrom datetime import datetime\n\n# \
+Base Airflow Imports\nimport airflow\nfrom airflow import DAG")
         for job in self.get_jobs():
             if job.get_operator().getImports() != "":
                 if job.get_operator().getImports() not in imports:
@@ -58,6 +59,7 @@ class Folder:
         return imports
 
     def calculate_job_dependencies(self):
+        # TODO - @TIMHIATT - Reduce Nesting
         deps = []
         # Calculate Job Dependencies for every job.
         for job in self.get_jobs():
@@ -66,7 +68,7 @@ class Folder:
             out_conds_positive = []
 
             for out_cond in out_conds:
-                if out_cond.getSign() == "+":
+                if out_cond.get_sign() == "+":
                     out_conds_positive.append(out_cond)
 
             if len(out_conds_positive) > 0:
