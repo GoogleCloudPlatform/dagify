@@ -108,9 +108,9 @@ class DummyOperator(BaseOperator):
         return True
 
     def output(self, task_name="UNKNOWN"):
-        return f"{task_name} = DummyOperator(\
-        task_id='{self.get_task_name()}',\
-        dag=dag\
+        return f"{task_name} = DummyOperator(\n\
+        task_id='{self.get_task_name()}',\n\
+        dag=dag\n\
     )"
 
 
