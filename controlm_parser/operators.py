@@ -33,7 +33,7 @@ class SSHOperator(BaseOperator):
         use_iap_tunnel=False,
         use_internal_ip=True
     ):
-        self.import_statement = '#Imports for Handling SSHOperator\nfrom airflow.contrib.operators.ssh_operator import SSHOperator\nfrom airflow.providers.google.cloud.hooks.compute_ssh import ComputeEngineSSHHook'
+        self.import_statement = '# Imports for Handling SSHOperator\nfrom airflow.contrib.operators.ssh_operator import SSHOperator\nfrom airflow.providers.google.cloud.hooks.compute_ssh import ComputeEngineSSHHook'
         self.name = "SSHOperator"
         self.task_id = task_id
         self.gce_instance_name = gce_instance_name
@@ -83,24 +83,24 @@ class SSHOperator(BaseOperator):
         return True
 
     def output(self, task_name="UNKNOWN"):
-        return f"{task_name} = SSHOperator(\
-        task_id='{self.get_task_name()}',\
-        ssh_hook=ComputeEngineSSHHook(\
-            instance_name={self.get_gce_instance_name()},\
-            zone={self.get_gce_instance_zone()},\
-            project_id={self.get_gcp_project_id()},\
-            use_oslogin={self.get_use_os_login()},\
-            use_iap_tunnel={self.get_use_iap_tunnel()},\
-            use_internal_ip={self.get_use_internal_ip()}),\
-        command=\"{self.get_command()}\",\
-        dag=dag\
+        return f"{task_name} = SSHOperator(\n\
+        task_id='{self.get_task_name()}',\n\
+        ssh_hook=ComputeEngineSSHHook(\n\
+            instance_name={self.get_gce_instance_name()},\n\
+            zone={self.get_gce_instance_zone()},\n\
+            project_id={self.get_gcp_project_id()},\n\
+            use_oslogin={self.get_use_os_login()},\n\
+            use_iap_tunnel={self.get_use_iap_tunnel()},\n\
+            use_internal_ip={self.get_use_internal_ip()}),\n\
+        command=\"{self.get_command()}\",\n\
+        dag=dag\n\
     )"
 
 
 class DummyOperator(BaseOperator):
 
     def __init__(self, task_id):
-        self.import_statement = "#Imports for DummyOperator\nfrom airflow.operators.dummy import DummyOperator"
+        self.import_statement = "# Imports for DummyOperator\nfrom airflow.operators.dummy import DummyOperator"
         self.name = "DummyOperator"
         self.task_id = task_id
 
