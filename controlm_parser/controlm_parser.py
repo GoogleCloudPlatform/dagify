@@ -9,7 +9,6 @@ from .inCondition import InCondition
 from .outCondition import OutCondition
 from .shout import Shout
 
-
 class ControlMParser():
     def __init__(
         self,

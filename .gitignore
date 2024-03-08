@@ -3,10 +3,13 @@
 *.py[cod]
 *$py.class
 
+
 # Exclude Virtual Environment Files
 .venv/
+venv/
 
 
 # Exclude special examples 
 /xml/x*
 /output/*.py
+
