@@ -8,7 +8,7 @@ default_args = {
 
 with DAG(
     dag_id="{{dag_id}}",
-    start_date=datetime.datetime(2021, 1, 1),
+    start_date=datetime(2021, 1, 1),
     schedule="@daily",
 ) as dag:
 
