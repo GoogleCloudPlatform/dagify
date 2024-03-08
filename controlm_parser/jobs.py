@@ -110,7 +110,8 @@ class Job:
         self.change_userid = change_userid
         self.change_date = change_date
         self.change_time = change_time
-        self.rule_based_calendar_relationship = rule_based_calendar_relationship
+        self.rule_based_calendar_relationship = \
+            rule_based_calendar_relationship
         self.appl_type = appl_type
         self.multy_agent = multy_agent
         self.use_instream_jcl = use_instream_jcl
@@ -200,7 +201,9 @@ class Job:
         return f"\
 # ---- Task Metadata ---- {self.get_job_name_safe()} ------\n\
 \t#\n\
-\t# Control-M Job Name: {self.get_job_name()} \t-->\t Airflow Job Name: {self.get_job_name_safe()}\n\
-\t# Control-M Job Type: {self.get_job_type()} \t-->\t  Airflow Operator Type: {self.get_operator().getType()}\n\
+\t# Control-M Job Name: {self.get_job_name()} \n\
+\t# -->\t Airflow Job Name: {self.get_job_name_safe()}\n\
+\t# Control-M Job Type: {self.get_job_type()}\n\
+\t# -->\t Airflow Operator Type: {self.get_operator().getType()}\n\
 \t#\n\
 \t# ---- End Task Metadata -------------------------------------------"

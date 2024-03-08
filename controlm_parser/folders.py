@@ -1,5 +1,7 @@
 class Folder:
-    def __init__(self, datacenter, version, platform, folder_name, modified, last_upload, folder_order_method, real_folder_id, type, used_by_code):
+    def __init__(self, datacenter, version, platform, folder_name,
+                 modified, last_upload, folder_order_method,
+                 real_folder_id, type, used_by_code):
         self.datacenter = datacenter
         self.version = version
         self.platform = platform

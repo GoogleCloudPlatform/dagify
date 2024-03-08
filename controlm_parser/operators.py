@@ -33,7 +33,12 @@ class SSHOperator(BaseOperator):
         use_iap_tunnel=False,
         use_internal_ip=True
     ):
-        self.import_statement = '#Imports for Handling SSHOperator\nfrom airflow.contrib.operators.ssh_operator import SSHOperator\nfrom airflow.providers.google.cloud.hooks.compute_ssh import ComputeEngineSSHHook'
+        self.import_statement = ("#Imports for Handling SSHOperator\n"
+                                 "from airflow.contrib.operators.ssh_operator "
+                                 "import SSHOperator\n"
+                                 "from airflow.providers.google.cloud.hooks."
+                                 "compute_ssh import ComputeEngineSSHHook"
+                                 )
         self.name = "SSHOperator"
         self.task_id = task_id
         self.gce_instance_name = gce_instance_name
@@ -100,7 +105,9 @@ class SSHOperator(BaseOperator):
 class DummyOperator(BaseOperator):
 
     def __init__(self, task_id):
-        self.import_statement = "#Imports for DummyOperator\nfrom airflow.operators.dummy import DummyOperator"
+        self.import_statement = ("#Imports for DummyOperator\n"
+                                 "from airflow.operators.dummy "
+                                 "import DummyOperator")
         self.name = "DummyOperator"
         self.task_id = task_id
 
@@ -117,6 +124,7 @@ class DummyOperator(BaseOperator):
 class UnknownOperator(BaseOperator):
     def __init__(self):
         self.name = "UnknownOperator"
+        self.import_statement = None
 
     def validate(self):
         return True
@@ -125,7 +133,9 @@ class UnknownOperator(BaseOperator):
         return """
     #   {task_name} = !!UnknownOperator!!
     #
-    #   The following code block represents of an Unsupported Control-M Job Type
+    #   The following code block represents of an Unsupported
+    #   Control-M Job Type
+    #
     #   Manual intervention is required here.
     #
     #   !!UnknownOperator!!
