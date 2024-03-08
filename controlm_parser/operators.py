@@ -33,10 +33,10 @@ class SSHOperator(BaseOperator):
         use_iap_tunnel=False,
         use_internal_ip=True
     ):
-        self.import_statement = ("#Imports for Handling SSHOperator\nfrom",
-                                 "airflow.contrib.operators.ssh_operator",
-                                 "import SSHOperator\nfrom",
-                                 "airflow.providers.google.cloud.hooks.",
+        self.import_statement = ("#Imports for Handling SSHOperator\n"
+                                 "from airflow.contrib.operators.ssh_operator "
+                                 "import SSHOperator\n"
+                                 "from airflow.providers.google.cloud.hooks."
                                  "compute_ssh import ComputeEngineSSHHook"
                                  )
         self.name = "SSHOperator"
@@ -105,8 +105,8 @@ class SSHOperator(BaseOperator):
 class DummyOperator(BaseOperator):
 
     def __init__(self, task_id):
-        self.import_statement = ("#Imports for DummyOperator\n",
-                                 "from airflow.operators.dummy ",
+        self.import_statement = ("#Imports for DummyOperator\n"
+                                 "from airflow.operators.dummy "
                                  "import DummyOperator")
         self.name = "DummyOperator"
         self.task_id = task_id
