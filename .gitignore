@@ -2,4 +2,14 @@
 **/__pycache__/
 *.py[cod]
 *$py.class
-venv
+
+
+# Exclude Virtual Environment Files
+.venv/
+venv/
+
+
+# Exclude special examples 
+/xml/x*
+/output/*.py
+
