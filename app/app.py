@@ -8,7 +8,9 @@ from werkzeug.utils import secure_filename
 from json import dumps
 
 
-app = Flask(__name__, template_folder='templates')
+app = Flask(__name__, template_folder='dist', static_folder='dist')
+
+app.config['PORT'] = int(os.environ.get('PORT', 5000))
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or str(uuid.uuid4())
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  
@@ -65,27 +67,16 @@ class Conversions(db.Model):
 
 @app.route('/api/v1/version')
 def version():
-    return jsonify({'version': '1.0'})
+    return jsonify({'version': 'v0.0.1'})
 
 
 @app.route('/')
 def home():
     return render_template('/index.html')
 
-
-@app.route('/about')
-def about():
-    return render_template('/about.html')
-
-
-@app.route('/faq')
-def faq():
-    return render_template('/faq.html')
-
-
-@app.route('/convert')
-def convert():
-    return render_template('/convert.html')
+@app.route('/test')
+def test():
+    return render_template('/test.html')
 
 
 @app.route('/api/v1/conversions', methods=['GET', 'POST'])
@@ -185,4 +176,4 @@ def allowed_file(filename):
 if __name__ == '__main__':   
     with app.app_context():  # Ensures db and session availability in routes
         db.create_all()
-    app.run(debug=True, host='0.0.0.0', port=8081)
+    app.run(debug=True, host='0.0.0.0', port=app.config['PORT'])
