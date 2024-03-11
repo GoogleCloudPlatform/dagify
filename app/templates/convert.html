@@ -53,24 +53,63 @@
             </li>
         </ul>
         <!-- Step Wise Form Content -->
-        <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" method="POST">
+        <form id="userAccountSetupForm" name="userAccountSetupForm" enctype="multipart/form-data" method="POST"></form>
             <!-- Step 1 Content -->
             <section id="step-1" class="form-step">
                 <h2 class="font-normal">Upload</h2>
                 <!-- Step 1 input fields -->
                 <div class="mt-3">
-                    Step 1 input fields goes here..
+                  <!--<div class="container mx-auto">
+                    <div class="flex justify-center items-center h-screen">
+                      <div class="w-full max-w-md">-->
+                        <form id="upload-file" method="post" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                          <div class="mb-4">
+                            <fieldset>
+                              <label class="block text-gray-700 text-sm font-bold mb-2" for="conversion_file">
+                                Name
+                              </label>
+                              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="conversion_name" type="text" placeholder="Enter a name for the conversion task">
+                            </fieldset>
+                          </div>
+                          <div class="mb-6">
+                            <fieldset>
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="conversion_file">
+                              XML File
+                            </label>
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="conversion_file" type="file" accept=".xml">
+                            </fieldset>
+                          </div>
+                          <div class="flex items-center justify-between">
+                            <fieldset>
+                              <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" id="upload-file-btn" type="button">
+                                Upload
+                              </button>
+                            </fieldset>
+                          </div>
+                          </form>
+                      <!--</div>
+                    </div>
+                  </div>-->
+                
+                  
                 </div>
-                <div class="mt-3">
+                <!--<div class="mt-3">
                     <button class="button btn-navigate-form-step" type="button" step_number="2">Next</button>
-                </div>
+                </div>-->
             </section>
             <!-- Step 2 Content, default hidden on page load. -->
             <section id="step-2" class="form-step d-none">
                 <h2 class="font-normal">Analyze</h2>
                 <!-- Step 2 input fields -->
                 <div class="mt-3">
-                    Step 2 input fields goes here..
+                  <form id="upload-file" method="post" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                      <fieldset>
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" id="analyze-btn" type="button">
+                          Analyze
+                        </button>
+                      </fieldset>
+                    </div>
+                    </form>
                 </div>
                 <div class="mt-3">
                     <button class="button btn-navigate-form-step" type="button" step_number="1">Prev</button>
@@ -116,7 +155,66 @@
         </form>
     </div>
 </div>
+
 <script>
+  $(document).ready(function() {
+
+    
+
+    $('#upload-file-btn').click(function() {
+        //var form_data = new FormData($('#upload-file'));
+
+        const formData = new FormData();
+        formData.append("conversion_name", document.querySelector("#conversion_name").value);
+        formData.append("file", document.querySelector("#conversion_file").files[0]);
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/v1/conversions',
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(data) {
+                console.log('Success!');
+                console.log(data);
+                navigateToFormStep(2);
+            },
+            error: function(data) {
+                console.log('Error!');
+            },
+        });
+    });
+
+    $('#analyze-btn').click(function() {
+        //var form_data = new FormData($('#upload-file'));
+
+        const formData = new FormData();
+        formData.append("conversion_name", document.querySelector("#conversion_name").value);
+        formData.append("file", document.querySelector("#conversion_file").files[0]);
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/v1/conversions/analyze/4',
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(data) {
+                console.log('Success!');
+                console.log(data);
+                navigateToFormStep(2);
+            },
+            error: function(data) {
+                console.log('Error!');
+            },
+        });
+    });
+  });
+</script>
+
+<script>
+
     /**
  * Define a function to navigate betweens form steps.
  * It accepts one parameter. That is - step number.
