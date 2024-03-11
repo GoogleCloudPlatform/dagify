@@ -1,22 +1,14 @@
 <script setup>
-import HelloWorld from './components/Demo.vue'
+import navBar from './components/Nav.vue'
+import footerBar from './components/Footer.vue'
+import flashMessage from './components/Flash.vue'
 </script>
 
 <template>
-  <HelloWorld/>
+  <div class="flex flex-col min-h-screen">
+    <navBar class="sticky top-0 z-10 shadow-md"/>
+    <flashMessage class="sticky bottom-0"/>
+    <router-view class="flex-1 min-w-full overflow-y-auto p-10" />
+    <footerBar class="sticky bottom-0 z-10"/>
+  </div>
 </template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>

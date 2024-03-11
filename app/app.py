@@ -4,6 +4,7 @@ import datetime
 from flask import Flask, render_template, request, \
     jsonify, abort, Response, flash, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 from werkzeug.utils import secure_filename
 from json import dumps
 
@@ -13,11 +14,13 @@ app = Flask(__name__, template_folder='dist', static_folder='dist')
 app.config['PORT'] = int(os.environ.get('PORT', 5000))
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or str(uuid.uuid4())
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 
 db = SQLAlchemy()
 db.init_app(app)
+ma = Marshmallow(app)
 
 
 # JSON Returns
@@ -34,35 +37,25 @@ class Conversions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
     filename = db.Column(db.String(300))
-    #sysCreated = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    #sysModified = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-        
+    sysCreated = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    sysModified = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+class ConversionsSchema(ma.Schema):
+    class Meta:
+        # Fields to expose
+        fields = ("id", "name", "filename", "sysCreated", "sysModified", "_links")
+
+    # Smart hyperlinking
+    _links = ma.Hyperlinks(
+        {
+            "self": ma.URLFor("api_conversions", values=dict(id="<id>")),
+            "collection": ma.URLFor("api_conversions"),
+        }
+    )
 
 
-#class ControlMFolders(db.Model):
-#    id = db.Column(db.Integer, primary_key=True)
-#    folder_name = db.Column(db.String(80))
-    # ... other folder details
-    #conversion_id = db.Column(db.Integer, db.ForeignKey('conversions.id'))
-
-    #control_m_jobs = db.relationship('ControlMJobs', backref='control_m_folder', lazy='dynamic')
-
-#    def get_json(self):
-#        return
-
-
-#class ControlMJobs(db.Model):
-#    id = db.Column(db.Integer, primary_key=True)
-#    job_name = db.Column(db.String(80))
-    # ... other job details
-    #control_m_folder_id = db.Column(db.Integer, db.ForeignKey('control_m_folders.id'))
-    #control_m_operator_id = db.Column(db.Integer, db.ForeignKey('airflow_operators.id'))
-
-    #control_m_operator = db.relationship('AirflowOperators', backref='control_m_job', uselist=False) 
-
- #   def get_json(self):
- #       return
-
+conversion_schema = ConversionsSchema()
+conversions_schema = ConversionsSchema(many=True)    
 
 
 @app.route('/api/v1/version')
@@ -74,10 +67,6 @@ def version():
 def home():
     return render_template('/index.html')
 
-@app.route('/test')
-def test():
-    return render_template('/test.html')
-
 
 @app.route('/api/v1/conversions', methods=['GET', 'POST'])
 @app.route('/api/v1/conversions/<int:conversion_id>', methods=['GET', 'POST', 'DELETE'])
@@ -88,9 +77,8 @@ def api_conversions(conversion_id=None):
         if conversion_id is None:
             # Handle POST request
             if 'file' not in request.files:
-                print("MADE IT! error")
                 error_message = 'No file part in the request'
-                return Response(dumps({'Message': error_message}), 400)
+                return Response(dumps({'message': error_message}), 400)
         
             # Get the file from the request
             file = request.files['file']
@@ -109,10 +97,11 @@ def api_conversions(conversion_id=None):
             # Create uploads folder if it does not exist
             if not os.path.exists(app.config['UPLOAD_FOLDER']):
                 os.makedirs(app.config['UPLOAD_FOLDER'])
-            
-            print("MADE IT4")
 
+            # Generate unique filename
             unique_filename = datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '_' + str(uuid.uuid4())[0:5] + '_' + secure_filename(file.filename)
+
+            # Save the file
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
 
             # Create a new conversion
@@ -120,7 +109,11 @@ def api_conversions(conversion_id=None):
             db.session.add(conversion)
             db.session.commit()
             success_message = 'Conversion Project successfully Created'
-            return Response(dumps({'conversion': get_json(conversion), 'status': 'Success', 'message': success_message}), 201)
+            return Response(dumps({
+                'conversion': conversion_schema.dump(conversion), 
+                'status': 'Success', 
+                'message': success_message
+            }), 201)
         else: 
             # Update existing Conversion
             return 
@@ -128,7 +121,9 @@ def api_conversions(conversion_id=None):
         if conversion_id is None:
             # Handle GET request for all conversions
             conversions = Conversions.query.all()
-            return jsonify([c.get_json() for c in conversions])
+            print(conversions)
+            return conversions_schema.dump(conversions)
+            #return jsonify([c.get_json() for c in conversions])
         else:
             # Handle GET request for a specific conversion
             return
