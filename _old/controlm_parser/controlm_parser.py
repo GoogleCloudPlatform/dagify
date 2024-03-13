@@ -14,15 +14,21 @@ class ControlMParser():
     def __init__(
         self,
         xml_path: str,
-        folder_name: str,
-        smart_folder_name: str,
-        output_path: str
+        folder_name: str = None,
+        smart_folder_name: str = None,
+        output_path: str = None
     ):
         self.xml_path = xml_path
         self.folder_name = folder_name
         self.smart_folder_name = smart_folder_name
         self.output_path = output_path
 
+    def analyze(self):
+        print("Analyzing XML File")
+        self.parse()
+        print("Successfully Parsed XML File")
+        return True
+    
     def parse(self):
         # Parse XML file
         tree = ET.parse(self.xml_path)
@@ -41,20 +47,21 @@ class ControlMParser():
 
 def create_dag_files(workflow):
     # Process Dag Output files
-    for folder in workflow.get_folders():
-        # Get DAG Template
-        environment = Environment(loader=FileSystemLoader("templates/"))
-        template = environment.get_template("dag.tmpl")
-        # Create DAG File by Folder
-        filename = f"output/{folder.get_folder_name()}.py"
-        content = template.render(
-            imports=folder.calculate_imports(),
-            dag_id=folder.get_folder_name_safe(),
-            tasks=folder.get_jobs_operator_as_string_list(),
-            dependencies=folder.calculate_job_dependencies()
-        )
-        with open(filename, mode="w", encoding="utf-8") as dag_file:
-            dag_file.write(content)
+    if 1==2:
+        for folder in workflow.get_folders():
+            # Get DAG Template
+            environment = Environment(loader=FileSystemLoader("templates/"))
+            template = environment.get_template("dag.tmpl")
+            # Create DAG File by Folder
+            filename = f"output/{folder.get_folder_name()}.py"
+            content = template.render(
+                imports=folder.calculate_imports(),
+                dag_id=folder.get_folder_name_safe(),
+                tasks=folder.get_jobs_operator_as_string_list(),
+                dependencies=folder.calculate_job_dependencies()
+            )
+            with open(filename, mode="w", encoding="utf-8") as dag_file:
+                dag_file.write(content)
 
 
 def convert_operators(workflow):

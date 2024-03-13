@@ -53,7 +53,7 @@
           <div class="flex flex-col p-8 text-center text-2xl font-bold">
             Analyze
           </div>
-          <button @click="analyzeData" 
+          <button :disabled="!conversionID" @click="analyzeData" 
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Analyze Control-M Data
                 </button>
@@ -80,6 +80,12 @@ const handleFileUpload = (event) => {
 
 const currentWorkflowStep = ref(0);
 
+// API Control Variables 
+const conversionID = ref(null); 
+
+
+
+
 
 
 
@@ -98,6 +104,11 @@ const uploadFile = async () => {
     // Use ref directly for accessing input element
     selectedFile.value = null; 
     fMsg.addMessage({text:'File uploaded successfully!',details:resp.data.message, type:'success'})
+    if (resp.data.conversion.id == undefined || resp.data.conversion.id == null){
+      fMsg.addMessage({text:'An error occurred during upload.', details:'server did not return a conversion id, which is required for analysis', type:'error'})
+      return;
+    }
+    conversionID.value = resp.data.conversion.id;
     currentWorkflowStep.value++
   } catch (error) {
     fMsg.addMessage({text:'An error occurred during upload.', details:error.response.data.message, type:'error'})
@@ -107,7 +118,9 @@ const uploadFile = async () => {
 const analyzeData = async () => {
 
   try {
-    let resp = await axios.post('/api/v1/conversions/analyze/1', {
+    if (!conversionID.value) return; // Early exit if no file
+
+    let resp = await axios.post('/api/v1/conversions/'+conversionID.value+'/analyze', {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
