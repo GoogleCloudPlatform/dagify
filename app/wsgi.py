@@ -1,4 +1,9 @@
-from app import app
+import os
+from app import create_app
 
 if __name__ == "__main__":
-    app.run()
+    create_app().run(
+        debug=True, 
+        host='0.0.0.0', 
+        port=int(os.environ.get('PORT', 8080))
+    )
