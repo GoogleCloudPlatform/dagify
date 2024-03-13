@@ -12,7 +12,7 @@ from app.core.handlers import conversions as c
 
 @bp.route('/conversions', methods=['GET', 'POST'])
 def api_conversions():
-    # Get All Conversions 
+    # Get All Conversions
     if request.method == 'GET':
         try:
             conversions = c.get_conversions()
@@ -26,7 +26,7 @@ def api_conversions():
                                   message="unable to load conversions",
                                   errors={'conversions': str(e)}
                                   )
-        
+
 
     # Create New Conversion
     if request.method == 'POST':
@@ -121,7 +121,7 @@ def api_conversions():
                                   message="unable to create conversion",
                                   errors={'conversions': str(e)}
                                   )
-           
+
     # Unknown Error return HTTP 500
     return HandleResponse(code=500,
                           message="unexpected error",
@@ -161,7 +161,7 @@ def api_conversion(conversion_id=None):
                                   message="validation error, unable to load conversions",
                                   errors={'conversions': str(e.msg)}
                                   )
-            
+
     # Update Conversion by ID
     if request.method == 'POST':
         try:
@@ -173,7 +173,7 @@ def api_conversion(conversion_id=None):
                                   )
         except ValidationError as e:
             # Validation Error Return HTTP 400
-            return HandleResponse(code=400, 
+            return HandleResponse(code=400,
                                   message="validation error, unable to update conversion",
                                   errors={'conversions': str(e.msg)}
                                   )
@@ -195,7 +195,7 @@ def api_conversion(conversion_id=None):
                                   )
         except ValidationError as e:
             # Validation Error Return HTTP 400
-            return HandleResponse(code=400, 
+            return HandleResponse(code=400,
                                   message="validation error, unable to delete conversion",
                                   errors={'conversions': str(e.msg)}
                                   )
@@ -205,7 +205,7 @@ def api_conversion(conversion_id=None):
                                   message="unable to delete conversion",
                                   errors={'conversions': str(e)}
                                   )
-        
+
     # Unknown Error return HTTP 500
     return HandleResponse(code=500,
                           message="unexpected error",

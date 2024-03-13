@@ -24,7 +24,7 @@ class Storage:
             os.makedirs(self.app.config['UPLOAD_FOLDER'])
             return
         log.debug("skipping UPLOAD_FOLDER creation, \
-            folder already exists")  
+            folder already exists")
 
     def create_downloads_folder(self):
         if not os.path.exists(self.app.config['DOWNLOADS_FOLDER']):
@@ -51,7 +51,7 @@ class Storage:
     def get_html_templates_folder(self):
         return self.app.config['HTML_TEMPLATES_FOLDER']
 
-    def validate(self): 
+    def validate(self):
         if not os.path.exists(self.get_upload_folder()):
             log.error("UPLOAD_FOLDER folder does not exist, \
                 cannot start web application")

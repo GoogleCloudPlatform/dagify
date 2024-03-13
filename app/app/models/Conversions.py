@@ -2,7 +2,7 @@ import datetime
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.declarative import declarative_base
-from app.extensions import db, ma
+from app.extensions import db
 
 Base = declarative_base()
 
@@ -29,7 +29,6 @@ class Conversions(Base):
         if len(description) > 500:
             raise ValueError("conversions description is too long must be less than 500 characters")
         return description
-
 
 
 class ConversionsSchema(SQLAlchemyAutoSchema):

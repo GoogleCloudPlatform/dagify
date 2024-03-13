@@ -8,17 +8,17 @@ from app.models.Conversions import Conversions, conversions_schema, conversion_s
 from app.extensions import db
 
 
-def create_conversion(file=None, name=None, description=None, **kwargs): 
+def create_conversion(file=None, name=None, description=None, **kwargs):
     # Validate file has been provided
-    if file is None: 
+    if file is None:
         raise ValidationError("no file provided")
     # Validate conversion name has been provided
-    if name is None: 
+    if name is None:
         raise ValidationError("no conversion name provided")
-    # Validate upload storage is configured 
+    # Validate upload storage is configured
     if store.get_upload_folder() is None:
         raise ValidationError("server upload storage misconfigured")
-    
+
     try:
         # Generate Unique Filename
         filename = UniqueFilename(
@@ -33,7 +33,7 @@ def create_conversion(file=None, name=None, description=None, **kwargs):
         )
     except Exception:
         raise
-    
+
     # Create Conversion Database Record
     conversion = Conversions(
         name=name,
@@ -64,8 +64,8 @@ def get_conversions():
     return json_result
 
 
-def get_conversion_by_id(conversion_id=None): 
-    if conversion_id is None: 
+def get_conversion_by_id(conversion_id=None):
+    if conversion_id is None:
         raise ValidationError("no conversion id provided")
     # Query database for Conversions
     stmt = select(Conversions).where(Conversions.id == conversion_id)
@@ -78,17 +78,17 @@ def get_conversion_by_id(conversion_id=None):
     return json_result
 
 
-def delete_conversion_by_id(conversion_id=None): 
-    # TODO: Implement 
+def delete_conversion_by_id(conversion_id=None):
+    # TODO: Implement
     raise NotImplementedError
-    if conversion_id is None: 
+    if conversion_id is None:
         raise ValidationError("conversion id required")
     return
 
 
-def update_conversion_by_id(conversion_id=None): 
-    # TODO: Implement 
+def update_conversion_by_id(conversion_id=None):
+    # TODO: Implement
     raise NotImplementedError
-    if conversion_id is None: 
+    if conversion_id is None:
         raise ValidationError("conversion id required")
     return

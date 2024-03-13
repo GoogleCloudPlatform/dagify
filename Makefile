@@ -1,2 +1,2 @@
 lint:
-	flake8 --exclude=./venv,./.venv,./test,./output,._old ./app
+	flake8 --exclude=./app/venv,./test,./output ./app
