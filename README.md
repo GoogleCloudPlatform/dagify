@@ -1,5 +1,23 @@
 # AirLift (Name TBD)
 
+</br></br>
+
+# Running Locally
+Here we outline how to run AirLift on your local machine.
+
+## Start AirLift (From Source)
+```bash
+
+make run
+
+```
+
+## Start AirLift (From Published Container)
+> Comming Soon
+
+---
+
+</br></br>
 
 # Development
 Here we outline how to run each of the components independently for development on your local machine.

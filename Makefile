@@ -38,5 +38,9 @@ api-lint:
 	flake8 --exit-zero --exclude=./app/venv ./app
 
 # Building 
-build: clean lint docker
+build: clean lint docker-build
+	@echo "Fully Cleaned and Built!"
+
+# Local Run 
+run: clean lint docker
 	@echo "Fully Cleaned and Built!"
