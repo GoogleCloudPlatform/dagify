@@ -1,0 +1,8 @@
+[March 14, 2024 10:24:49 UTC] [INFO | _internal] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8083
+ * Running on http://192.168.2.246:8083
+[March 14, 2024 10:24:49 UTC] [INFO | _internal] [33mPress CTRL+C to quit[0m
+[March 14, 2024 10:24:49 UTC] [INFO | _internal]  * Restarting with stat
+[March 14, 2024 10:24:49 UTC] [WARNING | _internal]  * Debugger is active!
+[March 14, 2024 10:24:49 UTC] [INFO | _internal]  * Debugger PIN: 371-568-046
