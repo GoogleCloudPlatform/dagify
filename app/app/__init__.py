@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-from flask import Flask, render_template
+from flask import Flask
 from logging.config import dictConfig
 from config import Config
 from app.extensions import db, ma, store
@@ -55,9 +55,6 @@ def create_app(config_class=Config):
     except Exception as e:
         log.error("exiting, failed to initialize flask extensions", e)
         raise SystemExit
-
-    # Import Database Models
-    from app.models.Conversions import Conversions
 
     # Configure Database
     with app.app_context():
