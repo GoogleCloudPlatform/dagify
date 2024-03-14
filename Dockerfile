@@ -8,17 +8,14 @@ RUN npm run build
 
 
 # Build API Application
-FROM python:alpine
+FROM python
 
 WORKDIR /app
-COPY --from=build-stage /web/dist/dist /app/dist/
-COPY --from=build-stage /web/dist/index.html /app/dist/index.html
+COPY --from=build-stage /web/dist/dist /app/app/web/dist
+COPY --from=build-stage /web/dist/index.html /app/app/web/dist/index.html
 
 COPY /converters .
 COPY /app .
 RUN pip3 install -r ./requirements.txt
 
-ARG BUILD_PORT=8080
-ENV PORT=$BUILD_PORT
-
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "wsgi:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "wsgi:create_app()"]

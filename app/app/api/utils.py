@@ -1,5 +1,4 @@
 from flask import Response
-from marshmallow import Schema, fields
 from json import dumps
 
 

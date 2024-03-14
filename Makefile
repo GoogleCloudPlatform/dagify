@@ -35,12 +35,12 @@ web-lint:
 
 api-lint:
 	@echo "Linting the API Server Environment"
-	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --exclude=./app/venv ./app
+	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402 --exclude=./app/venv ./app
 	flake8 --exit-zero --exclude=./app/venv ./app
 
 con-lint:
 	@echo "Linting the Converter Modules"
-	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive ./converters
+	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402 ./converters
 	flake8 --exit-zero ./converters
 
 # Building 
