@@ -1,5 +1,5 @@
 import logging
-from flask import Flask
+from flask import Flask, render_template
 from logging.config import dictConfig
 from config import Config
 from app.extensions import db, ma, store
@@ -34,6 +34,8 @@ def create_app(config_class=Config):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
+    app.static_folder = app.config["STATIC_FOLDER"]
+    app.template_folder = app.config["TEMPLATE_FOLDER"]
 
     # Initialize Flask extensions
     try:

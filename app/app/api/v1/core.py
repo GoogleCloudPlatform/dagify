@@ -6,12 +6,24 @@ from app.api.v1 import bp
 log = logging.getLogger(__name__)
 
 
+@bp.route('/healthz', methods=['GET'])
+def api_healthz():
+    if request.method == 'GET':
+        return jsonify({'healthz': True})
+
+
 @bp.route('/version', methods=['GET'])
 def api_version():
     if request.method == 'GET':
         return jsonify({'version': 'v0.0.1'})
-    
-    
+
+
+@bp.route('/app', methods=['GET'])
+def api_app():
+    if request.method == 'GET':
+        return jsonify({'appName': 'AirLift'})
+
+
 @bp.before_request
 def logBeforeRequest():
     session["ctx"] = {"request_id": str(uuid.uuid4())}
