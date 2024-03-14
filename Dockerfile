@@ -9,13 +9,13 @@ RUN npm run build
 
 # Build API Application
 FROM python
-
 WORKDIR /app
-COPY --from=build-stage /web/dist/dist /app/app/web/dist
-COPY --from=build-stage /web/dist/index.html /app/app/web/dist/index.html
 
 COPY /converters .
 COPY /app .
 RUN pip3 install -r ./requirements.txt
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "wsgi:create_app()"]
+COPY --from=build-stage /web/dist/static /app/app/static
+COPY --from=build-stage /web/dist/index.html /app/app/templates/index.html
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "8", "--log-level", "DEBUG", "wsgi:create_app()"]

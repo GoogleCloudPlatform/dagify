@@ -7,12 +7,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     # Flask Secret Key
     SECRET_KEY = os.environ.get('SECRET_KEY') or str(uuid.uuid4())
-    # Flask Static Assets Folder
-    STATIC_FOLDER = os.environ.get('STATIC_FOLDER') \
-        or "web/dist/"
-    # Flask Template Folder
-    TEMPLATE_FOLDER = os.environ.get('TEMPLATE_FOLDER') \
-        or "web/dist/"
     # SQLAlchemy Database Connection String
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')\
         or 'sqlite:///' + os.path.join(basedir, 'app.db')

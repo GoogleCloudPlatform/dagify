@@ -10,6 +10,9 @@ web-clean:
 	
 api-clean: 
 	@echo "Cleaning API Server Environment"
+	rm -rf ./app/app.db
+	rm -rf ./app/*.log
+	rm -rf ./app/files
 	rm -rf ./app/venv
 	python3 -m venv ./app/venv
 	. ./app/venv/bin/activate; pip install -r ./app/requirements.txt

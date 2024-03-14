@@ -44,8 +44,8 @@ def create_app(config_class=Config):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
-    app.static_folder = app.config["STATIC_FOLDER"]
-    app.template_folder = app.config["TEMPLATE_FOLDER"]
+    # app.static_folder = app.config["STATIC_FOLDER"]
+    # app.template_folder = app.config["TEMPLATE_FOLDER"]
 
     # Initialize Flask extensions
     try:
