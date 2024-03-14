@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 from app.utils.exceptions import ValidationError
 
+
 def AllowedFileExtensions():
     """
     This function returns a set of allowed file extensions.
@@ -36,7 +37,7 @@ def GetFileExt(filename):
     return pathlib.Path(filename).suffix
 
 
-def UniqueFilename(filename): 
+def UniqueFilename(filename):
     return datetime.now().strftime("%Y%m%d%H%M%S") +\
         '_' + \
         str(uuid.uuid4())[0:6] \

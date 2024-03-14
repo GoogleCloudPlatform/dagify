@@ -27,7 +27,7 @@ Here we outline how to run each of the components independently for development 
 
 make api-clean
 source app/venv/bin/activate
-python3 wsgi.py
+python3 app/wsgi.py
 
 ```
 

@@ -1,10 +1,17 @@
 import logging
+import os
+import sys
 from flask import Flask, render_template
 from logging.config import dictConfig
 from config import Config
 from app.extensions import db, ma, store
 
+
 log = logging.getLogger(__name__)
+
+# Add Converter to PATH
+# TODO confirm this approach
+sys.path.insert(0, os.getcwd() + "/converters")
 
 
 def create_app(config_class=Config):
@@ -28,9 +35,12 @@ def create_app(config_class=Config):
                     "formatter": "default",
                 },
             },
-            "root": {"level": "DEBUG", "handlers": ["console", "file"]},
-        }
-    )
+            "root": {
+                "level": "DEBUG",
+                "handlers": [
+                    "console",
+                    "file"]},
+        })
 
     app = Flask(__name__)
     app.config.from_object(config_class)

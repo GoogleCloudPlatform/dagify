@@ -28,7 +28,7 @@ class ControlMParser():
         self.parse()
         print("Successfully Parsed XML File")
         return True
-    
+
     def parse(self):
         # Parse XML file
         tree = ET.parse(self.xml_path)
@@ -47,7 +47,7 @@ class ControlMParser():
 
 def create_dag_files(workflow):
     # Process Dag Output files
-    if 1==2:
+    if 1 == 2:
         for folder in workflow.get_folders():
             # Get DAG Template
             environment = Environment(loader=FileSystemLoader("templates/"))

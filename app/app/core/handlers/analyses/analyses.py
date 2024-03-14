@@ -1,6 +1,7 @@
+import os
+import sys
 from app.utils.exceptions import ValidationError
-from app.core.parsers.controlm.controlm_parser import ControlMParser
-
+#from control_m.controlm_parser import ControlMParser
 
 def create_analyses():
     cmp = ControlMParser(
@@ -8,7 +9,6 @@ def create_analyses():
     )
 
     cmp.analyze()
-
 
     return
 

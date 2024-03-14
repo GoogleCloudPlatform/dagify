@@ -1,3 +1,4 @@
+autopep8==2.0.4
 blinker==1.7.0
 click==8.1.7
 flake8==7.0.0

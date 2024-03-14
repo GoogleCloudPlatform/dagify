@@ -24,10 +24,10 @@ docker-build:
 
 docker-run: 
 	@echo "Running the Docker Container"
-	docker run localhost/airlift:v0.0.1 -p 3000:8080
+	docker run -p 3000:8080 localhost/airlift:v0.0.1
 
 # Linting
-lint: api-lint web-lint
+lint: con-lint api-lint web-lint
 	@echo "Fully Linted!"
 
 web-lint:
@@ -35,7 +35,13 @@ web-lint:
 
 api-lint:
 	@echo "Linting the API Server Environment"
+	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --exclude=./app/venv ./app
 	flake8 --exit-zero --exclude=./app/venv ./app
+
+con-lint:
+	@echo "Linting the Converter Modules"
+	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive ./converters
+	flake8 --exit-zero ./converters
 
 # Building 
 build: clean lint docker-build

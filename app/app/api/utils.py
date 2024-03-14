@@ -22,55 +22,55 @@ def HandleResponse(code=None, message=None,
     output['status'] = status
     output['errors'] = []
     output['payload'] = {}
-   
+
     match code:
         case 200:
-            if output['message'] is None: 
+            if output['message'] is None:
                 output['message'] = "Success"
             if output['status'] is None:
                 output['status'] = "success"
         case 201:
-            if output['message'] is None: 
+            if output['message'] is None:
                 output['message'] = "Created"
             if output['status'] is None:
                 output['status'] = "success"
         case 400:
-            if output['message'] is None: 
+            if output['message'] is None:
                 output['message'] = "Bad Request"
             if output['status'] is None:
                 output['status'] = "error"
         case 401:
-            if output['message'] is None: 
+            if output['message'] is None:
                 output['message'] = "Unauthorized"
             if output['status'] is None:
                 output['status'] = "error"
         case 403:
-            if output['message'] is None: 
+            if output['message'] is None:
                 output['message'] = "Forbidden"
             if output['status'] is None:
                 output['status'] = "error"
         case 404:
-            if output['message'] is None: 
+            if output['message'] is None:
                 output['message'] = "Not Found"
             if output['status'] is None:
                 output['status'] = "error"
         case 500:
-            if output['message'] is None: 
+            if output['message'] is None:
                 output['message'] = "Internal Server Error"
             if output['status'] is None:
                 output['status'] = "error"
         case 501:
-            if output['message'] is None: 
+            if output['message'] is None:
                 output['message'] = "Method Not Implemented"
             if output['status'] is None:
                 output['status'] = "error"
         case 505:
-            if output['message'] is None: 
+            if output['message'] is None:
                 output['message'] = "Method Not Allowed"
             if output['status'] is None:
                 output['status'] = "error"
         case _:
-            if output['message'] is None: 
+            if output['message'] is None:
                 output['message'] = "Internal Server Error"
             if output['status'] is None:
                 output['status'] = "error"

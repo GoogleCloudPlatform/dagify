@@ -26,10 +26,10 @@ def create_conversion(file=None, name=None, description=None, **kwargs):
         )
         # Save the uploaded file to disk in upload folder
         file.save(
-                os.path.join(
-                    store.get_upload_folder(),
-                    filename
-                )
+            os.path.join(
+                store.get_upload_folder(),
+                filename
+            )
         )
     except Exception:
         raise

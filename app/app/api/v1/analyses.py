@@ -9,7 +9,7 @@ from app.core.handlers import analyses as a
 def api_analyses(conversion_id=None):
     if conversion_id is None:
         return HandleResponse(400)
-    
+
     # Get Analyses
     if request.method == 'GET':
         try:
@@ -21,17 +21,19 @@ def api_analyses(conversion_id=None):
                                   )
         except ValidationError as e:
             # Validation Error Return HTTP 400
-            return HandleResponse(code=400, 
-                                  message="validation error, unable to load analyses",
-                                  errors={'analyses': str(e.msg)}
-                                  )
+            return HandleResponse(
+                code=400,
+                message="validation error, unable to load analyses",
+                errors={
+                    'analyses': str(
+                        e.msg)})
         except Exception as e:
             # Error Return HTTP 500
             return HandleResponse(code=500,
                                   message="unable to load analyses",
                                   errors={'analyses': str(e)}
                                   )
-    
+
     # Create Analyses
     if request.method == 'POST':
         try:
@@ -43,10 +45,12 @@ def api_analyses(conversion_id=None):
                                   )
         except ValidationError as e:
             # Validation Error Return HTTP 400
-            return HandleResponse(code=400, 
-                                  message="validation error, unable to create analyses",
-                                  errors={'analyses': str(e.msg)}
-                                  )
+            return HandleResponse(
+                code=400,
+                message="validation error, unable to create analyses",
+                errors={
+                    'analyses': str(
+                        e.msg)})
         except Exception as e:
             # Error Return HTTP 500
             return HandleResponse(code=500,
@@ -61,7 +65,8 @@ def api_analyses(conversion_id=None):
                           )
 
 
-@bp.route('/conversions/<conversion_id>/analyses/<analyses_id>', methods=['GET', 'DELETE'])
+@bp.route('/conversions/<conversion_id>/analyses/<analyses_id>',
+          methods=['GET', 'DELETE'])
 def api_analysis(conversion_id=None, analyses_id=None):
     if conversion_id is None:
         return HandleResponse(400)
@@ -79,10 +84,12 @@ def api_analysis(conversion_id=None, analyses_id=None):
                                   )
         except ValidationError as e:
             # Validation Error Return HTTP 400
-            return HandleResponse(code=400, 
-                                  message="validation error, unable to load analyses",
-                                  errors={'analyses': str(e.msg)}
-                                  )
+            return HandleResponse(
+                code=400,
+                message="validation error, unable to load analyses",
+                errors={
+                    'analyses': str(
+                        e.msg)})
         except Exception as e:
             # Error Return HTTP 500
             return HandleResponse(code=500,
@@ -106,10 +113,12 @@ def api_analysis(conversion_id=None, analyses_id=None):
                                   )
         except ValidationError as e:
             # Validation Error Return HTTP 400
-            return HandleResponse(code=400, 
-                                  message="validation error, unable to delete analyses",
-                                  errors={'analyses': str(e.msg)}
-                                  )
+            return HandleResponse(
+                code=400,
+                message="validation error, unable to delete analyses",
+                errors={
+                    'analyses': str(
+                        e.msg)})
         except Exception as e:
             # Error Return HTTP 500
             return HandleResponse(code=500,

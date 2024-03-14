@@ -14,6 +14,7 @@ WORKDIR /app
 COPY --from=build-stage /web/dist/dist /app/dist/
 COPY --from=build-stage /web/dist/index.html /app/dist/index.html
 
+COPY /converters .
 COPY /app .
 RUN pip3 install -r ./requirements.txt
 

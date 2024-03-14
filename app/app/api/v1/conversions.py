@@ -27,7 +27,6 @@ def api_conversions():
                                   errors={'conversions': str(e)}
                                   )
 
-
     # Create New Conversion
     if request.method == 'POST':
         # Create Request Body Class Object
@@ -48,7 +47,7 @@ def api_conversions():
                 unknown = EXCLUDE
 
             @post_load
-            def make_request(self, data, **kwargs)->RequestBody:
+            def make_request(self, data, **kwargs) -> RequestBody:
                 return RequestBody(**data)
 
         # Validate Request Details
@@ -67,29 +66,26 @@ def api_conversions():
         # Check if the file extension is allowed
         try:
             if not AllowedFileType(file.filename):
-                return HandleResponse(code=400,
-                                      message='File type not allowed',
-                                      errors={'filetype': 'filetype is not allowed to be uploaded'})
+                return HandleResponse(
+                    code=400, message='File type not allowed', errors={
+                        'filetype': 'filetype is not allowed to be uploaded'})
         except ValidationError as e:
             return HandleResponse(code=400, message=str(e.msg))
         # Check Upload Folder Exists
         if store.get_upload_folder() is None:
-            return HandleResponse(code=500,
-                                  message='server upload storage misconfigured',
-                                  errors={'storage': 'not able to validate upload directories existence'})
+            return HandleResponse(
+                code=500, message='server upload storage misconfigured', errors={
+                    'storage': 'not able to validate upload directories existence'})
 
         # Validate and deserialize input
         if request.form.get('data') is None:
-            return HandleResponse(code=400,
-                                  message='no input data provided',
-                                  errors={'request': 'the json body is empty in the request'})
-
+            return HandleResponse(code=400, message='no input data provided', errors={
+                                  'request': 'the json body is empty in the request'})
 
         json_data = json.loads(request.form.get('data'))
         if not json_data:
-            return HandleResponse(code=400,
-                                  message='no input data provided',
-                                  errors={'request': 'the json body is empty in the request'})
+            return HandleResponse(code=400, message='no input data provided', errors={
+                                  'request': 'the json body is empty in the request'})
 
         # Validate and deserialize JSON input
         try:
@@ -97,7 +93,7 @@ def api_conversions():
                 json_data,
                 partial=True,
                 unknown=EXCLUDE
-                )
+            )
         except MarshmallowValidationError as err:
             return HandleResponse(code=400,
                                   message='request data invalid',
@@ -129,7 +125,6 @@ def api_conversions():
                           )
 
 
-
 @bp.route('/conversions/<conversion_id>', methods=['GET', 'POST', 'DELETE'])
 def api_conversion(conversion_id=None):
     if conversion_id is None:
@@ -157,10 +152,12 @@ def api_conversion(conversion_id=None):
                                   errors={'conversions': str(e)}
                                   )
         except ValidationError as e:
-            return HandleResponse(code=400,
-                                  message="validation error, unable to load conversions",
-                                  errors={'conversions': str(e.msg)}
-                                  )
+            return HandleResponse(
+                code=400,
+                message="validation error, unable to load conversions",
+                errors={
+                    'conversions': str(
+                        e.msg)})
 
     # Update Conversion by ID
     if request.method == 'POST':
@@ -173,10 +170,12 @@ def api_conversion(conversion_id=None):
                                   )
         except ValidationError as e:
             # Validation Error Return HTTP 400
-            return HandleResponse(code=400,
-                                  message="validation error, unable to update conversion",
-                                  errors={'conversions': str(e.msg)}
-                                  )
+            return HandleResponse(
+                code=400,
+                message="validation error, unable to update conversion",
+                errors={
+                    'conversions': str(
+                        e.msg)})
         except Exception as e:
             # Error Return HTTP 500
             return HandleResponse(code=500,
@@ -195,10 +194,12 @@ def api_conversion(conversion_id=None):
                                   )
         except ValidationError as e:
             # Validation Error Return HTTP 400
-            return HandleResponse(code=400,
-                                  message="validation error, unable to delete conversion",
-                                  errors={'conversions': str(e.msg)}
-                                  )
+            return HandleResponse(
+                code=400,
+                message="validation error, unable to delete conversion",
+                errors={
+                    'conversions': str(
+                        e.msg)})
         except Exception as e:
             # Error Return HTTP 500
             return HandleResponse(code=500,
