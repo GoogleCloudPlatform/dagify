@@ -19,7 +19,7 @@ Then open the web application at http://localhost:3000
 
 
 ## Start AirLift (From Published Container)
-> Comming Soon
+> Coming Soon
 
 ---
 
