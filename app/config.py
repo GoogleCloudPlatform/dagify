@@ -32,4 +32,4 @@ class Config:
     # Maintenance GitHub Repo
     MAINTENANCE_GITHUB_REPO_URL = \
         os.environ.get('MAINTENANCE_GITHUB_REPO_URL') \
-        or "https://github.com/KonradSchieban/cntrlm-to-airflow/issues"
+        or "https://github.com/KonradSchieban/cntrlm-to-/issues"

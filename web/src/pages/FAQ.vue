@@ -1,5 +1,5 @@
 <template>
-    <h1>Airflow Agent</h1>
+    <h1>AirLift</h1>
   
     <div class="card">
       <p>
