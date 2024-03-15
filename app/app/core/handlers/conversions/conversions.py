@@ -1,5 +1,4 @@
 import os
-from sqlalchemy import select
 from werkzeug.utils import secure_filename
 from app.extensions import store
 from app.utils.exceptions import ValidationError, NotImplementedError
@@ -53,10 +52,7 @@ def create_conversion(file=None, name=None, description=None, **kwargs):
 
 
 def get_conversions():
-    # Query database for Conversions
-    stmt = select(Conversions)
-    conversions = db.session.execute(stmt)
-    # Serialize the Schema
+    conversions = Conversions.query.all()
     json_result = conversions_schema.dump(conversions)
     if json_result is None:
         raise Exception("unable to serialize json response")
@@ -68,8 +64,7 @@ def get_conversion_by_id(conversion_id=None):
     if conversion_id is None:
         raise ValidationError("no conversion id provided")
     # Query database for Conversions
-    stmt = select(Conversions).where(Conversions.id == conversion_id)
-    conversion = db.session.execute(stmt)
+    conversion = Conversions.query.filter(Conversions.id == conversion_id).first()
     # Serialize the Schema
     json_result = conversion_schema.dump(conversion)
     if json_result is None:

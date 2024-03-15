@@ -44,8 +44,6 @@ def create_app(config_class=Config):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
-    # app.static_folder = app.config["STATIC_FOLDER"]
-    # app.template_folder = app.config["TEMPLATE_FOLDER"]
 
     # Initialize Flask extensions
     try:
@@ -55,9 +53,13 @@ def create_app(config_class=Config):
     except Exception as e:
         log.error("exiting, failed to initialize flask extensions", e)
         raise SystemExit
+    
+    # Import Database Models
+    from app.models import Conversions
 
     # Configure Database
     with app.app_context():
+        print("Creating database tables")
         db.create_all()
 
     # Register blueprints here
