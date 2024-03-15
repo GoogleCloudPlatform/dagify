@@ -38,7 +38,7 @@ source app/venv/bin/activate
 python3 app/wsgi.py
 
 ```
-Then open the web application at http://localhost:8083
+Then open the web application at http://localhost:8080
 
 ## Running Web Server Locally (Development Mode)
 execute the following in the root directory of the project to start the application.
