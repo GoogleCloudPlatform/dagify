@@ -53,7 +53,7 @@ def create_app(config_class=Config):
     except Exception as e:
         log.error("exiting, failed to initialize flask extensions", e)
         raise SystemExit
-    
+
     # Import Database Models
     from app.models import Conversions
 

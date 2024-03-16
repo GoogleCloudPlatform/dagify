@@ -1,5 +1,5 @@
 <template>
-    <h1>AirLift</h1>
+    <h1>AirShip</h1>
   
     <div class="card">
       <p>

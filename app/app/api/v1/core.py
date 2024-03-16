@@ -21,7 +21,7 @@ def api_version():
 @bp.route('/app', methods=['GET'])
 def api_app():
     if request.method == 'GET':
-        return jsonify({'appName': 'AirLift'})
+        return jsonify({'appName': 'AirShip'})
 
 
 @bp.before_request

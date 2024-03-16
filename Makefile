@@ -23,11 +23,11 @@ docker: docker-build docker-run
 
 docker-build: 
 	@echo "Building the Docker Container"
-	docker build -t localhost/airlift:v0.0.1 . 
+	docker build -t localhost/airship:v0.0.1 . 
 
 docker-run: 
 	@echo "Running the Docker Container"
-	docker run -p 3000:8080 localhost/airlift:v0.0.1
+	docker run -p 3000:8080 localhost/airship:v0.0.1
 
 # Linting
 lint: con-lint api-lint web-lint

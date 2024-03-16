@@ -64,7 +64,8 @@ def get_conversion_by_id(conversion_id=None):
     if conversion_id is None:
         raise ValidationError("no conversion id provided")
     # Query database for Conversions
-    conversion = Conversions.query.filter(Conversions.id == conversion_id).first()
+    conversion = Conversions.query.filter(
+        Conversions.id == conversion_id).first()
     # Serialize the Schema
     json_result = conversion_schema.dump(conversion)
     if json_result is None:
