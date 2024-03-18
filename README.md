@@ -16,6 +16,16 @@ This table outlines the schedulers that are currently supported by AirShip and w
 
 </br></br>
 
+## Supported Schedulers
+This table outlines the schedulers that are currently supported by AirShip and which versions are currently considered. 
+
+
+| Scheduler     | Status         | Supported Versions | Notes                       |
+|---------------|----------------|--------------------|-----------------------------|
+| BMC Control-M | In Development | TBC                | Currently under development |
+| UC4           | Roadmap        | TBC                | Only under consideration    |
+|               |                |                    |                             |
+
 # Running Locally
 Here we outline how to run AirShip on your local machine.
 
