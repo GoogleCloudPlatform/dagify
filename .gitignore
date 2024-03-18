@@ -10,8 +10,8 @@ venv/
 
 
 # Exclude special examples 
-/xml/x*
-/output/*.py
+**/examples/*xxx*
+**/output/*.py
 
 
 **/.vscode
