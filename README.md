@@ -1,6 +1,18 @@
-# AirShip (Name TBD)
+# AirShip
+Migrate your enterprise scheudler workflows to Apache Airflow and Google Cloud Composer. 
+
 
 </br></br>
+
+## Supported Schedulers
+This table outlines the schedulers that are currently supported by AirShip and which versions are currently considered. 
+
+
+| Scheduler     | Status         | Supported Versions | Notes                       |
+|---------------|----------------|--------------------|-----------------------------|
+| BMC Control-M | In Development | TBC                | Currently under development |
+| UC4           | Roadmap        | TBC                | Only under consideration    |
+|               |                |                    |                             |
 
 # Running Locally
 Here we outline how to run AirShip on your local machine.
