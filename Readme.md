@@ -1,4 +1,4 @@
-# CNTRLM-TO-AIRFLOW
+# AirShip
 
 This repository contains a tool written in Python3 that converts Control-M XML files to Apache Airflow DAGs.
 
