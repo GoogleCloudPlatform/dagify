@@ -13,3 +13,5 @@ venv/
 /xml/x*
 /output/*.py
 
+
+**/.vscode
