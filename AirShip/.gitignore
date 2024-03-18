@@ -9,9 +9,5 @@
 venv/
 
 
-# Exclude special examples 
-**/examples/*xxx*
-**/output/*.py
-
-
-**/.vscode
+# Exclude Outputfolder and Outputfiles 
+**/output

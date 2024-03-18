@@ -1,1 +1,1 @@
-from .converter import *
+from .converter import new_converter
