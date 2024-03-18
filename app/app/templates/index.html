@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Development Mode</title>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white ">
+  <header class="fixed flex mx-auto justify-between items-center top-0 left-0 w-full z-10 bg-gray-900 text-white p-4">
+    <h1 class="text-xl font-bold"><p id="appName"></p></h1>
+    <a href="#" class="text-sm font-medium px-2 py-1 bg-blue-600 rounded hover:bg-blue-700">GitHub Source</a>
+  </header>
+
+  <main class="container mx-auto pt-16 pb-16 flex flex-col items-center justify-center h-screen">
+    <h1 class="text-8xl font-bold mb-8">Development Mode</h1>
+    <p class="text-sm text-gray-400">This page is only visible in development mode. It will be replaced automatically with the web front end when executed within a docker container</p>
+  </main>
+
+  <footer class="fixed bottom-0 left-0 w-full z-10 text-center p-4 text-gray-400 bg-gray-900">
+    <p id="version"></p>
+  </footer>
+</body>
+</html>
+
+<script>
+  // HTTP GET - App Name
+  async function fetchAndDisplayAppName() {
+    const response = await fetch('/api/v1/app');
+    if (!response.ok) {
+      throw new Error('API request failed');
+    }
+
+    const data = await response.json();
+    const versionElement = document.getElementById('appName');
+    versionElement.textContent = `${data.appName}`;
+  }
+
+
+  // HTTP GET - App Version
+  async function fetchAndDisplayVersion() {
+    const response = await fetch('/api/v1/version');
+    if (!response.ok) {
+      throw new Error('API request failed');
+    }
+
+    const data = await response.json();
+    const versionElement = document.getElementById('version');
+    versionElement.textContent = `${data.version}`;
+  }
+
+  fetchAndDisplayAppName();
+  fetchAndDisplayVersion(); 
+</script>

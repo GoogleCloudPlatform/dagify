@@ -1,6 +1,55 @@
-setup: 
-	source .venv/bin/activate
-	pip install -r requirements.txt
+## Cleaning 
+clean: api-clean web-clean
+	@echo "Fully Cleaned!"
 
-lint:
-	flake8 ./controlm_parser
+web-clean:
+	@echo "Cleaning Web Server Environment"
+	rm -rf ./web/node_modules
+	rm -rf ./web/dist
+	npm --prefix ./web install
+	
+api-clean: 
+	@echo "Cleaning API Server Environment"
+	rm -rf ./app/app.db
+	rm -rf ./app/*.log
+	rm -rf ./app/files
+	rm -rf ./app/venv
+	python3 -m venv ./app/venv
+	. ./app/venv/bin/activate; pip install -r ./app/requirements.txt
+
+# Containers
+docker: docker-build docker-run
+	@echo "Fully Containerized!"
+
+docker-build: 
+	@echo "Building the Docker Container"
+	docker build -t localhost/airship:v0.0.1 . 
+
+docker-run: 
+	@echo "Running the Docker Container"
+	docker run -p 3000:8080 localhost/airship:v0.0.1
+
+# Linting
+lint: con-lint api-lint web-lint
+	@echo "Fully Linted!"
+
+web-lint:
+	@echo "Linting the Web Server Environment"
+
+api-lint:
+	@echo "Linting the API Server Environment"
+	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402 --exclude=./app/venv ./app
+	flake8 --exit-zero --exclude=./app/venv ./app
+
+con-lint:
+	@echo "Linting the Converter Modules"
+	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402 ./converters
+	flake8 --exit-zero ./converters
+
+# Building 
+build: clean lint docker-build
+	@echo "Fully Cleaned and Built!"
+
+# Local Run 
+run: clean lint docker
+	@echo "Fully Cleaned and Built!"
