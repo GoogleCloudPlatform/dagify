@@ -1,0 +1,13 @@
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+
+# Exclude Virtual Environment Files
+.venv/
+venv/
+
+
+# Exclude Outputfolder and Outputfiles 
+**/output
