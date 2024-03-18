@@ -20,6 +20,3 @@ class Config():
     
     def getConverters(self): 
         return self.converters
-    
-    
-    
