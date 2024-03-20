@@ -24,6 +24,19 @@ def file_exists(file_path):
     """
     return os.path.isfile(file_path)
 
+
+def is_directory(folder_path): 
+    """Checks if a path is a directory.
+
+    Args:
+        folder_path (str): The path to the folder.
+
+    Returns:
+        bool: True if the path is a directory, False otherwise.
+    """
+    return os.path.isdir(folder_path)
+
+
 def directory_extist(folder_path):
     """Checks if a folder exists.
 

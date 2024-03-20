@@ -7,6 +7,9 @@ from .utils import file_exists, clean_converter_type, create_directory, director
 # ControlM Imports
 import xml.etree.ElementTree as ET
 from .platform.controlm import Workflow, Folder, Job, InCondition, OutCondition, Shout, Variable,  BaseOperator, SSHOperator, DummyOperator, UnknownOperator
+from .engine import Engine
+
+
 
 def new_converter(converter_type=None):
     try:
@@ -28,12 +31,17 @@ def new_converter(converter_type=None):
             case "CONTROLM":
                 # return ControlMConverter() class
                 return ControlMConverter()
+            case "ENGINE":
+                # return Engine() class
+                return Engine()
             case _:
                 # raise exception
                 raise InvalidConverterType(f"unsupported converter type: {converter_type}")
 
     except (InvalidConverterType, DisabledConverterType) as e:
         return None
+
+
 
 
 class AirShipConverter():
@@ -210,6 +218,7 @@ def _parse_struct(root_node, parent):
 def _convert_operators(workflow):
     for folder in workflow.get_folders():
         for job in folder.get_jobs():
+            
             # Create Airflow Operator Object
             op = None
             match job.get_job_type():
@@ -248,7 +257,6 @@ def _create_dag_files(workflow):
     # Process Dag Output files
     for folder in workflow.get_folders():
         # Get DAG Template
-        print("hi..")
         environment = Environment(loader=FileSystemLoader("./converter/templates/"))
         template = environment.get_template("dag.tmpl")
         
