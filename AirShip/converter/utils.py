@@ -1,5 +1,7 @@
 import re
 import os
+import yaml
+import pprint
 
 def clean_converter_type(converter_type):
     """Cleans a converter type string by removing all non-alphanumeric characters and converting it to uppercase.
@@ -56,3 +58,29 @@ def create_directory(folder_path):
     """
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
+        
+        
+def read_yaml_to_dict(yaml_file):
+    """Loads a YAML file into a dictionary.
+
+    Args:
+        yaml_file (str): The path to the YAML file.
+
+    Returns:
+        dict: The dictionary representation of the YAML file.
+    """
+    if yaml_file is None or not file_exists(yaml_file):
+        raise FileNotFoundError("AirShip: template file provided is None or does not exist")
+        return
+    
+    with open(yaml_file, 'r') as file:
+        return yaml.safe_load(file)
+    
+
+def display_dict(dict):
+    """Pretty prints a dictionary.
+
+    Args:
+        dict (dict): The dictionary to print.
+    """
+    pprint.pprint(dict)

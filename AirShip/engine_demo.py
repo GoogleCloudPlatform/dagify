@@ -5,7 +5,7 @@ def main():
     engine = Engine(
         templates_path="./templates",
         config_path="./config.yaml",
-        source_file=None
+        source_file="./examples/xxx.xml"
     )
     
     engine.convert()
