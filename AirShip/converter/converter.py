@@ -218,8 +218,6 @@ def _parse_struct(root_node, parent):
 def _convert_operators(workflow):
     for folder in workflow.get_folders():
         for job in folder.get_jobs():
-
-            
             # Create Airflow Operator Object
             op = None
             match job.get_job_type():

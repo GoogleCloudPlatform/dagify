@@ -60,7 +60,6 @@ class Logging():
         return len(self.debug)
 
 
-
 class Engine():
     def __init__(self, templates_path="./templates", config_path="./config.yaml", source_file=None):
         self.log = Logging()
@@ -75,9 +74,9 @@ class Engine():
         self.load_config()
         self.load_templates()
         self.load_source()
+        self.validate()
         self.calc_dependencies()
-        self.validate_config()
-        #self.convert()
+        self.convert()
 
     def load_config(self):
         # Validate Template Path Provided
@@ -86,20 +85,30 @@ class Engine():
         if file_exists(self.config_path) is False:
             raise FileNotFoundError("AirShip: conifg path does not exist")
     
+        
         with open(self.config_path) as stream:
             try:
-                self.config = yaml.safe_load(stream)
+                 self.config =  yaml.safe_load(stream)
             except yaml.YAMLError as exc:
                 raise
+        
+        if self.config is None:
+            raise ValueError("AirShip: No configuration has been loaded") 
+        
+        if self.config["config"]["mappings"] is None:
+            raise ValueError("AirShip: Configuration loaded with error, no Operator/JobType Mappings loaded")
+        
+        # Modify Configration for Standardization:
+        for idx, config in enumerate(self.config["config"]["mappings"]):
+            # Set Command Uppercase 
+             self.config["config"]["mappings"][idx]["job_type"] = self.config["config"]["mappings"][idx]["job_type"].upper()
         return
 
-    def validate_config(self):
+    def validate(self):
+        # TODO
+        # Check that every Job in the Source has a Configured Mapping in Config
+        # Check that every JobType in Config has a Template Name and that that Template Name is in Templates;
         
-        to_validate = self.get_distinct_job_types()
-        for mapping in to_validate:
-            print(mapping)
-            if mapping.upper() not in self.config["config"]["mappings"]:
-                raise Exception(f"AirShip: source file contains job type {mapping.upper()}; No template mapping has been provided in the config for this job type.")
         return
 
     def load_templates(self):
@@ -274,48 +283,65 @@ class Engine():
                         }
         return uf
 
-    def calc_dependencies(self): 
+    def calc_dependencies(self):
         return
 
     def convert(self):
         
+        folder_count = 0
+        job_count = 0
+        
         #Iterate folders
         for folder in self.universal_format:
+            folder_count += 1
             # Iterate jobs
-            for job in self.universal_format[folder]["jobs"]:
+            for item in self.universal_format[folder]["jobs"]:
+                job = self.universal_format[folder]["jobs"][item]
+                job_count += 1
                 # Process each job
                 # determine job type:
-                job_type = self.universal_format[folder]["jobs"][job]["task_type"]
+                job_type = job.get("task_type", None)
+                job_name = job.get("job_name", "UNKNOWN_JOB_NAME")
+                if job_type is None: 
+                    raise ValueError(f"AirShip: no task/job_type in source for job: {job_name}")
                 # get the template name from config.yaml based on job_type
-                template_filename = self.get_job_type_template_filename(job_type)
+                # TODO Add filter support
+                template_name = self.get_template_name(job_type)
                 # get the template from the template name
-                template = self.get_template(template_filename)
+                template = self.get_template(template_name)
+                if template is None: 
+                    raise ValueError(f"AirShip: no template name provided that matches job type {job_type}")
                 
                 # work out the mappings from the template;
                 
+                # Access Job Details: 
+                src_platform_name = template["source"]["platform"].get("name", "UNKNOWN_SOURCE_PLATFORM")
+                src_operator_name = template["source"]["operator"].get("id", "UNKNOWN_SOURCE_PLATFORM")
+                tgt_platform_name = template["target"]["platform"].get("name", "UNKNOWN_TARGET_PLATFORM")
+                tgt_operator_name = template["target"]["operator"].get("name", "UNKNOWN_TARGET_PLATFORM")
+                print(f" --> Converting Job number {str(job_count)}: {job_name}, \n \
+\t from Source Platform {src_platform_name} to Target Platform: {tgt_platform_name}\n \
+\t from Source Operator {src_operator_name} to Target Operator: {tgt_operator_name}\n \
+\t with template: {template_name}\n")
+                
         return
 
-    def get_template(self, template_filename):    
+    def get_template(self, template_name):    
         # Validate template_name is Provided
-        #if template_name is None:
-        #    raise ValueError("AirShip: template name must be provided")
-        #if file_exists(self.template_path) is False:
-        #    raise FileNotFoundError("AirShip: named template  ")
+        if template_name is None:
+            raise ValueError("AirShip: template name must be provided")        
+        template = self.templates.get(template_name, None)
+        if template is None:
+            raise ValueError(f"AirShip: no template with name: '{template_name}' was not found among loaded templates.")
+        return template
     
-        #with open(self.config_path) as stream:
-        #    try:
-        ##        self.config = yaml.safe_load(stream)
-         #   except yaml.YAMLError as exc:
-         #       raise
-        #return
-        
-        return    
 
-    def get_job_type_template_filename(self, job_type):
-        for command in self.config["config"]["mappings"]:
-                # Look for a job_type match. 
-                if command["job_type"].upper() == job_type.upper():
-                    return command["template_filename"]        
+    # TODO Add Filter Support (Multiple Templates by Filters)
+    def get_template_name(self, job_type):
+        for mapping in self.config["config"]["mappings"]:
+            if mapping["job_type"] == job_type.upper():
+                return mapping["template_name"]
+        # no match found
         return None
     
     def get_distinct_job_types(self):
