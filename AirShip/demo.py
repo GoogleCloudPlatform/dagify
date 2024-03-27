@@ -5,7 +5,7 @@ def main():
     con = new_converter(converter_type="control-m")
 
     try:
-        example_file = "examples/xxx.xml"
+        example_file = "examples/004-iron-giant.xml"
 
         con.analyze(example_file)
         con.parse(example_file)

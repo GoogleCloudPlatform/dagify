@@ -4,65 +4,8 @@ import xml.etree.ElementTree as ET
 from .utils import file_exists, create_directory, directory_extist, is_directory, read_yaml_to_dict, display_dict
 
 
-class Logging():
-    def __init__(self, debug=False):
-        self.debug = debug
-        self.trace = []
-        self.warnings = []
-        self.errors = []
-        self.info = []
-        self.debug = []
-
-    def addTrace(self, item):
-        # stoe all items as a trace item
-        self.trace.append(item)
-        # if debug mode output every trace in realtime.
-        if self.debug:
-            print(item)
-
-    def trace_count(self):
-        return len(self.trace)
-
-    def addWarn(self, item):
-        # trace all warnings
-        self.addTrace(item)
-        # store all warnings
-        self.warnings.append(item)
-
-    def warn_count(self):
-        return len(self.warn)
-
-    def addError(self, item):
-        # trace all errors
-        self.addTrace(item)
-        # store all errors
-        self.errors.append(item)
-
-    def error_count(self):
-        return len(self.error)
-
-    def addInfo(self, item):
-        # trace all info messages
-        self.addTrace(item)
-        # store all info messages
-        self.info.append(item)
-
-    def info_count(self):
-        return len(self.info)
-
-    def addDebug(self, item):
-        # trace all debug messages
-        self.addTrace(item)
-        # store all debug messages
-        self.debug.append(item)
-
-    def debug_count(self):
-        return len(self.debug)
-
-
 class Engine():
     def __init__(self, templates_path="./templates", config_path="./config.yaml", source_file=None):
-        self.log = Logging()
         self.templates = {}
         self.templates_count = 0
         self.templates_path = templates_path
@@ -130,8 +73,6 @@ class Engine():
                         # if the dict it not empty
                         self.templates_count += 1
                         self.templates[template["metadata"]["name"]] = template
-
-        self.log.addInfo("AirShip: {} templates loaded".format(self.templates_count))
         return
 
     def get_template_count(self):
@@ -279,7 +220,8 @@ class Engine():
                                 "in_conditions": incons,
                                 "out_conditions": outcons,
                                 "shouts": shouts,
-                                "JOB_DEPS": []
+                                "JOB_DEPS": [],
+                                "JOB_RAW": str(job)
                         }
         return uf
 
@@ -323,6 +265,16 @@ class Engine():
 \t from Source Platform {src_platform_name} to Target Platform: {tgt_platform_name}\n \
 \t from Source Operator {src_operator_name} to Target Operator: {tgt_operator_name}\n \
 \t with template: {template_name}\n")
+                
+                # Construct Airflow Task from Job and Template
+                output = airflow_task_build(job, template)
+                if output is None:
+                    #TODO Log Error Constructing DAG Task
+                    continue
+                
+                print(output)
+                
+                
                 
         return
 
@@ -377,3 +329,43 @@ class Engine():
     --> Construct YAML Output  from all Stored Jobs for "Dag Builder"
     --> Output all Files Created
 """
+
+
+
+
+def airflow_task_build(job, template):
+    
+    # Load the Template Output Structure
+    output = template["structure"]
+    if template["structure"] is None: 
+        raise ValueError(f"AirShip: no output structure in template: {template['metadata']['name']}, conversion will perform no action")
+        return None
+
+    if template["mappings"] is None: 
+        raise ValueError(f"AirShip: no mappings in template: {template['metadata']['name']}, conversion will perform no action")
+        return None
+    
+    # Declare Output Values Dictionary
+    values = {}
+    
+    # Process each Mapping
+    for mapping in template["mappings"]:        
+        # Lookup Mapping Target Key
+        targetKey = mapping.get('target', None)
+        if targetKey is None: 
+            # If Key is None, Skip
+            continue
+        
+        # Load Target Value or Default Value for TargetKey from Job Source Field
+        targetValue = job.get(mapping["source"], job.get(mapping.get("default"), None))
+        if targetValue is None: 
+            # No Value Found and No Default; Skip this mapping. 
+            # TODO Log Error Value Output (Required to Prevent String Formatting Failure)
+            targetValue = "!!UNKNOWN!!"
+
+        # Construct Values for Output!
+        values[targetKey] = targetValue
+    
+    # Construct Output Python Object Text
+    output = output.format(**values)
+    return output

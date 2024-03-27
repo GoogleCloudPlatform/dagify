@@ -6,6 +6,7 @@ def main():
         templates_path="./templates",
         config_path="./config.yaml",
         source_file="./examples/xxx.xml"
+        #source_file="./examples/004-iron-giant.xml"
     )
     
     engine.convert()
