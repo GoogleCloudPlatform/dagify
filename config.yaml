@@ -1,0 +1,6 @@
+config: 
+  mappings: 
+    - job_type: "command"
+      template_name: "control-m-command-to-airflow-ssh"
+    - job_type: "DUMMY"
+      template_name: "control-m-dummy-to-airflow-dummy"

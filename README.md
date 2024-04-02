@@ -105,3 +105,7 @@ Refactor:
 git checkout -b rf/<github_issue_number>/<username>/<description>
 ```
 
+
+
+
+docker run --env-file= myenvfile.env alpine env

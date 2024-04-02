@@ -1,21 +1,13 @@
-## Cleaning 
-clean: api-clean web-clean
-	@echo "Fully Cleaned!"
 
-web-clean:
-	@echo "Cleaning Web Server Environment"
-	rm -rf ./web/node_modules
-	rm -rf ./web/dist
-	npm --prefix ./web install
+## Cleaning 
+clean: airship-clean
+	@echo "Fully Cleaned!"
 	
-api-clean: 
-	@echo "Cleaning API Server Environment"
-	rm -rf ./app/app.db
-	rm -rf ./app/*.log
-	rm -rf ./app/files
-	rm -rf ./app/venv
-	python3 -m venv ./app/venv
-	. ./app/venv/bin/activate; pip install -r ./app/requirements.txt
+airship-clean: 
+	@echo "Cleaning AirShip Package"
+	rm -rf ./venv
+	python3 -m venv ./venv
+	. ./venv/bin/activate; pip install -r ./requirements.txt
 
 # Containers
 docker: docker-build docker-run
@@ -27,24 +19,16 @@ docker-build:
 
 docker-run: 
 	@echo "Running the Docker Container"
-	docker run -p 3000:8080 localhost/airship:v0.0.1
+	docker run --env-file=docker.env localhost/airship:v0.0.1
 
 # Linting
-lint: con-lint api-lint web-lint
+lint: airship-lint
 	@echo "Fully Linted!"
 
-web-lint:
-	@echo "Linting the Web Server Environment"
-
-api-lint:
+airship-lint:
 	@echo "Linting the API Server Environment"
-	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402 --exclude=./app/venv ./app
-	flake8 --exit-zero --exclude=./app/venv ./app
-
-con-lint:
-	@echo "Linting the Converter Modules"
-	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402 ./converters
-	flake8 --exit-zero ./converters
+	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402 --exclude=./AirShip/venv ./AirShip
+	flake8 --exit-zero --exclude=./AirShip/venv ./AirShip
 
 # Building 
 build: clean lint docker-build
@@ -53,3 +37,7 @@ build: clean lint docker-build
 # Local Run 
 run: clean lint docker
 	@echo "Fully Cleaned and Built!"
+
+# run tests
+tests: 
+	python3 -m unittest discover test

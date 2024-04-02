@@ -1,0 +1,48 @@
+--- 
+metadata:
+  id: 0001
+  name: control-m-command-to-airflow-ssh
+  version: "v0.0.1"
+  author:
+    name: "Google PSO"
+    email: "airship-code@google.com"
+  description-short: "Control-M Command Job to Airflow SSH Operator"
+  description: "This template allows for the conversion of Control-M Jobs of type Command into the native Apache Airflow SSH operator format."
+  tags:
+    - control-m
+    - airflow
+    - ssh
+source:
+  platform: 
+    id: "CONTROLM"
+    name: "Control-M"
+  operator: 
+    id: "Command"
+target:
+  platform: 
+      id: "APACHEAIRFLOW"
+      name: "Apache Airflow"
+  operator: 
+      id: "SSHOperator"
+      name: "SSH Operator"
+      docs: "https://airflow.apache.org/docs/apache-airflow-providers-ssh/stable/_api/airflow/providers/ssh/operators/ssh/index.html#module-airflow.providers.ssh.operators.ssh"
+      imports: 
+        - package: "airflow.providers.ssh.operators.ssh"
+          imports:
+              - "SSHOperator"
+mappings:
+  - source: JOBNAME
+    target: task_id
+    rules: []
+  - source: CMDLINE
+    target: command
+    rules: [] 
+
+structure: |
+  {task_id} = SSHOperator(
+    task_id='{task_id}',
+    command='{command}',
+    dag=dag,
+  )
+
+

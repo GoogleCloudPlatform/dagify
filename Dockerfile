@@ -1,21 +1,8 @@
-# Stage 1: Build Web Application
-FROM node:current-alpine as build-stage 
-WORKDIR /web
-COPY /web/package*.json ./
-RUN npm install
-COPY ./web .
-RUN npm run build
-
-
-# Build API Application
+# Stage 1: Build AirShip Application
 FROM python
 WORKDIR /app
 
-COPY /converters .
-COPY /app .
+COPY . .
 RUN pip3 install -r ./requirements.txt
 
-COPY --from=build-stage /web/dist/static /app/app/static
-COPY --from=build-stage /web/dist/index.html /app/app/templates/index.html
-
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "8", "--log-level", "DEBUG", "wsgi:create_app()"]
+CMD ["sh", "-c", "Python3", "AirShip.py", "--source-path", "${SOURCE_PATH}", "--output-path", "${OUTPUT_PATH}",  "--temples-path", "${TEMPLATES_PATH}", "--config-file", "${CONFIG_FILE}"]
