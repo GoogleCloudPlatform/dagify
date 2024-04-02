@@ -17,3 +17,5 @@ venv/
 **/.vscode
 
 **/output**
+
+.env.local
