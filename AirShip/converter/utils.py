@@ -3,6 +3,7 @@ import os
 import yaml
 import pprint
 
+
 def clean_converter_type(converter_type):
     """Cleans a converter type string by removing all non-alphanumeric characters and converting it to uppercase.
 
@@ -27,7 +28,7 @@ def file_exists(file_path):
     return os.path.isfile(file_path)
 
 
-def is_directory(folder_path): 
+def is_directory(folder_path):
     """Checks if a path is a directory.
 
     Args:
@@ -50,6 +51,7 @@ def directory_extist(folder_path):
     """
     return os.path.isdir(folder_path)
 
+
 def create_directory(folder_path):
     """Creates a folder if it does not already exist.
 
@@ -58,8 +60,8 @@ def create_directory(folder_path):
     """
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
-        
-        
+
+
 def read_yaml_to_dict(yaml_file):
     """Loads a YAML file into a dictionary.
 
@@ -70,12 +72,13 @@ def read_yaml_to_dict(yaml_file):
         dict: The dictionary representation of the YAML file.
     """
     if yaml_file is None or not file_exists(yaml_file):
-        raise FileNotFoundError("AirShip: template file provided is None or does not exist")
+        raise FileNotFoundError(
+            "AirShip: template file provided is None or does not exist")
         return
-    
+
     with open(yaml_file, 'r') as file:
         return yaml.safe_load(file)
-    
+
 
 def display_dict(dict):
     """Pretty prints a dictionary.

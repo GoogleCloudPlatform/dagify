@@ -13,6 +13,7 @@ def base_apply(string):
     string = string.replace(" ", "_")
     return string
 
+
 class UF():
     T = TypeVar('T', bound='UF')
 
@@ -39,13 +40,12 @@ class UF():
     # get total count of folders from the universal format
     def get_folder_count(self):
         return len(self.folders)
-    
+
     def set_raw_xml_element(self, node):
         self.raw_xml_element = node
 
     def get_raw_xml(self):
-        return self.raw_xml_element 
-
+        return self.raw_xml_element
 
 
 class UFFolder(UF):
@@ -73,7 +73,7 @@ class UFTask(UF):
         self.out_conditions = []
         self.shouts = []
         return
-    
+
     # Handle Variables
     def add_variable(self, ufTaskVariable):
         self.variables.append(ufTaskVariable)
@@ -83,7 +83,7 @@ class UFTask(UF):
 
     def get_variable_count(self):
         return len(self.variables)
-    
+
     # Handle In Conditions
     def add_in_condition(self, ufTaskInCondition):
         self.variables.append(ufTaskInCondition)
@@ -93,7 +93,7 @@ class UFTask(UF):
 
     def get_in_condition_count(self):
         return len(self.in_conditions)
-    
+
     # Handle Out Conditions
     def add_out_condition(self, ufTaskOutCondition):
         self.variables.append(ufTaskOutCondition)
@@ -103,7 +103,7 @@ class UFTask(UF):
 
     def get_out_condition_count(self):
         return len(self.out_conditions)
-    
+
     # Handle SHOUTS Conditions
     def add_shout(self, ufTaskShout):
         self.variables.append(ufTaskShout)
@@ -113,16 +113,19 @@ class UFTask(UF):
 
     def get_shout_count(self):
         return len(self.shouts)
-    
+
     def set_output_airflow_task(self, output):
         self.output_airflowtask = output
-    
+
     def get_output_airflow_task(self):
-        return self.output_airflowtask 
-    
+        return self.output_airflowtask
+
     def get_output_raw_xml(self):
         xmlstr = xml.etree.ElementTree.tostring(self.raw_xml_element)
-        return etree.tostring(etree.fromstring(xmlstr), pretty_print=True).decode()
+        return etree.tostring(
+            etree.fromstring(xmlstr),
+            pretty_print=True).decode()
+
 
 class UFTaskVariable(UFTask):
     T = TypeVar('T', bound='UFTaskVariable')
@@ -143,6 +146,7 @@ class UFTaskOutCondition(UFTask):
 
     def __init__(self):
         return
+
 
 class UFTaskShout(UFTask):
     T = TypeVar('T', bound='UFTaskShout')
