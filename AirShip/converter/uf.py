@@ -37,11 +37,15 @@ class UF():
     def from_controlm_xml(self: Type[T], node: xml.etree.ElementTree.Element):
         for key, value in node.attrib.items():
             setattr(self, base_apply(key), value)
+            setattr(self, base_apply(key + "_original"), value)
         self.set_raw_xml_element(node)
 
     # Handle Attributes
     def get_attribute(self, attribute: str) -> str:
         return getattr(self, base_apply(attribute), None)
+    
+    def get_attribute_original(self, attribute: str) -> str:
+        return self.get_attribute((attribute + "_original"))
 
     # add folder to the universal format
     def add_folder(self, ufFolder):
