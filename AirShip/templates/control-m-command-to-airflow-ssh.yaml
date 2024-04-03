@@ -40,8 +40,8 @@ mappings:
 
 structure: |
   {task_id} = SSHOperator(
-    task_id='{task_id}',
-    command='{command}',
+    task_id="{task_id}",
+    command="{command}",
     dag=dag,
   )
 

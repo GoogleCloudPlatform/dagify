@@ -8,6 +8,7 @@ airship-clean:
 	rm -rf ./venv
 	python3 -m venv ./venv
 	. ./venv/bin/activate; pip install -r ./requirements.txt
+	echo ${PWD}
 
 # Containers
 docker: docker-build docker-run
@@ -19,7 +20,7 @@ docker-build:
 
 docker-run: 
 	@echo "Running the Docker Container"
-	docker run --env-file=.env.local localhost/airship:local
+	docker run --env-file=.env.example localhost/airship:local
 
 # Linting
 lint: airship-lint
@@ -41,3 +42,6 @@ run: clean lint docker
 # run tests
 tests: 
 	python3 -m unittest discover test
+
+licence: 
+	docker run -i -t -v ${PWD}:/src ghcr.io/google/addlicense -c "Google LLC"  **/*.py
