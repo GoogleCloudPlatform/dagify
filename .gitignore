@@ -10,8 +10,12 @@ venv/
 
 
 # Exclude special examples 
-**/examples/*xxx*
+**/*xxx*
 **/output/*.py
 
 
 **/.vscode
+
+**/output**
+
+.env.local
