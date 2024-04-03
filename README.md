@@ -113,4 +113,4 @@ git checkout -b rf/<github_issue_number>/<username>/<description>
 
 ## Stargazers over time
 
-[![Stargazers over time](https://starchart.cc/KonradSchieban/airship.svg)](https://starchart.cc/KonradSchieban/airship)
+[![Stargazers over time](https://starchart.cc/KonradSchieban/airship.svg?variant=dark)](https://starchart.cc/KonradSchieban/airship)
