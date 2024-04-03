@@ -1,8 +1,8 @@
 <center>
     <span> <h1>AirShip</h1></span>
     <span> <h3><i>Migrate your enterprise scheduler workflows to Apache Airflow and Google Cloud Composer. </i></h3></span>
-    <p><img src="./docs/assets/AirShip-Logo.png" alt="drawing" width="30%"/></p>
 </center>
+<img style="text-align:center" src="./docs/assets/AirShip-Logo.png" alt="drawing" width="30%"/>
 <br>
 
 ## AirShip Overview 
@@ -111,6 +111,6 @@ git checkout -b rf/<github_issue_number>/<username>/<description>
 ```
 
 
+## Stargazers over time
 
-
-docker run --env-file= myenvfile.env alpine env
+[![Stargazers over time](https://starchart.cc/KonradSchieban/airship.svg)](https://starchart.cc/KonradSchieban/airship)
