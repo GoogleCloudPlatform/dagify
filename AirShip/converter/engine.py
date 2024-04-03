@@ -34,6 +34,9 @@ class Engine():
         self.generate_airflow_dags()
 
     def load_config(self):
+        print(self.config_file)
+        print(os.getcwd())
+        print(os.listdir())
         # Validate Template Path Provided
         if self.config_file is None:
             raise ValueError("AirShip: config file not provided")
@@ -116,15 +119,10 @@ class Engine():
         self.universal_format = None
         if self.source_path is None:
             raise ValueError("AirShip: source file cannot be None or Empty")
-        if file_exists(self.source_path) is None:
-            raise FileNotFoundError("AirShip: source file not found")
+        if file_exists(self.source_path) is False:
+            raise FileNotFoundError("AirShip: source file not found at {}".format(self.source_path))
 
         root = ET.parse(self.source_path).getroot()
-
-        # V1 Method
-        # self.universal_format = self.parse(root)
-
-        # V2 Method (Control-M)
         self.uf = self.parse_universal_format(root)
         return
 
@@ -324,17 +322,15 @@ class Engine():
                     "name", "UNKNOWN_TARGET_PLATFORM")
                 tgt_operator_name = template["target"]["operator"].get(
                     "name", "UNKNOWN_TARGET_PLATFORM")
-                # print(f" --> Converting Job number {str(tIdx)}: {task_name}, \n \
-# \t from Source Platform {src_platform_name} to Target Platform: {tgt_platform_name}\n \
-# \t from Source Operator {src_operator_name} to Target Operator: {tgt_operator_name}\n \
-# \t with template: {template_name}\n")
+                print(f" --> Converting Job number {str(tIdx)}: {task_name}, \n \
+ \t from Source Platform {src_platform_name} to Target Platform: {tgt_platform_name}\n \
+ \t from Source Operator {src_operator_name} to Target Operator: {tgt_operator_name}\n \
+ \t with template: {template_name}\n")
 
                 output = airflow_task_buildV2(task, template)
                 imports = airflow_imports_buildV2(task, template)
                 task.set_output_airflow_task(output)
 
-                # print(task.get_output_raw_xml())
-                # print(task.get_output_airflow_task())
 
     def convert(self):
 

@@ -25,6 +25,7 @@ def file_exists(file_path):
     Returns:
         bool: True if the file exists, False otherwise.
     """
+    file_path = os.path.abspath(file_path)
     return os.path.isfile(file_path)
 
 
