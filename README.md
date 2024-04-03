@@ -1,8 +1,27 @@
-# AirShip
-Migrate your enterprise scheudler workflows to Apache Airflow and Google Cloud Composer. 
+<center>
+    <span> <h1>AirShip</h1></span>
+    <span> <h3><i>Migrate your enterprise scheduler workflows to Apache Airflow and Google Cloud Composer. </i></h3></span>
+    <p><img src="./docs/assets/AirShip-Logo.png" alt="drawing" width="30%"/></p>
+</center>
+<br>
+
+## AirShip Overview 
+AirShip is a highly extensible, template driven, enterprise scheduler migration accelerator that helps organizations speed up their migration to Apache Airflow & Google Cloud Composer. While AirShip is not designed to be be a clear 1:1 migration tool it aims to heavily reduce the effort it takes for developers to convert their native enterprise scheduler formats into Native Python code in a Apache Airflow DAG format.  
+
+The primary goal with AirShip is never to be 100% but rather reduce the number of human hours required to undertake the conversion and therefore speed up migrations! 
+</br>
+
+## Supported Features
+This table outlines the schedulers that are currently supported by AirShip and which versions are currently considered. 
 
 
-</br></br>
+| Scheduler     | Feature         | Status | Notes                       |
+|---------------|----------------|--------------------|-----------------------------|
+| BMC Control-M | Convert Control-M  Folder -> Airflow DAG Mapping conversion | Under Development                |  |
+| BMC Control-M | Convert Control-M  Job -> Airflow Task Mapping conversion | Under Development                |  |
+| BMC Control-M | Convert Control-M Job Dependencies -> Airflow Dependencies conversion | Under Development                |  |
+| BMC Control-M | Custom Calendars | Under Investigation                | Feasibility is not yet determined |
+|               |                |                    |                             |
 
 ## Supported Schedulers
 This table outlines the schedulers that are currently supported by AirShip and which versions are currently considered. 
@@ -40,33 +59,19 @@ Then open the web application at http://localhost:3000
 # Development
 Here we outline how to run each of the components independently for development on your local machine.
 
-## Running API Server Locally (Development Mode)
-execute the following in the root directory of the project to start the application.
-
-```bash
-
-make api-clean
-source app/venv/bin/activate
-python3 app/wsgi.py
-
-```
-Then open the web application at http://localhost:8080
-
-## Running Web Server Locally (Development Mode)
-execute the following in the root directory of the project to start the application.
-
-```bash
-
-make web-clean
-cd ./web
-npm run dev
-
-```
-Then open the web application at http://localhost:8082
-
-
 # Contribution 
-We welcome contribuiton; At this time the contribution guidelines are still being created; Regardless of which, please always raise an issue on the github repository and we will get back to you as soon as possible. When raising issues please provide as much detail as possible and where ever possible please provide replication instructions and any other non PII or sensitive information that could help us understand the issue you are facing. 
+We welcome contribuiton; At this time the contribution guidelines are still being developed; Regardless of which, please always raise an issue on the github repository and we will get back to you as soon as possible. When raising issues please provide as much detail as possible and where ever possible please provide replication instructions and any other non PII or sensitive information that could help us understand the issue you are facing. 
+
+## Contribution Areas
+
+### Template Contribution (Primary)
+AirShip utilizes templates to help map native scheduler formats to Apache Airflow Operator formats. Please consider whether the mapping you are requiring (example: Control-M Job --> Apache Airflow FTP or SSH Operator) is a pattern other users could benefit from. Template contribution is the best and easiest method of contributing to AirShip. 
+
+### Rules & Custom Function Contribution
+> Not Yet Available
+AirShip is highly extensible and the ability to extend AirFlow by adding custom field conversion rules is an important part of our roadmap. Rules are applied to fields as they are converted from Source to AirFlow Operator. It is our desire that rules could be contributed and considered for all users. 
+
+An example rule could be something as simple as ToUppercase() or ToLowercase() which takes the content of a field and converts it on route to its target mapping.  
 
 ## Branching Strategy 
 Please note the branching strategy is as follows. Create a new branch based on the below naming conventions depending on the type of work you are contributing. Note that all branches will be checked for naming conventions before merging. 
