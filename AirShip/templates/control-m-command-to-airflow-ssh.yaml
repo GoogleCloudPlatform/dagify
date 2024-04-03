@@ -33,7 +33,7 @@ target:
 mappings:
   - source: JOBNAME
     target: task_id
-    rules: []
+    rules: [] 
   - source: CMDLINE
     target: command
     rules: [] 

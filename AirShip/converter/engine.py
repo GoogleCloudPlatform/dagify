@@ -466,6 +466,14 @@ def airflow_task_build(task, template):
         # Load Target Value or Default Value for TargetKey from task source
         # field
         targetValue = task.get_attribute(mapping.get("source", ""))
+        # Apply Rules
+        # TODO: Handle Rules through additional function
+        rules = mapping.get("rules", [])
+        if len(rules) == 0:
+            print("No Rules applied to source during mapping")
+        for rule in rules:
+            print(f"Apply Rule {rule}")
+        
         if targetValue is None:
             # TODO - Log That we are going to use the defaults
             targetValue = mapping.get("default", None)
