@@ -19,7 +19,7 @@ docker-build:
 
 docker-run: 
 	@echo "Running the Docker Container"
-	docker run --env-file=docker.env localhost/airship:v0.0.1
+	docker run --env-file=.env.example localhost/airship:v0.0.1
 
 # Linting
 lint: airship-lint

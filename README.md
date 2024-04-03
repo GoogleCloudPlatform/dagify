@@ -63,7 +63,20 @@ The above commands will use the built in default templates and also use your cus
 ---
 
 
-## Start AirShip (From Published Container)
+## Run AirShip (From Local Container)
+First you should update your .env.example file to use the environment variables you need. 
+When you run the below commands you will mount your current working directory to the container for execution.
+### With Defaults
+```bash
+
+docker build -t localhost/airship:source . 
+docker run -it --env-file=.env.example -v $(pwd):/app localhost/airship:source
+
+```
+---
+
+
+## Run AirShip (From Published Container)
 > Coming Soon
 
 ---
