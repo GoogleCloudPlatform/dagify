@@ -15,11 +15,11 @@ docker: docker-build docker-run
 
 docker-build: 
 	@echo "Building the Docker Container"
-	docker build -t localhost/airship:v0.0.1 . 
+	docker build -t localhost/airship:local . 
 
 docker-run: 
 	@echo "Running the Docker Container"
-	docker run --env-file=.env.example localhost/airship:v0.0.1
+	docker run --env-file=.env.local localhost/airship:local
 
 # Linting
 lint: airship-lint
@@ -27,11 +27,11 @@ lint: airship-lint
 
 airship-lint:
 	@echo "Linting the API Server Environment"
-	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402 --exclude=./AirShip/venv ./AirShip
-	flake8 --exit-zero --exclude=./AirShip/venv ./AirShip
+	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402,E501 --exclude=./AirShip/venv ./AirShip
+	flake8 --ignore=E402,E501 --exit-zero --exclude=./venv ./
 
 # Building 
-build: clean lint docker-build
+build: clean lint tests docker-build
 	@echo "Fully Cleaned and Built!"
 
 # Local Run 

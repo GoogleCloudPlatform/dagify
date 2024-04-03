@@ -3,7 +3,7 @@ from converter import Engine
 
 def main():
     print("Demo AirShip Engine")
-    engine = Engine(
+    Engine(
         templates_path="./templates",
         config_path="./config.yaml",
         source_file="./examples/xxx.xml"

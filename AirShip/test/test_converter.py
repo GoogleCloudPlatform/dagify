@@ -1,5 +1,4 @@
 import unittest
-from converter import new_converter, ControlMConverter
 
 
 class TestClass(unittest.TestCase):
