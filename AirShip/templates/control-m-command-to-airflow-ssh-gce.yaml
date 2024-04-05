@@ -1,0 +1,50 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+--- 
+metadata:
+  id: 0002
+  name: control-m-command-to-airflow-ssh-gce
+  version: "v0.0.1"
+  author:
+    name: "Google PSO"
+    email: "airship-code@google.com"
+  description-short: "Control-M Command Job to Google Cloud Compute Engine SSH Operator"
+  description: "This template allows for the conversion of Control-M Jobs of type Command into the Google Cloud Compute Engine SSH operator format."
+  tags:
+    - control-m
+    - airflow
+    - ssh
+source:
+  platform: 
+    id: "CONTROLM"
+    name: "Control-M"
+  operator: 
+    id: "Command"
+target:
+  platform: 
+      id: "APACHEAIRFLOW"
+      name: "Apache Airflow"
+  operator: 
+      id: "SSHOperator"
+      name: "Google Compute Engine SSH Operator"
+      docs: "https://airflow.apache.org/docs/apache-airflow-providers-google/stable/operators/cloud/compute_ssh.html"
+      imports: 
+        - package: "airflow.providers.ssh.operators.ssh"
+          imports:
+              - "SSHOperator"
+        - package: "airflow.providers.ssh.operators.ssh"
+          imports:
+              - "SSHOperator"
+mappings: 
+  

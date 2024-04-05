@@ -9,13 +9,5 @@
 venv/
 
 
-# Exclude special examples 
-**/*xxx*
-**/output/*.py
-**/source/**
-
-**/.vscode
-
-**/output**
-
-.env.local
+# Exclude Outputfolder and Outputfiles 
+**/output
