@@ -1,0 +1,54 @@
+<!-- # Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFTABLE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Folder.xsd">
+<SMART_FOLDER
+	DATACENTER="gcp-pso-core-dc"
+	CREATION_DATE="20190212"
+	CREATION_TIME="133214"
+	FOLDER_NAME="dc-one"
+	USED_BY_CODE="0"
+	ADJUST_COND="N"
+	FOLDER_ORDER_METHOD="SYSTEM"
+	APPLICATION="DEFAULT_APPLICATION"
+	CREATED_BY="N/A"
+	CONFIRM="0"
+	CRITICAL="0"
+	JOBNAME="dc-one"
+	SUB_APPLICATION="DEFAULT_SUB_APPLICATION"
+	DESCRIPTION=""
+	TIMEFROM=""
+	TIMETO=""
+	PRIORITY=""
+	CREATION_USER="1"
+	PLATFORM="UNIX"
+	VERSION="918"
+	CYCLIC="0"
+	INTERVAL="00001M"
+	MAXRERUN="0"
+	REMOVEATONCE="Y"
+	DAYSKEEPINNOTOK="0"
+	CYCLIC_TOLERANCE="1"
+>
+<JOB 
+JOBISN="0" APPLICATION="application-xx" SUB_APPLICATION="australia-region" MEMNAME="app-xx-aus-reg-001" JOBNAME="app-xx-aus-reg-001-daily" DESCRIPTION="Daily Application Run Australia Region" CREATED_BY="Google PSO Demo App" RUN_AS="gpso_user" PRIORITY="AA" CRITICAL="0" TASKTYPE="Command" CYCLIC="0" NODEID="gcp.pso.demo.app.google.com" INTERVAL="00001M" CMDLINE="execute_batch.sh aus.gcp.pso.demo.app.google.com daily_run" CONFIRM="0" RETRO="0" MAXWAIT="0" MAXRERUN="0" AUTOARCH="0" MAXDAYS="0" MAXRUNS="0" WEEKDAYS="1,2,3,4,5" JAN="1" FEB="1" MAR="1" APR="1" MAY="1" JUN="1" JUL="1" AUG="1" SEP="1" OCT="1" NOV="1" DEC="1" DAYS_AND_OR="O" SHIFT="Ignore Job" SHIFTNUM="+00" SYSDB="0" JOBS_IN_GROUP="00000" IND_CYCLIC="S" CREATION_USER="gpso_user" CREATION_DATE="20160112" CREATION_TIME="103502" CHANGE_USERID="emp8" CHANGE_DATE="20170714" CHANGE_TIME="181328" RULE_BASED_CALENDAR_RELATIONSHIP="O" APPL_TYPE="OS" MULTY_AGENT="N" USE_INSTREAM_JCL="N" VERSION_OPCODE="N" IS_CURRENT_VERSION="Y" VERSION_SERIAL="3" VERSION_HOST="gcp.online.com" CYCLIC_TOLERANCE="0" CYCLIC_TYPE="C" PARENT_FOLDER="gcp-pso-core-apps">
+    <VARIABLE NAME="%%SCRIPT_DIR" VALUE="/data/scripts/aus-scripts" />
+    <VARIABLE NAME="%%DATE" VALUE="%%$YEAR-%%MNTH-%%DAY" />
+    <SHOUT WHEN="NOTOK" URGENCY="V" DEST="ECS" MESSAGE="%% failed, Needs Investigation" />
+    <INCOND NAME="dependent-job-xxx-1" ODATE="ODAT" AND_OR="A" />
+    <OUTCOND NAME="task-complete-flag" ODATE="ODAT" SIGN="+" />
+</JOB>
+</SMART_FOLDER>
+</DEFTABLE>
