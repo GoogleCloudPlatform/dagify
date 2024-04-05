@@ -12,7 +12,7 @@ venv/
 # Exclude special examples 
 **/*xxx*
 **/output/*.py
-
+**/source/**
 
 **/.vscode
 
