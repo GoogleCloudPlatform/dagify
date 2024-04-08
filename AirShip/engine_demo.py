@@ -8,8 +8,6 @@ def main():
         source_file="./examples/xxx.xml"
         #source_file="./examples/004-iron-giant.xml"
     )
-    
-    engine.convert()
 
 if __name__ == '__main__':
     main()

@@ -56,8 +56,13 @@ mappings:
 
 structure: |
   {task_id} = SSHOperator(
+<<<<<<< HEAD
     task_id="{task_id}",
     command="{command}",
+=======
+    task_id='{task_id}',
+    command='{command}',
+>>>>>>> e383780 (Massive Cleanup Completed)
     dag=dag,
   )
 

@@ -27,7 +27,6 @@ def base_apply(string):
     string = string.replace(" ", "_")
     return string
 
-
 class UF():
     T = TypeVar('T', bound='UF')
 
@@ -58,7 +57,6 @@ class UF():
     # get total count of folders from the universal format
     def get_folder_count(self):
         return len(self.folders)
-
     def set_raw_xml_element(self, node):
         self.raw_xml_element = node
 
@@ -161,7 +159,6 @@ class UFTask(UF):
         self.out_conditions = []
         self.shouts = []
         return
-
     # Handle Variables
     def add_variable(self, ufTaskVariable):
         self.variables.append(ufTaskVariable)
@@ -191,7 +188,6 @@ class UFTask(UF):
 
     def get_out_condition_count(self):
         return len(self.out_conditions)
-
     # Handle SHOUTS Conditions
     def add_shout(self, ufTaskShout):
         self.variables.append(ufTaskShout)
@@ -240,7 +236,6 @@ class UFTaskOutCondition(UFTask):
 
     def __init__(self):
         return
-
 
 class UFTaskShout(UFTask):
     T = TypeVar('T', bound='UFTaskShout')
