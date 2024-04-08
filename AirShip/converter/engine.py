@@ -175,7 +175,6 @@ class Engine():
                     ufTaskOutCondition = UFTaskOutCondition()
                     ufTaskOutCondition.from_controlm_xml(node)
                     parent.add_out_condition(ufTaskOutCondition)
-                    print(ufTaskOutCondition.get_raw_xml())
                     self.parse_controlm_tree(node, ufTaskOutCondition)
                 case "SHOUT":
                     ufTaskShout = UFTaskShout()
@@ -190,10 +189,7 @@ class Engine():
     def calc_dependencies(self):
 
         for fIdx, folder in enumerate(self.uf.get_folders()):
-            print(f"calculating dependies for Folder {folder.get_attribute('FOLDER_NAME')}")
             folder.calculate_task_dependencies()
-            print(folder.get_task_dependencies())
-        
         return
 
     def convert(self):
