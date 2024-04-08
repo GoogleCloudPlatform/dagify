@@ -46,9 +46,7 @@ target:
 mappings:
   - source: JOBNAME
     target: task_id
-    rules: 
-      - test
-      - sample
+    rules: []
   - source: CMDLINE
     target: command
     rules: [] 
