@@ -57,8 +57,8 @@ class Engine():
         self.load_templates()
         self.load_source()
         self.validate()
-        # self.calc_dependencies()
         self.convert()
+        self.calc_dependencies()
         self.generate_airflow_dags()
 
     def load_config(self):
@@ -186,127 +186,10 @@ class Engine():
 
         return parent
 
-    def parse(self, root_node):
-        uf = {}
-        for folder in root_node:
-            match folder.tag:
-                case "FOLDER" | "SMART_FOLDER":
-                    uf[folder.get("FOLDER_NAME")] = {
-                        "jobs": {},
-                    }
-
-            for job in folder:
-                match job.tag:
-                    case "JOB":
-                        vars = {}
-                        incons = []
-                        outcons = []
-                        shouts = []
-                        for item in job:
-                            match item.tag:
-                                # Construct Variables for Job
-                                case "VARIABLE":
-                                    vars[item.get("NAME")] = {
-                                        "name": item.get("NAME"),
-                                        "value": item.get("VALUE"),
-                                    }
-                                # Construct In Conditions for Job
-                                case "INCOND":
-                                    incons.append({
-                                        "name": item.get("NAME"),
-                                        "odate": item.get("ODATE"),
-                                        "and_or": item.get("AND_OR"),
-                                    })
-                                # Construct In Conditions for Job
-                                case "OUTCOND":
-                                    outcons.append({
-                                        "name": item.get("NAME"),
-                                        "odate": item.get("ODATE"),
-                                        "sign": item.get("SIGN"),
-                                    })
-                                # Construct Shouts for Job
-                                case "SHOUT":
-                                    shouts.append({
-                                        "when": item.get("WHEN"),
-                                        "urgency": item.get("URGENCY"),
-                                        "dest": item.get("DEST"),
-                                        "message": item.get("MESSAGE"),
-                                    })
-                                case _:
-                                    # TODO Catch this output as unsupported
-                                    print(
-                                        f"Node type: {item.tag} is not supported for job {job.get('JOBNAME')}")
-
-                        # Construct Job Object
-                        uf[folder.get("FOLDER_NAME")]["jobs"][job.get("JOBNAME")] = {
-                            "job_name": job.get("JOBNAME"),
-                            "description": job.get("DESCRIPTION"),
-                            "job_isn": job.get("JOBISN"),
-                            "application": job.get("APPLICATION"),
-                            "sub_application": job.get("SUB_APPLICATION"),
-                            "memname": job.get("MEMNAME"),
-                            "created_by": job.get("CREATED_BY"),
-                            "run_as": job.get("RUN_AS"),
-                            "priority": job.get("PRIORITY"),
-                            "critical": job.get("CRITICAL"),
-                            "task_type": job.get("TASKTYPE"),
-                            "cyclic": job.get("CYCLIC"),
-                            "node_id": job.get("NODEID"),
-                            "interval": job.get("INTERVAL"),
-                            "cmd_line": job.get("CMDLINE"),
-                            "confirm": job.get("CONFIRM"),
-                            "retro": job.get("RETRO"),
-                            "maxwait": job.get("MAXWAIT"),
-                            "maxrerun": job.get("MAXRERUN"),
-                            "autoarch": job.get("AUTOARCH"),
-                            "maxdays": job.get("MAXDAYS"),
-                            "maxruns": job.get("MAXRUNS"),
-                            "timefrom": job.get("TIMEFROM"),
-                            "weekdays": job.get("WEEKDAYS"),
-                            "jan": job.get("JAN"),
-                            "feb": job.get("FEB"),
-                            "mar": job.get("MAR"),
-                            "apr": job.get("APR"),
-                            "may": job.get("MAY"),
-                            "jun": job.get("JUN"),
-                            "jul": job.get("JUL"),
-                            "aug": job.get("AUG"),
-                            "sep": job.get("SEP"),
-                            "oct": job.get("OCT"),
-                            "nov": job.get("NOV"),
-                            "dec": job.get("DEC"),
-                            "days_and_or": job.get("DAYS_AND_OR"),
-                            "shift": job.get("SHIFT"),
-                            "shiftnum": job.get("SHIFTNUM"),
-                            "sysdb": job.get("SYSDB"),
-                            "jobs_in_group": job.get("JOBS_IN_GROUP"),
-                            "ind_cyclic": job.get("IND_CYCLIC"),
-                            "creation_user": job.get("CREATION_USER"),
-                            "creation_date": job.get("CREATION_DATE"),
-                            "creation_time": job.get("CREATION_TIME"),
-                            "change_userid": job.get("CHANGE_USERID"),
-                            "change_date": job.get("CHANGE_DATE"),
-                            "change_time": job.get("CHANGE_TIME"),
-                            "rule_based_calendar_relationship": job.get(
-                                "RULE_BASED_CALENDAR_RELATIONSHIP"),
-                            "appl_type": job.get("APPL_TYPE"),
-                            "multy_agent": job.get("MULTY_AGENT"),
-                            "use_instream_jcl": job.get("USE_INSTREAM_JCL"),
-                            "version_serial": job.get("VERSION_SERIAL"),
-                            "version_host": job.get("VERSION_HOST"),
-                            "cyclic_tolerance": job.get("CYCLIC_TOLERANCE"),
-                            "cyclic_type": job.get("CYCLIC_TYPE"),
-                            "parent_folder": job.get("PARENT_FOLDER"),
-                            "variables": vars,
-                            "in_conditions": incons,
-                            "out_conditions": outcons,
-                            "shouts": shouts,
-                            "JOB_DEPS": [],
-                            "JOB_RAW": str(job)
-                        }
-        return uf
-
     def calc_dependencies(self):
+
+        for fIdx, folder in enumerate(self.uf.get_folders()):
+            folder.calculate_task_dependencies()
         return
 
     def convert(self):
@@ -393,6 +276,7 @@ class Engine():
 
         # process the conversion of all universal format items
         for fIdx, folder in enumerate(self.uf.get_folders()):
+            folder.calculate_task_dependencies()
             # process a single folder
             for tIdx, task in enumerate(folder.get_tasks()):
                 # Capture the airflow tasks
@@ -400,13 +284,15 @@ class Engine():
                 # Capture the airflow task imports
                 # tasks.append(task.get_output_airflow_task())
 
-                # Get DAG Template
-                environment = Environment(
-                    loader=FileSystemLoader("./AirShip/converter/templates/"))
-                template = environment.get_template("dag.tmpl")
+            # Get DAG Template
+            environment = Environment(
+                loader=FileSystemLoader("./AirShip/converter/templates/"))
+            template = environment.get_template("dag.tmpl")
 
-                if directory_extist(self.output_path) is False:
-                    create_directory(self.output_path)
+            if directory_extist(self.output_path) is False:
+                create_directory(self.output_path)
+                    
+                
 
             # Create DAG File by Folder
             filename = f"output/{folder.get_attribute('FOLDER_NAME')}.py"
@@ -414,7 +300,7 @@ class Engine():
                 # imports=folder.calculate_imports(),
                 dag_id=folder.get_attribute("FOLDER_NAME"),
                 tasks=tasks,
-                # dependencies=folder.calculate_job_dependencies()
+                dependencies=folder.get_task_dependencies()
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
