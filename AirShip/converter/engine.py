@@ -185,94 +185,11 @@ class Engine():
 
         return parent
 
-    def parse_universal_format(self, source):
-        uf = UF()
-        uf = self.parse_controlm_tree(source, uf)
-        return uf
-
-    def parse_controlm_tree(self, root_node, parent):
-        for node in root_node:
-            match node.tag:
-                case "FOLDER" | "SMART_FOLDER":
-                    ufFolder = UFFolder()
-                    ufFolder.from_controlm_xml(node)
-                    parent.add_folder(ufFolder)
-                    self.parse_controlm_tree(node, ufFolder)
-                case "JOB":
-                    ufTask = UFTask()
-                    ufTask.from_controlm_xml(node)
-                    parent.add_task(ufTask)
-                    self.parse_controlm_tree(node, ufTask)
-                case "VARIABLE":
-                    ufTaskVariable = UFTaskVariable()
-                    ufTaskVariable.from_controlm_xml(node)
-                    parent.add_variable(ufTaskVariable)
-                    self.parse_controlm_tree(node, ufTaskVariable)
-                case "INCOND":
-                    ufTaskInCondition = UFTaskInCondition()
-                    ufTaskInCondition.from_controlm_xml(node)
-                    parent.add_in_condition(ufTaskInCondition)
-                    self.parse_controlm_tree(node, ufTaskInCondition)
-                case "OUTCOND":
-                    ufTaskOutCondition = UFTaskOutCondition()
-                    ufTaskOutCondition.from_controlm_xml(node)
-                    parent.add_out_condition(ufTaskOutCondition)
-                    self.parse_controlm_tree(node, ufTaskOutCondition)
-                case "SHOUT":
-                    ufTaskShout = UFTaskShout()
-                    ufTaskShout.from_controlm_xml(node)
-                    parent.add_shout(ufTaskShout)
-                    self.parse_controlm_tree(node, ufTaskShout)
-                case _:
-                    print("Node: " + node.tag + " is not currently supported.")
-
-        return parent
-
     def calc_dependencies(self):
 
         for fIdx, folder in enumerate(self.uf.get_folders()):
             folder.calculate_dag_dependencies()
         return
-
-    def convert(self):
-        if self.uf is None:
-            raise ValueError(
-                "AirShip: no data in universal format. nothing to convert!")
-
-        # process the conversion of all universal format items
-        for fIdx, folder in enumerate(self.uf.get_folders()):
-            # process a single folder
-            for tIdx, task in enumerate(folder.get_tasks()):
-                # process a single task
-                task_type = task.get_attribute("TASKTYPE")
-                task_name = task.get_attribute("JOBNAME")
-                if task_type is None:
-                    raise ValueError(
-                        f"AirShip: no task/job_type in source for task {task_name}")
-                template_name = self.get_template_name(task_type)
-                # get the template from the template name
-                template = self.get_template(template_name)
-                if template is None:
-                    raise ValueError(
-                        f"AirShip: no template name provided that matches job type {task_type}")
-
-                src_platform_name = template["source"]["platform"].get(
-                    "name", "UNKNOWN_SOURCE_PLATFORM")
-                src_operator_name = template["source"]["operator"].get(
-                    "id", "UNKNOWN_SOURCE_PLATFORM")
-                tgt_platform_name = template["target"]["platform"].get(
-                    "name", "UNKNOWN_TARGET_PLATFORM")
-                tgt_operator_name = template["target"]["operator"].get(
-                    "name", "UNKNOWN_TARGET_PLATFORM")
-                print(
-                    f" --> Converting Job number {str(tIdx)}: {task_name}, \n \
- \t from Source Platform {src_platform_name} to Target Platform: {tgt_platform_name}\n \
- \t from Source Operator {src_operator_name} to Target Operator: {tgt_operator_name}\n \
- \t with template: {template_name}\n")
-
-                output = airflow_task_build(task, template)
-                # imports = airflow_imports_build(task, template)
-                task.set_output_airflow_task(output)
 
 
     def convert(self):
@@ -328,7 +245,6 @@ class Engine():
         return template
 
     # TODO Add Filter Support (Multiple Templates by Filters)
-
     def get_template_name(self, job_type):
         for mapping in self.config["config"]["mappings"]:
             if mapping["job_type"] == job_type.upper():
@@ -354,11 +270,7 @@ class Engine():
         if self.uf is None:
             raise ValueError("AirShip: no data in universal format. nothing to convert!")
 
-        # imports = []
-        # dag_id = ""
         tasks = []
-        # dependencies = []
-
         # process the conversion of all universal format items
         for fIdx, folder in enumerate(self.uf.get_folders()):
             # process a single folder
@@ -417,8 +329,6 @@ class Engine():
 
             if directory_extist(self.output_path) is False:
                 create_directory(self.output_path)
-                    
-                
 
             # Create DAG File by Folder
             filename = f"output/{folder.get_attribute('FOLDER_NAME')}.py"
