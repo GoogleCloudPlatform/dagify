@@ -31,6 +31,11 @@ airship-lint:
 	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402,E501 --exclude=./AirShip/venv ./AirShip
 	flake8 --ignore=E402,E501 --exit-zero --exclude=./venv ./
 
+con-lint:
+	@echo "Linting the Converter Modules"
+	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive ./converters
+	flake8 --exit-zero ./converters
+
 # Building 
 build: clean lint tests docker-build
 	@echo "Fully Cleaned and Built!"
