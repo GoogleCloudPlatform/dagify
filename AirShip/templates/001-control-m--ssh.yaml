@@ -25,9 +25,9 @@ target:
   operator: 
       id: "SSHOperator"
       name: "SSH Operator"
-      package: "airflow.providers.ssh.operators.ssh"
       docs: "https://airflow.apache.org/docs/apache-airflow-providers-ssh/stable/_api/airflow/providers/ssh/operators/ssh/index.html#module-airflow.providers.ssh.operators.ssh"
       imports: 
         - package: "airflow.providers.ssh.operators.ssh"
           imports:
               - "SSHOperator"
+mappings:

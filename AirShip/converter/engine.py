@@ -33,7 +33,6 @@ from .uf import (
     UFTaskShout,
 )
 
-
 class Engine():
     def __init__(
         self,
@@ -71,7 +70,7 @@ class Engine():
 
         with open(self.config_file) as stream:
             try:
-                self.config = yaml.safe_load(stream)
+                 self.config =  yaml.safe_load(stream)
             except yaml.YAMLError as exc:
                 raise exc
 
@@ -319,14 +318,6 @@ class Engine():
         ]
         return
     
-        #with open(self.config_path) as stream:
-        #    try:
-        ##        self.config = yaml.safe_load(stream)
-         #   except yaml.YAMLError as exc:
-         #       raise
-        #return
-        
-        return    
 
     def get_baseline_imports(self):
         return self.baseline_imports

@@ -1,6 +1,6 @@
 config: 
   mappings: 
-    - job_type: "COMMAND"
-      template_filename: "control-m--ssh.yaml"
+    - job_type: "command"
+      template_name: "control-m--ssh"
     - job_type: "DUMMY"
-      template_filename: "control-m--dummmy.yaml"
+      template_name: "control-m--dummmy"
