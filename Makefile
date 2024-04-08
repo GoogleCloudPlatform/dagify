@@ -33,7 +33,7 @@ airship-lint:
 
 con-lint:
 	@echo "Linting the Converter Modules"
-	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive ./converters
+	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402 ./converters
 	flake8 --exit-zero ./converters
 
 # Building 
