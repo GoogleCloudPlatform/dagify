@@ -77,6 +77,45 @@ class UFFolder(UF):
     def get_task_count(self):
         return len(self.tasks)
 
+    def calculate_task_dependencies(self):
+        deps = []
+        # Calculate Job Dependencies for every job.
+        for task in self.get_tasks():
+            dep = ""
+            out_conds = task.get_out_conditions()
+            out_conds_positive = []
+
+            for out_cond in out_conds:
+                if out_cond.get_attribute("SIGN") == "+":
+                    out_conds_positive.append(out_cond)
+
+            if len(out_conds_positive) > 0:
+                items = ""
+
+                for poutcon in out_conds_positive:
+                    for task in self.get_tasks():
+                        for in_conds in task.get_out_conditions():
+                            if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
+                                items += task.get_attribute("JOBNAME") + ", "
+                if items != "":
+                    dep = task.get_attribute("JOBNAME") + " >> [" + items + "]"
+                    dep = dep.replace(", ]", "]")
+
+            if dep != "":
+                deps.append(dep)
+        
+        if len(deps) > 0:
+            self.task_dependencies = deps
+        else:
+            self.task_dependencies = None
+    
+    def get_task_dependencies(self):
+        return self.task_dependencies
+
+    def get_task_dependencies_count(self):
+        return len(self.task_dependencies)
+
+
 
 class UFTask(UF):
     T = TypeVar('T', bound='UFTask')
@@ -100,7 +139,7 @@ class UFTask(UF):
 
     # Handle In Conditions
     def add_in_condition(self, ufTaskInCondition):
-        self.variables.append(ufTaskInCondition)
+        self.in_conditions.append(ufTaskInCondition)
 
     def get_in_conditions(self):
         return self.in_conditions
@@ -110,7 +149,7 @@ class UFTask(UF):
 
     # Handle Out Conditions
     def add_out_condition(self, ufTaskOutCondition):
-        self.variables.append(ufTaskOutCondition)
+        self.out_conditions.append(ufTaskOutCondition)
 
     def get_out_conditions(self):
         return self.out_conditions
