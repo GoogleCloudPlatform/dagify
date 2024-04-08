@@ -1,0 +1,4 @@
+config: 
+  mappings: 
+    - jobType: "command"
+      template: "control-m--ssh"
