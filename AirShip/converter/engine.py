@@ -23,6 +23,9 @@ from .utils import (
     is_directory,
     read_yaml_to_dict,
 )
+from .rules import(
+    Rule
+)
 from .uf import (
     UF,
     UFFolder,
@@ -358,6 +361,8 @@ def airflow_task_build(task, template):
 
         for rule in rules:
             print(f"Apply Rule {rule}")
+            r = Rule()
+            targetValue = r.run([rule, targetValue])
         
         if targetValue is None:
             # TODO - Log That we are going to use the defaults
