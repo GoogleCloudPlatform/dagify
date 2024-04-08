@@ -20,11 +20,17 @@ This table outlines the schedulers that are currently supported by AirShip and w
 Here we outline how to run AirLift on your local machine.
 
 ## Start AirLift (From Source)
+execute the following in the root directory of the project to start the application.
+
 ```bash
 
 make run
 
 ```
+Then open the web application at http://localhost:3000
+
+---
+
 
 ## Start AirLift (From Published Container)
 > Comming Soon
