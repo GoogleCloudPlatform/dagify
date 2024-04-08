@@ -36,14 +36,28 @@ This table outlines the schedulers that are currently supported by AirShip and w
 Here we outline how to run AirShip on your local machine.
 
 ## Start AirShip (From Source)
-execute the following in the root directory of the project to start the application.
 
+### With Defaults
 ```bash
 
-make run
+make clean
+python3 AirShip.py --source-path=[YOUR-SOURCE-XML-FILE]
 
 ```
-Then open the web application at http://localhost:3000
+Make clean; will create a new virtual environment using Python3 and install all required AirShip dependencies using PIP into that virtual environment.
+
+The above commands will use the built in default templates and also use the original mapping configuration yaml file in the root directory of the repo to conduct a conversion of your source file.
+
+### With Custom Output Path and Custom Configuration File
+```bash
+
+make clean
+python3 AirShip.py --source-path=[YOUR-SOURCE-XML-FILE] --output-path=[YOUR-OUTPUT-PATH] --config-file=[YOUR-CUSTOM-CONFIGURATION-YAML]
+
+```
+Make clean; will create a new virtual environment using Python3 and install all required AirShip dependencies using PIP into that virtual environment.
+
+The above commands will use the built in default templates and also use your custom original template mapping configuration yaml file to conduct a conversion of your source file. Additionally it will output the converted Python DAG files to the output directory provided in the above command. 
 
 ---
 
@@ -52,8 +66,15 @@ Then open the web application at http://localhost:3000
 > Comming Soon
 
 ---
+# Command Line Help
+You can get help from each command by running -h or --help next to the command
 
-</br></br>
+```bash
+python3 AirShip.py --help
+```
+---
+
+</br>
 
 | Scheduler     | Feature         | Status | Notes                       |
 |---------------|----------------|--------------------|-----------------------------|
