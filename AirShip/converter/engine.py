@@ -32,6 +32,10 @@ from .uf import (
     UFTaskOutCondition,
     UFTaskShout,
 )
+<<<<<<< HEAD
+=======
+
+>>>>>>> 937ffcd (Stable with Output)
 
 class Engine():
     def __init__(
@@ -57,14 +61,16 @@ class Engine():
         self.load_templates()
         self.load_source()
         self.validate()
+<<<<<<< HEAD
         self.convert()
         self.calc_dependencies()
+=======
+        # self.calc_dependencies()
+        self.convert()
+>>>>>>> 937ffcd (Stable with Output)
         self.generate_airflow_dags()
 
     def load_config(self):
-        print(self.config_file)
-        print(os.getcwd())
-        print(os.listdir())
         # Validate Template Path Provided
         if self.config_file is None:
             raise ValueError("AirShip: config file not provided")
@@ -237,10 +243,10 @@ class Engine():
             folder.calculate_dag_dependencies()
         return
 
-    def convertV2(self):
+    def convert(self):
         if self.uf is None:
             raise ValueError(
-                f"AirShip: no data in universal format. nothing to convert!")
+                "AirShip: no data in universal format. nothing to convert!")
 
         # process the conversion of all universal format items
         for fIdx, folder in enumerate(self.uf.get_folders()):
@@ -267,15 +273,17 @@ class Engine():
                     "name", "UNKNOWN_TARGET_PLATFORM")
                 tgt_operator_name = template["target"]["operator"].get(
                     "name", "UNKNOWN_TARGET_PLATFORM")
-                print(f" --> Converting Job number {str(tIdx)}: {task_name}, \n \
+                print(
+                    f" --> Converting Job number {str(tIdx)}: {task_name}, \n \
  \t from Source Platform {src_platform_name} to Target Platform: {tgt_platform_name}\n \
  \t from Source Operator {src_operator_name} to Target Operator: {tgt_operator_name}\n \
  \t with template: {template_name}\n")
 
-                output = airflow_task_buildV2(task, template)
-                imports = airflow_imports_buildV2(task, template)
+                output = airflow_task_build(task, template)
+                # imports = airflow_imports_build(task, template)
                 task.set_output_airflow_task(output)
 
+<<<<<<< HEAD
 
     def convert(self):
         if self.uf is None:
@@ -319,6 +327,8 @@ class Engine():
                 python_imports = airflow_task_python_imports_build(task, template)
                 task.set_airflow_task_python_imports(python_imports)
 
+=======
+>>>>>>> 937ffcd (Stable with Output)
     def get_template(self, template_name):
         # Validate template_name is Provided
         if template_name is None:
@@ -354,13 +364,12 @@ class Engine():
     def generate_airflow_dags(self):
 
         if self.uf is None:
-            raise ValueError(
-                f"AirShip: no data in universal format. nothing to convert!")
+            raise ValueError("AirShip: no data in universal format. nothing to convert!")
 
-        imports = []
-        dag_id = ""
+        # imports = []
+        # dag_id = ""
         tasks = []
-        dependencies = []
+        # dependencies = []
 
         # process the conversion of all universal format items
         for fIdx, folder in enumerate(self.uf.get_folders()):
@@ -371,29 +380,30 @@ class Engine():
                 # Capture the airflow task imports
                 # tasks.append(task.get_output_airflow_task())
 
-         # Get DAG Template
-        # environment = Environment(loader=FileSystemLoader("./converter/templates/"))
-        # template = environment.get_template("dag.tmpl")
+                # Get DAG Template
+                environment = Environment(
+                    loader=FileSystemLoader("./AirShip/converter/templates/"))
+                template = environment.get_template("dag.tmpl")
 
-        outputDir = self.output_path
-        # if directory_extist(outputDir) is False:
-        #    create_directory(outputDir)
+                if directory_extist(self.output_path) is False:
+                    create_directory(self.output_path)
 
-        # Create DAG File by Folder
-        # filename = f"output/{folder.get_folder_name()}.py"
-        # content = template.render(
-        #    imports=folder.calculate_imports(),
-        #    dag_id=folder.get_folder_name_safe(),
-        #    tasks=folder.get_jobs_operator_as_string_list(),
-        #    dependencies=folder.calculate_job_dependencies()
-        # )
-        # with open(filename, mode="w", encoding="utf-8") as dag_file:
-        #    dag_file.write(content)
+            # Create DAG File by Folder
+            filename = f"output/{folder.get_attribute('FOLDER_NAME')}.py"
+            content = template.render(
+                # imports=folder.calculate_imports(),
+                dag_id=folder.get_attribute("FOLDER_NAME"),
+                tasks=tasks,
+                # dependencies=folder.calculate_job_dependencies()
+            )
+            with open(filename, mode="w", encoding="utf-8") as dag_file:
+                dag_file.write(content)
 
         return
 
     def generate_airflow_dags(self):
 
+<<<<<<< HEAD
         if self.uf is None:
             raise ValueError("AirShip: no data in universal format. nothing to convert!")
 
@@ -450,6 +460,27 @@ class Engine():
 
 
 
+=======
+def airflow_imports_build(task, template):
+    if template["target"] is None:
+        raise ValueError(
+            f"AirShip: no target in template: {template['metadata']['name']}, python import statements will be missing")
+    if template["target"]["operator"] is None:
+        raise ValueError(
+            f"AirShip: no target operstor listed in template: {template['metadata']['name']}, python import statements will be missing")
+    if template["target"]["operator"]["imports"] is None:
+        raise ValueError(
+            f"AirShip: no imports listed in template: {template['metadata']['name']}, python import statements will be missing")
+
+    imports = []
+    for imp in template["target"]["operator"]["imports"]:
+        for package in imp.get("packages", []):
+            imports.append(f"from {package} import {imp['module']}")
+
+    return
+
+
+>>>>>>> 937ffcd (Stable with Output)
 def airflow_task_build(task, template):
     # Load the Template Output Structure
     if template["structure"] is None:
@@ -494,6 +525,7 @@ def airflow_task_build(task, template):
     # Construct Output Python Object Text
     output = template["structure"].format(**values)
     return output
+<<<<<<< HEAD
 
 def airflow_task_python_imports_build(task, template):
     # Load the Template Output Structure
@@ -517,3 +549,5 @@ def airflow_task_python_imports_build(task, template):
             continue 
         python_imports.append(imp)
     return python_imports
+=======
+>>>>>>> 937ffcd (Stable with Output)
