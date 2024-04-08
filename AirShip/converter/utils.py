@@ -66,7 +66,6 @@ def directory_extist(folder_path):
     """
     return os.path.isdir(folder_path)
 
-
 def create_directory(folder_path):
     """Creates a folder if it does not already exist.
 
