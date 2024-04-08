@@ -14,7 +14,13 @@ The primary goal with AirShip is never to be 100% but rather reduce the number o
 ## Supported Features
 This table outlines the schedulers that are currently supported by AirShip and which versions are currently considered. 
 
-</br></br>
+| Scheduler     | Feature         | Status | Notes                       |
+|---------------|----------------|--------------------|-----------------------------|
+| BMC Control-M | Convert Control-M  Folder -> Airflow DAG Mapping conversion | Under Development                |  |
+| BMC Control-M | Convert Control-M  Job -> Airflow Task Mapping conversion | Under Development                |  |
+| BMC Control-M | Convert Control-M Job Dependencies -> Airflow Dependencies conversion | Under Development                |  |
+| BMC Control-M | Custom Calendars | Under Investigation                | Feasibility is not yet determined |
+|               |                |                    |                             |
 
 ## Supported Schedulers
 This table outlines the schedulers that are currently supported by AirShip and which versions are currently considered. 
