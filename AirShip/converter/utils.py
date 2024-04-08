@@ -17,7 +17,6 @@ import os
 import yaml
 import pprint
 
-
 def clean_converter_type(converter_type):
     """Cleans a converter type string by removing all non-alphanumeric characters and converting it to uppercase.
 

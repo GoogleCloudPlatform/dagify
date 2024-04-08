@@ -319,6 +319,14 @@ class Engine():
         ]
         return
     
+        #with open(self.config_path) as stream:
+        #    try:
+        ##        self.config = yaml.safe_load(stream)
+         #   except yaml.YAMLError as exc:
+         #       raise
+        #return
+        
+        return    
 
     def get_baseline_imports(self):
         return self.baseline_imports

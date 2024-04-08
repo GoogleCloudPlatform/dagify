@@ -1,11 +1,11 @@
 --- 
 metadata:
   id: 0002
+  name: control-m--gce-ssh
   version: "v0.0.1"
   author:
     name: "Google PSO"
     email: "airship-code@google.com"
-  name: control-m--gce-ssh
   description-short: "Control-M Command Job to Google Cloud Compute Engine SSH Operator"
   description: "This template allows for the conversion of Control-M Jobs of type Command into the Google Cloud Compute Engine SSH operator format."
   tags:
