@@ -31,3 +31,12 @@ target:
           imports:
               - "DummyOperator"
 mappings:
+  - source: job_name
+    target: task_id
+    rules: []
+
+structure: |
+  {task_id} = DummyOperator(
+    task_id='{task_id}',
+    dag=dag,
+  )

@@ -31,3 +31,18 @@ target:
           imports:
               - "SSHOperator"
 mappings:
+  - source: job_name
+    target: task_id
+    rules: []
+  - source: cmd_line
+    target: command
+    rules: [] 
+
+structure: |
+  {task_id} = SSHOperator(
+    task_id='{task_id}',
+    command='{command}',
+    dag=dag,
+  )
+
+
