@@ -17,6 +17,7 @@ import os
 import yaml
 import pprint
 
+
 def clean_converter_type(converter_type):
     """Cleans a converter type string by removing all non-alphanumeric characters and converting it to uppercase.
 
@@ -64,6 +65,7 @@ def directory_extist(folder_path):
         bool: True if the folder exists, False otherwise.
     """
     return os.path.isdir(folder_path)
+
 
 def create_directory(folder_path):
     """Creates a folder if it does not already exist.
