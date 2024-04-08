@@ -32,10 +32,6 @@ from .uf import (
     UFTaskOutCondition,
     UFTaskShout,
 )
-<<<<<<< HEAD
-=======
-
->>>>>>> 937ffcd (Stable with Output)
 
 class Engine():
     def __init__(
@@ -61,13 +57,8 @@ class Engine():
         self.load_templates()
         self.load_source()
         self.validate()
-<<<<<<< HEAD
         self.convert()
         self.calc_dependencies()
-=======
-        # self.calc_dependencies()
-        self.convert()
->>>>>>> 937ffcd (Stable with Output)
         self.generate_airflow_dags()
 
     def load_config(self):
@@ -283,7 +274,6 @@ class Engine():
                 # imports = airflow_imports_build(task, template)
                 task.set_output_airflow_task(output)
 
-<<<<<<< HEAD
 
     def convert(self):
         if self.uf is None:
@@ -327,8 +317,6 @@ class Engine():
                 python_imports = airflow_task_python_imports_build(task, template)
                 task.set_airflow_task_python_imports(python_imports)
 
-=======
->>>>>>> 937ffcd (Stable with Output)
     def get_template(self, template_name):
         # Validate template_name is Provided
         if template_name is None:
@@ -403,7 +391,6 @@ class Engine():
 
     def generate_airflow_dags(self):
 
-<<<<<<< HEAD
         if self.uf is None:
             raise ValueError("AirShip: no data in universal format. nothing to convert!")
 
@@ -460,27 +447,6 @@ class Engine():
 
 
 
-=======
-def airflow_imports_build(task, template):
-    if template["target"] is None:
-        raise ValueError(
-            f"AirShip: no target in template: {template['metadata']['name']}, python import statements will be missing")
-    if template["target"]["operator"] is None:
-        raise ValueError(
-            f"AirShip: no target operstor listed in template: {template['metadata']['name']}, python import statements will be missing")
-    if template["target"]["operator"]["imports"] is None:
-        raise ValueError(
-            f"AirShip: no imports listed in template: {template['metadata']['name']}, python import statements will be missing")
-
-    imports = []
-    for imp in template["target"]["operator"]["imports"]:
-        for package in imp.get("packages", []):
-            imports.append(f"from {package} import {imp['module']}")
-
-    return
-
-
->>>>>>> 937ffcd (Stable with Output)
 def airflow_task_build(task, template):
     # Load the Template Output Structure
     if template["structure"] is None:
@@ -525,7 +491,6 @@ def airflow_task_build(task, template):
     # Construct Output Python Object Text
     output = template["structure"].format(**values)
     return output
-<<<<<<< HEAD
 
 def airflow_task_python_imports_build(task, template):
     # Load the Template Output Structure
@@ -549,5 +514,3 @@ def airflow_task_python_imports_build(task, template):
             continue 
         python_imports.append(imp)
     return python_imports
-=======
->>>>>>> 937ffcd (Stable with Output)
