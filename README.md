@@ -3,6 +3,7 @@
     <span> <h4><i>Migrate your enterprise scheduler workflows to Apache Airflow and Google Cloud Composer. </i></h4></span>
     <img src="./docs/assets/AirShip-Logo.png" alt="AirShip Logo" width="30%"/>
 </center>
+<img style="text-align:center" src="./docs/assets/AirShip-Logo.png" alt="drawing" width="30%"/>
 <br>
 
 ## AirShip Overview 
