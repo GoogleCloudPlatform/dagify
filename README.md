@@ -14,6 +14,24 @@ The primary goal with AirShip is never to be 100% but rather reduce the number o
 ## Supported Features
 This table outlines the schedulers that are currently supported by AirShip and which versions are currently considered. 
 
+</br></br>
+
+# Running Locally
+Here we outline how to run AirLift on your local machine.
+
+## Start AirLift (From Source)
+```bash
+
+make run
+
+```
+
+## Start AirLift (From Published Container)
+> Comming Soon
+
+---
+
+</br></br>
 
 | Scheduler     | Feature         | Status | Notes                       |
 |---------------|----------------|--------------------|-----------------------------|
