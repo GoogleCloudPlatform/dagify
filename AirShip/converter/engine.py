@@ -43,7 +43,7 @@ class Engine():
         config_file="./config.yaml",
     ):
         self.DAGs = []
-
+        self.baseline_imports = []
         self.templates = {}
         self.templates_count = 0
         self.templates_path = templates_path
@@ -53,6 +53,7 @@ class Engine():
         self.output_path = output_path
 
         # Run the Proccess
+        self.set_baseline_imports()
         self.load_config()
         self.load_templates()
         self.load_source()
@@ -189,7 +190,7 @@ class Engine():
     def calc_dependencies(self):
 
         for fIdx, folder in enumerate(self.uf.get_folders()):
-            folder.calculate_task_dependencies()
+            folder.calculate_dag_dependencies()
         return
 
     def convert(self):
@@ -229,8 +230,10 @@ class Engine():
  \t with template: {template_name}\n")
 
                 output = airflow_task_build(task, template)
-                # imports = airflow_imports_build(task, template)
-                task.set_output_airflow_task(output)
+                task.set_airflow_task_output(output)
+                
+                python_imports = airflow_task_python_imports_build(task, template)
+                task.set_airflow_task_python_imports(python_imports)
 
     def get_template(self, template_name):
         # Validate template_name is Provided
@@ -276,13 +279,14 @@ class Engine():
 
         # process the conversion of all universal format items
         for fIdx, folder in enumerate(self.uf.get_folders()):
-            folder.calculate_task_dependencies()
+            folder.calculate_dag_dependencies()
+            folder.calculate_dag_python_imports()
             # process a single folder
             for tIdx, task in enumerate(folder.get_tasks()):
                 # Capture the airflow tasks
-                tasks.append(task.get_output_airflow_task())
+                tasks.append(task.get_airflow_task_output())
                 # Capture the airflow task imports
-                # tasks.append(task.get_output_airflow_task())
+                # tasks.append(task.get_airflow_task_output())
 
             # Get DAG Template
             environment = Environment(
@@ -297,39 +301,32 @@ class Engine():
             # Create DAG File by Folder
             filename = f"output/{folder.get_attribute('FOLDER_NAME')}.py"
             content = template.render(
-                # imports=folder.calculate_imports(),
+                baseline_imports = self.get_baseline_imports(),
+                custom_imports=folder.get_dag_python_imports(),
                 dag_id=folder.get_attribute("FOLDER_NAME"),
                 tasks=tasks,
-                dependencies=folder.get_task_dependencies()
+                dependencies=folder.get_dag_dependencies()
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
 
         return
+    
+    def set_baseline_imports(self):
+        self.baseline_imports = [
+            "from airflow import DAG",
+            "from airflow.decorators import task",
+        ]
+        return
+    
 
+    def get_baseline_imports(self):
+        return self.baseline_imports
 
-def airflow_imports_build(task, template):
-    if template["target"] is None:
-        raise ValueError(
-            f"AirShip: no target in template: {template['metadata']['name']}, python import statements will be missing")
-    if template["target"]["operator"] is None:
-        raise ValueError(
-            f"AirShip: no target operstor listed in template: {template['metadata']['name']}, python import statements will be missing")
-    if template["target"]["operator"]["imports"] is None:
-        raise ValueError(
-            f"AirShip: no imports listed in template: {template['metadata']['name']}, python import statements will be missing")
-
-    imports = []
-    for imp in template["target"]["operator"]["imports"]:
-        for package in imp.get("packages", []):
-            imports.append(f"from {package} import {imp['module']}")
-
-    return
 
 
 def airflow_task_build(task, template):
     # Load the Template Output Structure
-    output = template["structure"]
     if template["structure"] is None:
         raise ValueError(
             f"AirShip: no output structure in template: {template['metadata']['name']}, conversion will perform no action")
@@ -370,5 +367,28 @@ def airflow_task_build(task, template):
         values[targetKey] = targetValue
 
     # Construct Output Python Object Text
-    output = output.format(**values)
+    output = template["structure"].format(**values)
     return output
+
+def airflow_task_python_imports_build(task, template):
+    # Load the Template Output Structure
+    if template["target"] is None:
+        raise ValueError(
+            f"AirShip: no target data in template: {template['metadata']['name']}, python imports can not be calculated")
+    if template["target"]['operator'] is None:
+        raise ValueError(
+            f"AirShip: no target operator data in template: {template['metadata']['name']}, python imports can not be calculated")
+    if template["target"]['operator']['imports'] is None:
+        raise ValueError(
+            f"AirShip: no target operator import data in template: {template['metadata']['name']}, python imports can not be calculated")
+
+    python_imports = []
+    for imp in template["target"]['operator']['imports']:
+        if imp['package'] is None: 
+            continue 
+        if imp['imports'] is None: 
+            continue
+        if len(imp['imports']) is None: 
+            continue 
+        python_imports.append(imp)
+    return python_imports
