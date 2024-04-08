@@ -17,9 +17,9 @@ This table outlines the schedulers that are currently supported by AirShip and w
 </br></br>
 
 # Running Locally
-Here we outline how to run AirLift on your local machine.
+Here we outline how to run AirShip on your local machine.
 
-## Start AirLift (From Source)
+## Start AirShip (From Source)
 execute the following in the root directory of the project to start the application.
 
 ```bash
