@@ -58,10 +58,6 @@ class UF():
     # get total count of folders from the universal format
     def get_folder_count(self):
         return len(self.folders)
-<<<<<<< HEAD
-=======
-
->>>>>>> 95ca5fa (Massive Cleanup Completed)
     def set_raw_xml_element(self, node):
         self.raw_xml_element = node
 
@@ -164,10 +160,6 @@ class UFTask(UF):
         self.out_conditions = []
         self.shouts = []
         return
-<<<<<<< HEAD
-=======
-
->>>>>>> 95ca5fa (Massive Cleanup Completed)
     # Handle Variables
     def add_variable(self, ufTaskVariable):
         self.variables.append(ufTaskVariable)
@@ -197,10 +189,6 @@ class UFTask(UF):
 
     def get_out_condition_count(self):
         return len(self.out_conditions)
-<<<<<<< HEAD
-=======
-
->>>>>>> 95ca5fa (Massive Cleanup Completed)
     # Handle SHOUTS Conditions
     def add_shout(self, ufTaskShout):
         self.variables.append(ufTaskShout)
@@ -211,7 +199,6 @@ class UFTask(UF):
     def get_shout_count(self):
         return len(self.shouts)
 
-<<<<<<< HEAD
     def set_airflow_task_output(self, output):
         self.airflow_task_output = output
 
@@ -224,14 +211,6 @@ class UFTask(UF):
     def get_airflow_task_python_imports(self):
         return self.airflow_task_python_imports
     
-=======
-    def set_output_airflow_task(self, output):
-        self.output_airflowtask = output
-
-    def get_output_airflow_task(self):
-        return self.output_airflowtask
-
->>>>>>> 95ca5fa (Massive Cleanup Completed)
     def get_output_raw_xml(self):
         xmlstr = xml.etree.ElementTree.tostring(self.raw_xml_element)
         return etree.tostring(
