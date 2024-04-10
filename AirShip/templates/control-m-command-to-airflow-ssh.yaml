@@ -46,10 +46,12 @@ target:
 mappings:
   - source: JOBNAME
     target: task_id
-    rules: []
+    rules:
+      - rule: python_variable_safe  
   - source: CMDLINE
     target: command
-    rules: [] 
+    rules:
+      - rule: escape_quotes
 
 structure: |
   {task_id} = SSHOperator(

@@ -13,16 +13,17 @@ default_args = {
 
 with DAG(
     dag_id="{{dag_id}}",
-    start_date=datetime.datetime(2021, 1, 1),
-    schedule="@daily",
+    start_date=datetime.datetime(2024, 1, 1),
+    #schedule="@daily",
+    schedule_interval='*/1 * * * *',
 ) as dag:
 
-# DAG Tasks
-{%- for task in tasks %}
-{{task}}
-{%- endfor %}
+    # DAG Tasks
+    {%- for task in tasks %}
+    {{task | indent(4)}}
+    {%- endfor %}
 
-# Airflow Task Dependencies
-{%- for dependency in dependencies %}
-{{dependency}}
-{%- endfor %}
+    # Airflow Task Dependencies
+    {%- for dependency in dependencies %}
+    {{dependency | indent(4)}}
+    {%- endfor %}

@@ -17,17 +17,6 @@ import xml.etree.ElementTree
 from lxml import etree
 
 
-def base_apply(string):
-    string = string.lower()
-    string = string.replace("-", "_")
-    string = string.replace(":", "")
-    string = string.replace(".", "")
-    string = string.replace(",", "")
-    string = string.replace("#", "_")
-    string = string.replace(" ", "_")
-    return string
-
-
 class UF():
     T = TypeVar('T', bound='UF')
 
@@ -36,12 +25,24 @@ class UF():
 
     def from_controlm_xml(self: Type[T], node: xml.etree.ElementTree.Element):
         for key, value in node.attrib.items():
-            setattr(self, base_apply(key), value)
+            # Set Original Attribute Version
+            self.set_attribute_original(key, value)
+            # Set Current Attribute Version
+            self.set_attribute(key, value)
         self.set_raw_xml_element(node)
 
     # Handle Attributes
+    def set_attribute_original(self, key, value):
+        self.set_attribute(key + "_ORIGINAL", value)
+
+    def set_attribute(self, key, value):
+        setattr(self, key, value)
+
+    def get_attribute_original(self, attribute: str) -> str:
+        return self.get_attribute(attribute + "_ORIGINAL")
+
     def get_attribute(self, attribute: str) -> str:
-        return getattr(self, base_apply(attribute), None)
+        return getattr(self, attribute, None)
 
     # add folder to the universal format
     def add_folder(self, ufFolder):
@@ -93,22 +94,22 @@ class UFFolder(UF):
                 items = ""
 
                 for poutcon in out_conds_positive:
-                    for task in self.get_tasks():
-                        for in_conds in task.get_out_conditions():
+                    for obj in self.get_tasks():
+                        for in_conds in obj.get_in_conditions():
                             if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
-                                items += task.get_attribute("JOBNAME") + ", "
+                                items += obj.get_attribute("JOBNAME") + ", "
                 if items != "":
                     dep = task.get_attribute("JOBNAME") + " >> [" + items + "]"
                     dep = dep.replace(", ]", "]")
 
             if dep != "":
                 deps.append(dep)
-        
+
         if len(deps) > 0:
             self.dag_dependencies = deps
         else:
             self.dag_dependencies = []
-    
+
     def get_dag_dependencies(self):
         return self.dag_dependencies
 
@@ -125,20 +126,20 @@ class UFFolder(UF):
                     for new_imp in task_import['imports']:
                         if new_imp not in existing_imports:
                             dag_imps[task_import['package']].append(new_imp)
-                            
+
                 else:
                     dag_imps[task_import['package']] = task_import['imports']
-                
-                # Sort the Import List 
+
+                # Sort the Import List
                 dag_imps[task_import['package']].sort()
-        # Sort the Modules 
+        # Sort the Modules
         dag_imps = dict(sorted(dag_imps.items()))
-        
+
         # Process to Pythonic Statements
         for package, imports_list in dag_imps.items():
             imports = ', '.join(imports_list)
             python_imports.append(f"from {package} import {imports}")
-            
+
         # Set the Python Imports for the DAG
         self.dag_python_imports = python_imports
 
@@ -147,6 +148,7 @@ class UFFolder(UF):
 
     def get_dag_python_imports_count(self):
         return len(self.dag_python_imports)
+
 
 class UFTask(UF):
     T = TypeVar('T', bound='UFTask')
@@ -203,13 +205,13 @@ class UFTask(UF):
 
     def get_airflow_task_output(self):
         return self.airflow_task_output
-    
+
     def set_airflow_task_python_imports(self, imps):
         self.airflow_task_python_imports = imps
 
     def get_airflow_task_python_imports(self):
         return self.airflow_task_python_imports
-    
+
     def get_output_raw_xml(self):
         xmlstr = xml.etree.ElementTree.tostring(self.raw_xml_element)
         return etree.tostring(

@@ -23,6 +23,9 @@ from .utils import (
     is_directory,
     read_yaml_to_dict,
 )
+from .rules import (
+    Rule
+)
 from .uf import (
     UF,
     UFFolder,
@@ -59,7 +62,8 @@ class Engine():
         self.load_source()
         self.validate()
         self.convert()
-        self.calc_dependencies()
+        self.calc_dag_dependencies()
+        self.calc_dag_python_imports()
         self.generate_airflow_dags()
 
     def load_config(self):
@@ -187,10 +191,16 @@ class Engine():
 
         return parent
 
-    def calc_dependencies(self):
+    def calc_dag_dependencies(self):
 
         for fIdx, folder in enumerate(self.uf.get_folders()):
             folder.calculate_dag_dependencies()
+        return
+
+    def calc_dag_python_imports(self):
+
+        for fIdx, folder in enumerate(self.uf.get_folders()):
+            folder.calculate_dag_python_imports()
         return
 
     def convert(self):
@@ -231,7 +241,7 @@ class Engine():
 
                 output = airflow_task_build(task, template)
                 task.set_airflow_task_output(output)
-                
+
                 python_imports = airflow_task_python_imports_build(task, template)
                 task.set_airflow_task_python_imports(python_imports)
 
@@ -272,21 +282,13 @@ class Engine():
         if self.uf is None:
             raise ValueError("AirShip: no data in universal format. nothing to convert!")
 
-        # imports = []
-        # dag_id = ""
         tasks = []
-        # dependencies = []
-
         # process the conversion of all universal format items
         for fIdx, folder in enumerate(self.uf.get_folders()):
-            folder.calculate_dag_dependencies()
-            folder.calculate_dag_python_imports()
             # process a single folder
             for tIdx, task in enumerate(folder.get_tasks()):
                 # Capture the airflow tasks
                 tasks.append(task.get_airflow_task_output())
-                # Capture the airflow task imports
-                # tasks.append(task.get_airflow_task_output())
 
             # Get DAG Template
             environment = Environment(
@@ -295,13 +297,11 @@ class Engine():
 
             if directory_extist(self.output_path) is False:
                 create_directory(self.output_path)
-                    
-                
 
             # Create DAG File by Folder
             filename = f"output/{folder.get_attribute('FOLDER_NAME')}.py"
             content = template.render(
-                baseline_imports = self.get_baseline_imports(),
+                baseline_imports=self.get_baseline_imports(),
                 custom_imports=folder.get_dag_python_imports(),
                 dag_id=folder.get_attribute("FOLDER_NAME"),
                 tasks=tasks,
@@ -311,18 +311,17 @@ class Engine():
                 dag_file.write(content)
 
         return
-    
+
     def set_baseline_imports(self):
         self.baseline_imports = [
             "from airflow import DAG",
             "from airflow.decorators import task",
+            "import datetime"
         ]
         return
-    
 
     def get_baseline_imports(self):
         return self.baseline_imports
-
 
 
 def airflow_task_build(task, template):
@@ -349,6 +348,27 @@ def airflow_task_build(task, template):
         # Load Target Value or Default Value for TargetKey from task source
         # field
         targetValue = task.get_attribute(mapping.get("source", ""))
+
+        # Apply Rules
+        # TODO: Handle Rules through additional function
+        rules = mapping.get("rules", [])
+        if rules is None:
+            rules = []
+
+        if len(rules) == 0:
+            print("No Rules applied to source during mapping")
+
+        for rule in rules:
+            print(f"Apply Rule {rule.get('rule')}")
+            r = Rule()
+            args = [rule.get("rule"), targetValue]
+            for arg in rule.get("args", []):
+                args.append(arg)
+            targetValue = r.run(args)
+
+            # Update the Current Object Value
+            task.set_attribute(mapping.get("source", ""), targetValue)
+
         if targetValue is None:
             # TODO - Log That we are going to use the defaults
             targetValue = mapping.get("default", None)
@@ -361,6 +381,7 @@ def airflow_task_build(task, template):
     # Construct Output Python Object Text
     output = template["structure"].format(**values)
     return output
+
 
 def airflow_task_python_imports_build(task, template):
     # Load the Template Output Structure
@@ -376,11 +397,11 @@ def airflow_task_python_imports_build(task, template):
 
     python_imports = []
     for imp in template["target"]['operator']['imports']:
-        if imp['package'] is None: 
-            continue 
-        if imp['imports'] is None: 
+        if imp['package'] is None:
             continue
-        if len(imp['imports']) is None: 
-            continue 
+        if imp['imports'] is None:
+            continue
+        if len(imp['imports']) is None:
+            continue
         python_imports.append(imp)
     return python_imports
