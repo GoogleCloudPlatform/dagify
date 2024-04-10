@@ -22,31 +22,41 @@ class Rule:
             func = getattr(self, method_name)
             return func(args[1:])
         else:
-            print(f"Rule not found: {args[0]}")
-            return None
-            
+            print(f"Error: Rule not found: {args[0]}")
+            return args[1]
+
     def __can_execute(self, method_name):
         return method_name in dir(self)
-    
+
     # Define Rule - LowerCase
     def rule_lowercase(self, vals):
-        print(f"Rule Lowercase: {vals[0]}")
+        print(f"Info: Rule Lowercase: {vals[0]}")
         vals[0] = vals[0].lower()
         return vals
 
     # Define Rule - Replace Characters
     def rule_replace(self, vals):
-        print(f"Rule Replace Characters: {vals[1]} -> {vals[2]} output = {vals[0]}")
+        print(f"Info: Rule Replace Characters: {vals[1]} -> {vals[2]} output = {vals[0]}")
         vals[0] = vals[0].replace(vals[1], vals[2])
         return vals
-    
+
     # Define Rule - Python Variable Safe
     def rule_python_variable_safe(self, vals):
-        print(f"Rule Python Variable Safe: {vals[0]}")
+        print(f"Info: Rule Python Variable Safe: {vals[0]}")
         vals = self.rule_lowercase(vals)
-        for char in ['-', ' ', '.', ':', ';', "$", "!", ","]:
+        for char in ['-', ' ', '.', ':', ';', "$", "!", ",", "#"]:
             if char in vals[0]:
                 vals = self.rule_replace([vals[0], char, "_"])
             vals = self.rule_replace([vals[0], char, "_"])
         print(f"Rule Python Variable Safe: {vals[0]}")
+        return vals[0]
+    
+    def rule_prefix(self, vals):
+        if len(vals) < 2:
+            print("Error: Not Enough Variables passed to Prefix Rule")
+            return
+        
+        print(f"Info: Rule Prefix Safe: {vals[0]}")
+        vals[0] = vals[1] + "_" + vals[0]
+        print(f"Info: Rule Prefix Safe: {vals[0]}")
         return vals[0]

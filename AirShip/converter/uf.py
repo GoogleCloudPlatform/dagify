@@ -103,12 +103,12 @@ class UFFolder(UF):
 
             if dep != "":
                 deps.append(dep)
-        
+
         if len(deps) > 0:
             self.dag_dependencies = deps
         else:
             self.dag_dependencies = []
-    
+
     def get_dag_dependencies(self):
         return self.dag_dependencies
 
@@ -125,20 +125,20 @@ class UFFolder(UF):
                     for new_imp in task_import['imports']:
                         if new_imp not in existing_imports:
                             dag_imps[task_import['package']].append(new_imp)
-                            
+
                 else:
                     dag_imps[task_import['package']] = task_import['imports']
-                
-                # Sort the Import List 
+
+                # Sort the Import List
                 dag_imps[task_import['package']].sort()
-        # Sort the Modules 
+        # Sort the Modules
         dag_imps = dict(sorted(dag_imps.items()))
-        
+
         # Process to Pythonic Statements
         for package, imports_list in dag_imps.items():
             imports = ', '.join(imports_list)
             python_imports.append(f"from {package} import {imports}")
-            
+
         # Set the Python Imports for the DAG
         self.dag_python_imports = python_imports
 
@@ -147,6 +147,7 @@ class UFFolder(UF):
 
     def get_dag_python_imports_count(self):
         return len(self.dag_python_imports)
+
 
 class UFTask(UF):
     T = TypeVar('T', bound='UFTask')
@@ -203,13 +204,13 @@ class UFTask(UF):
 
     def get_airflow_task_output(self):
         return self.airflow_task_output
-    
+
     def set_airflow_task_python_imports(self, imps):
         self.airflow_task_python_imports = imps
 
     def get_airflow_task_python_imports(self):
         return self.airflow_task_python_imports
-    
+
     def get_output_raw_xml(self):
         xmlstr = xml.etree.ElementTree.tostring(self.raw_xml_element)
         return etree.tostring(
