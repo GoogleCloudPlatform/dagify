@@ -62,7 +62,8 @@ class Engine():
         self.load_source()
         self.validate()
         self.convert()
-        self.calc_dependencies()
+        self.calc_dag_dependencies()
+        self.calc_dag_python_imports()
         self.generate_airflow_dags()
 
     def load_config(self):
@@ -190,10 +191,16 @@ class Engine():
 
         return parent
 
-    def calc_dependencies(self):
+    def calc_dag_dependencies(self):
 
         for fIdx, folder in enumerate(self.uf.get_folders()):
             folder.calculate_dag_dependencies()
+        return
+
+    def calc_dag_python_imports(self):
+
+        for fIdx, folder in enumerate(self.uf.get_folders()):
+            folder.calculate_dag_python_imports()
         return
 
     def convert(self):
@@ -275,21 +282,13 @@ class Engine():
         if self.uf is None:
             raise ValueError("AirShip: no data in universal format. nothing to convert!")
 
-        # imports = []
-        # dag_id = ""
         tasks = []
-        # dependencies = []
-
         # process the conversion of all universal format items
         for fIdx, folder in enumerate(self.uf.get_folders()):
-            folder.calculate_dag_dependencies()
-            folder.calculate_dag_python_imports()
             # process a single folder
             for tIdx, task in enumerate(folder.get_tasks()):
                 # Capture the airflow tasks
                 tasks.append(task.get_airflow_task_output())
-                # Capture the airflow task imports
-                # tasks.append(task.get_airflow_task_output())
 
             # Get DAG Template
             environment = Environment(
@@ -317,6 +316,7 @@ class Engine():
         self.baseline_imports = [
             "from airflow import DAG",
             "from airflow.decorators import task",
+            "import datetime"
         ]
         return
 
@@ -354,7 +354,7 @@ def airflow_task_build(task, template):
         rules = mapping.get("rules", [])
         if rules is None:
             rules = []
-        
+
         if len(rules) == 0:
             print("No Rules applied to source during mapping")
 
@@ -365,6 +365,9 @@ def airflow_task_build(task, template):
             for arg in rule.get("args", []):
                 args.append(arg)
             targetValue = r.run(args)
+
+            # Update the Current Object Value
+            task.set_attribute(mapping.get("source", ""), targetValue)
 
         if targetValue is None:
             # TODO - Log That we are going to use the defaults

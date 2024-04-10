@@ -51,7 +51,7 @@ mappings:
   - source: CMDLINE
     target: command
     rules:
-      - rule: quote_safe_string
+      - rule: escape_quotes
 
 structure: |
   {task_id} = SSHOperator(

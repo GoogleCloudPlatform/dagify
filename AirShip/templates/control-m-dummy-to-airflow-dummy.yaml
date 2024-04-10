@@ -44,9 +44,10 @@ target:
           imports:
               - "DummyOperator"
 mappings:
-  - source: jobname
+  - source: JOBNAME
     target: task_id
-    rules: []
+    rules:
+      - rule: python_variable_safe 
 
 structure: |
   {task_id} = DummyOperator(

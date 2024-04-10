@@ -47,16 +47,28 @@ class Rule:
         for char in ['-', ' ', '.', ':', ';', "$", "!", ",", "#"]:
             if char in vals[0]:
                 vals = self.rule_replace([vals[0], char, "_"])
-            vals = self.rule_replace([vals[0], char, "_"])
-        print(f"Rule Python Variable Safe: {vals[0]}")
         return vals[0]
-    
+
     def rule_prefix(self, vals):
         if len(vals) < 2:
             print("Error: Not Enough Variables passed to Prefix Rule")
             return
-        
-        print(f"Info: Rule Prefix Safe: {vals[0]}")
+        print(f"Info: Rule Prefix: {vals[0]}")
         vals[0] = vals[1] + "_" + vals[0]
-        print(f"Info: Rule Prefix Safe: {vals[0]}")
+        return vals[0]
+
+    def rule_suffix(self, vals):
+        if len(vals) < 2:
+            print("Error: Not Enough Variables passed to Suffix Rule")
+            return
+
+        print(f"Info: Rule Suffix: {vals[0]}")
+        vals[0] = vals[0] + "_" + vals[1]
+        return vals[0]
+
+    def rule_escape_quotes(self, vals):
+        print(f"Info: Rule Escape Quotes: {vals[0]}")
+        for char in ["'", '"', "`"]:
+            if char in vals[0]:
+                vals = self.rule_replace([vals[0], char, f"\\{char}"])
         return vals[0]

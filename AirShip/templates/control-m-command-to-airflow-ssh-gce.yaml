@@ -43,8 +43,5 @@ target:
         - package: "airflow.providers.ssh.operators.ssh"
           imports:
               - "SSHOperator"
-        - package: "airflow.providers.ssh.operators.ssh"
-          imports:
-              - "SSHOperator"
 mappings: 
   

@@ -17,17 +17,6 @@ import xml.etree.ElementTree
 from lxml import etree
 
 
-def base_apply(string):
-    string = string.lower()
-    string = string.replace("-", "_")
-    string = string.replace(":", "")
-    string = string.replace(".", "")
-    string = string.replace(",", "")
-    string = string.replace("#", "_")
-    string = string.replace(" ", "_")
-    return string
-
-
 class UF():
     T = TypeVar('T', bound='UF')
 
@@ -36,12 +25,24 @@ class UF():
 
     def from_controlm_xml(self: Type[T], node: xml.etree.ElementTree.Element):
         for key, value in node.attrib.items():
-            setattr(self, base_apply(key), value)
+            # Set Original Attribute Version
+            self.set_attribute_original(key, value)
+            # Set Current Attribute Version
+            self.set_attribute(key, value)
         self.set_raw_xml_element(node)
 
     # Handle Attributes
+    def set_attribute_original(self, key, value):
+        self.set_attribute(key + "_ORIGINAL", value)
+
+    def set_attribute(self, key, value):
+        setattr(self, key, value)
+
+    def get_attribute_original(self, attribute: str) -> str:
+        return self.get_attribute(attribute + "_ORIGINAL")
+
     def get_attribute(self, attribute: str) -> str:
-        return getattr(self, base_apply(attribute), None)
+        return getattr(self, attribute, None)
 
     # add folder to the universal format
     def add_folder(self, ufFolder):
@@ -93,10 +94,10 @@ class UFFolder(UF):
                 items = ""
 
                 for poutcon in out_conds_positive:
-                    for task in self.get_tasks():
-                        for in_conds in task.get_out_conditions():
+                    for obj in self.get_tasks():
+                        for in_conds in obj.get_in_conditions():
                             if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
-                                items += task.get_attribute("JOBNAME") + ", "
+                                items += obj.get_attribute("JOBNAME") + ", "
                 if items != "":
                     dep = task.get_attribute("JOBNAME") + " >> [" + items + "]"
                     dep = dep.replace(", ]", "]")
