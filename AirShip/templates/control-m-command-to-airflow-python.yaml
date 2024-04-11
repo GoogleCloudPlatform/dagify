@@ -47,7 +47,8 @@ mappings:
   - source: JOBNAME
     target: task_id
     rules:
-      - rule: python_variable_safe  
+      - rule: python_variable_safe
+      - rule: make_unique  
   - source: CMDLINE
     target: command
     rules:
