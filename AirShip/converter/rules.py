@@ -79,3 +79,7 @@ class Rule:
         uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(vals[0])))[:5]
         vals[0] = self.rule_suffix([vals[0], uid])
         return vals[0]
+    
+    def rule_lookup_replace(self, vals):
+        print(f"Info: Rule Lookup Replace: {vals[0]}")
+        return vals[0]
