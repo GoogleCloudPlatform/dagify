@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import uuid
+import random
 
 class Rule:
     def __init__(self):
@@ -76,6 +77,8 @@ class Rule:
     
     def rule_make_unique(self, vals):
         print(f"Info: Rule Make Unique: {vals[0]}")
-        uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(vals[0])))[:5]
+        random.seed()
+        rnd = random.randint(0, 1000000)
+        uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(vals[0]+str(rnd))))[:5]
         vals[0] = self.rule_suffix([vals[0], uid])
         return vals[0]
