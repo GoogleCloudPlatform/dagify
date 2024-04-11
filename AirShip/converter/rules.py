@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import uuid
 
 class Rule:
     def __init__(self):
@@ -71,4 +72,9 @@ class Rule:
         for char in ["'", '"', "`"]:
             if char in vals[0]:
                 vals = self.rule_replace([vals[0], char, f"\\{char}"])
+        return vals[0]
+    
+    def rule_unique(self, vals):
+        print(f"Info: Rule Make Unique: {vals[0]}")
+        vals[0] = self.rule_suffix([vals[0], uuid.uuid5(uuid.NAMESPACE_DNS, str(vals[0]))])
         return vals[0]
