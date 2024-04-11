@@ -74,7 +74,8 @@ class Rule:
                 vals = self.rule_replace([vals[0], char, f"\\{char}"])
         return vals[0]
     
-    def rule_unique(self, vals):
+    def rule_make_unique(self, vals):
         print(f"Info: Rule Make Unique: {vals[0]}")
-        vals[0] = self.rule_suffix([vals[0], uuid.uuid5(uuid.NAMESPACE_DNS, str(vals[0]))])
+        uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(vals[0])))[:5]
+        vals[0] = self.rule_suffix([vals[0], uid])
         return vals[0]
