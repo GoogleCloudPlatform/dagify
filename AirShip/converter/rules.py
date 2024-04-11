@@ -13,7 +13,10 @@
 # limitations under the License.
 import codecs
 import random
+<<<<<<< HEAD
 import string
+=======
+>>>>>>> 185fe3c (Adding rule to obfuscate for demo purposes)
 import uuid
 
 class Rule:
