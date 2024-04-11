@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import pandas as pd
 import uuid
+
 
 class Rule:
     def __init__(self):
@@ -82,4 +84,15 @@ class Rule:
     
     def rule_lookup_replace(self, vals):
         print(f"Info: Rule Lookup Replace: {vals[0]}")
+        # vals[0] is Lookup Value
+        # vals[1] is Lookup File Path
+        # vals[2] is Lookup Return Column
+        
+        if len(vals) < 3:
+            print("Error: Not Enough Variables passed to Lookup Replace Rule")
+            return vals[0]
+        
+        df = pd.read_csv(vals[1], header=0)
+        print(df)
+        
         return vals[0]
