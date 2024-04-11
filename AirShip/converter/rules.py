@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import uuid
+import codecs
 import random
+import uuid
 
 class Rule:
     def __init__(self):
@@ -81,4 +82,11 @@ class Rule:
         rnd = random.randint(0, 1000000)
         uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(vals[0]+str(rnd))))[:5]
         vals[0] = self.rule_suffix([vals[0], uid])
+        return vals[0]
+
+    def rule_obfuscate(self, vals):
+        print(f"Info: Rule Obfuscate: {vals[0]}")
+        random.seed()
+        rnd = random.randint(0, 1000000)
+        vals[0] = codecs.encode(vals[0], str(rnd))
         return vals[0]
