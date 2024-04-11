@@ -299,7 +299,7 @@ class Engine():
                 create_directory(self.output_path)
 
             # Create DAG File by Folder
-            filename = f"output/{folder.get_attribute('FOLDER_NAME')}.py"
+            filename = f"{self.output_path}/{folder.get_attribute('FOLDER_NAME')}.py"
             content = template.render(
                 baseline_imports=self.get_baseline_imports(),
                 custom_imports=folder.get_dag_python_imports(),
