@@ -13,6 +13,7 @@
 # limitations under the License.
 import codecs
 import random
+import string
 import uuid
 
 class Rule:
@@ -86,7 +87,5 @@ class Rule:
 
     def rule_obfuscate(self, vals):
         print(f"Info: Rule Obfuscate: {vals[0]}")
-        random.seed()
-        rnd = random.randint(0, 1000000)
-        vals[0] = codecs.encode(vals[0], str(rnd))
+        vals[0] = codecs.encode(vals[0], 'rot13')
         return vals[0]
