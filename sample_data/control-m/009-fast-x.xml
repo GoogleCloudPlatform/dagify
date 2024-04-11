@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFTABLE xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Folder.xsd">
+<SMART_FOLDER
+	FOLDER_NAME="fast_x"
+	JOBNAME="fast_x_reports"
+	SUB_APPLICATION="DEFAULT_SUB_APPLICATION"
+	DESCRIPTION=""
+>
+	<JOB APPLICATION="fast_x" SUB_APPLICATION="fast_x_reports" JOBNAME="fast_x_job_1" DESCRIPTION="fast_x_job_1_reports"  TASKTYPE="Command" CMDLINE="" PARENT_FOLDER="fast_x">
+		<OUTCOND NAME="fast_x_job_1_completed" ODATE="ODAT" SIGN="+" />
+	</JOB>
+	<JOB APPLICATION="fast_x" SUB_APPLICATION="fast_x_reports" JOBNAME="fast_x_job_2" DESCRIPTION="fast_x_job_2_reports"  TASKTYPE="Command" CMDLINE=""  PARENT_FOLDER="fast_x">
+		<INCOND NAME="fast_x_job_1_completed" ODATE="ODAT" AND_OR="A" />
+		<OUTCOND NAME="fast_x_job_2_completed" ODATE="ODAT" SIGN="+" />
+	</JOB>
+	<JOB APPLICATION="fast_x" SUB_APPLICATION="fast_x_reports" JOBNAME="fast_x_job_3" DESCRIPTION="fast_x_job_3_reports"  TASKTYPE="Command" CMDLINE="" PARENT_FOLDER="fast_x">
+		<INCOND NAME="fast_x_job_1_completed" ODATE="ODAT" AND_OR="A" />
+		<INCOND NAME="fast_x_job_2_completed" ODATE="ODAT" AND_OR="A" />
+		<OUTCOND NAME="fast_x_job_3_completed" ODATE="ODAT" SIGN="+" />
+	</JOB>
+	<JOB APPLICATION="fast_x" SUB_APPLICATION="fast_x_reports" JOBNAME="fast_x_job_4" DESCRIPTION="fast_x_job_4_reports"  TASKTYPE="Command" CMDLINE=""  PARENT_FOLDER="fast_x">
+		<OUTCOND NAME="fast_x_job_3_completed" ODATE="ODAT" SIGN="+" />
+	</JOB>
+	<JOB APPLICATION="fast_x" SUB_APPLICATION="fast_x_reports" JOBNAME="fast_x_job_5" DESCRIPTION="fast_x_job_5_reports"  TASKTYPE="Command" CMDLINE=""  PARENT_FOLDER="fast_x">
+		<INCOND NAME="fast_x_job_2_completed" ODATE="ODAT" AND_OR="A" />
+		<OUTCOND NAME="fast_x_job_5_completed" ODATE="ODAT" SIGN="+" />
+	</JOB>
+	<JOB APPLICATION="fast_x" SUB_APPLICATION="fast_x_reports" JOBNAME="fast_x_job_6" DESCRIPTION="fast_x_job_6_reports"  TASKTYPE="Command" CMDLINE="" PARENT_FOLDER="fast_x">
+		<INCOND NAME="fast_x_job_3_completed" ODATE="ODAT" AND_OR="A" />
+		<INCOND NAME="fast_x_job_5_completed" ODATE="ODAT" AND_OR="A" />
+	</JOB>
+</SMART_FOLDER>
+</DEFTABLE>
