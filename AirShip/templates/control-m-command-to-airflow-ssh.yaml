@@ -52,7 +52,6 @@ mappings:
     target: command
     rules:
       - rule: escape_quotes
-
 structure: |
   {task_id} = SSHOperator(
     task_id="{task_id}",

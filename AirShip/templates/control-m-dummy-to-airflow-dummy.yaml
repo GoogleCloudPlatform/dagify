@@ -48,7 +48,7 @@ mappings:
     target: task_id
     rules:
       - rule: python_variable_safe 
-
+      - rule: make_unique
 structure: |
   {task_id} = DummyOperator(
     task_id='{task_id}',
