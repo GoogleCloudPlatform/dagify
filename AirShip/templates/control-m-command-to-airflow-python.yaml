@@ -53,7 +53,6 @@ mappings:
     target: command
     rules:
       - rule: escape_quotes
-
 structure: |
   {task_id} = PythonOperator(
     task_id="{task_id}",
