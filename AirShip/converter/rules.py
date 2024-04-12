@@ -11,7 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+<<<<<<< Updated upstream
 import pandas as pd
+=======
+import codecs
+import random
+import string
+>>>>>>> Stashed changes
 import uuid
 
 
@@ -78,8 +84,15 @@ class Rule:
     
     def rule_make_unique(self, vals):
         print(f"Info: Rule Make Unique: {vals[0]}")
-        uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(vals[0])))[:5]
+        random.seed()
+        rnd = random.randint(0, 1000000)
+        uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(vals[0]+str(rnd))))[:5]
         vals[0] = self.rule_suffix([vals[0], uid])
+        return vals[0]
+    
+    def rule_obfuscate(self, vals):
+        print(f"Info: Rule Obfuscate: {vals[0]}")
+        vals[0] = codecs.encode(vals[0], 'rot13')
         return vals[0]
     
     def rule_lookup_replace(self, vals):
