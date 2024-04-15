@@ -5,6 +5,7 @@ clean: airship-clean
 	
 airship-clean: 
 	@echo "Cleaning AirShip Package"
+	rm -rf ./output
 	rm -rf ./venv
 	python3 -m venv ./venv
 	. ./venv/bin/activate; pip install -r ./requirements.txt
@@ -32,16 +33,24 @@ airship-lint:
 	flake8 --ignore=E402,E501 --exit-zero --exclude=./venv ./
 
 # Building 
-build: clean lint tests docker-build
+build: clean lint unit-tests int-tests docker-build
 	@echo "Fully Cleaned and Built!"
 
 # Local Run 
 run: clean lint docker
 	@echo "Fully Cleaned and Built!"
 
-# run tests
-tests: 
+# run unit tests
+unit-tests: 
 	python3 -m unittest discover test
+
+# run integration tests
+int-tests:
+	./AirShip/test/integration/run_integration-tests.sh
+
+# run unit and integration tests
+all-tests: unit-tests int-tests
+	@echo "Completed execution of test suite"
 
 licence: 
 	docker run -i -t -v ${PWD}:/src ghcr.io/google/addlicense -c "Google LLC"  **/*.py

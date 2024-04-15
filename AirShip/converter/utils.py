@@ -55,7 +55,7 @@ def is_directory(folder_path):
     return os.path.isdir(folder_path)
 
 
-def directory_extist(folder_path):
+def directory_exists(folder_path):
     """Checks if a folder exists.
 
     Args:

@@ -19,7 +19,7 @@ from jinja2 import Environment, FileSystemLoader
 from .utils import (
     file_exists,
     create_directory,
-    directory_extist,
+    directory_exists,
     is_directory,
     read_yaml_to_dict,
 )
@@ -101,7 +101,7 @@ class Engine():
 
         if self.output_path is None:
             raise ValueError("AirShip: No output path provided")
-        if directory_extist(self.output_path) is False:
+        if directory_exists(self.output_path) is False:
             create_directory(self.output_path)
 
         return
@@ -295,7 +295,7 @@ class Engine():
                 loader=FileSystemLoader("./AirShip/converter/templates/"))
             template = environment.get_template("dag.tmpl")
 
-            if directory_extist(self.output_path) is False:
+            if directory_exists(self.output_path) is False:
                 create_directory(self.output_path)
 
             # Create DAG File by Folder

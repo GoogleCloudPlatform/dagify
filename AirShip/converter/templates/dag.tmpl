@@ -15,7 +15,8 @@ with DAG(
     dag_id="{{dag_id}}",
     start_date=datetime.datetime(2024, 1, 1),
     #schedule="@daily",
-    schedule_interval='*/1 * * * *',
+    schedule_interval='*/5 * * * *',
+    catchup=False,
 ) as dag:
 
     # DAG Tasks
