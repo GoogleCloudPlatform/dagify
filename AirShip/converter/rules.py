@@ -15,7 +15,6 @@
 import codecs
 import pandas as pd
 import random
-import string
 import uuid
 
 
@@ -79,7 +78,7 @@ class Rule:
             if char in vals[0]:
                 vals = self.rule_replace([vals[0], char, f"\\{char}"])
         return vals[0]
-    
+
     def rule_make_unique(self, vals):
         print(f"Info: Rule Make Unique: {vals[0]}")
         random.seed()
@@ -87,23 +86,23 @@ class Rule:
         uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(vals[0]+str(rnd))))[:5]
         vals[0] = self.rule_suffix([vals[0], uid])
         return vals[0]
-    
+   
     def rule_obfuscate(self, vals):
         print(f"Info: Rule Obfuscate: {vals[0]}")
         vals[0] = codecs.encode(vals[0], 'rot13')
         return vals[0]
-    
+   
     def rule_lookup_replace(self, vals):
         print(f"Info: Rule Lookup Replace: {vals[0]}")
         # vals[0] is Lookup Value
         # vals[1] is Lookup File Path
         # vals[2] is Lookup Return Column
-        
+      
         if len(vals) < 3:
             print("Error: Not Enough Variables passed to Lookup Replace Rule")
             return vals[0]
-        
+       
         df = pd.read_csv(vals[1], header=0)
         print(df)
-        
+       
         return vals[0]
