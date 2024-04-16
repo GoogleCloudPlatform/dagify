@@ -28,7 +28,6 @@ from .rules import (
 )
 from .uf import (
     UF,
-    UFFolder,
     UFTask,
     UFTaskVariable,
     UFTaskInCondition,
@@ -44,6 +43,7 @@ class Engine():
         output_path=None,
         templates_path="./templates",
         config_file="./config.yaml",
+        dag_divider="PARENT_FOLDER",
     ):
         self.DAGs = []
         self.baseline_imports = []
@@ -54,6 +54,7 @@ class Engine():
         self.config_file = config_file
         self.source_path = source_path
         self.output_path = output_path
+        self.dag_divider = dag_divider
 
         # Run the Proccess
         self.set_baseline_imports()
@@ -62,9 +63,11 @@ class Engine():
         self.load_source()
         self.validate()
         self.convert()
+        self.cal_dag_dividers()
         self.calc_dag_dependencies()
-        self.calc_dag_python_imports()
+        #self.calc_dag_python_imports()
         self.generate_airflow_dags()
+        self.cal_dag_dividers()
 
     def load_config(self):
         # Validate Template Path Provided
@@ -157,10 +160,10 @@ class Engine():
         for node in root_node:
             match node.tag:
                 case "FOLDER" | "SMART_FOLDER":
-                    ufFolder = UFFolder()
-                    ufFolder.from_controlm_xml(node)
-                    parent.add_folder(ufFolder)
-                    self.parse_controlm_tree(node, ufFolder)
+                    #ufFolder = UFFolder()
+                    #ufFolder.from_controlm_xml(node)
+                    #parent.add_folder(ufFolder)
+                    self.parse_controlm_tree(node, parent)
                 case "JOB":
                     ufTask = UFTask()
                     ufTask.from_controlm_xml(node)
@@ -192,16 +195,20 @@ class Engine():
         return parent
 
     def calc_dag_dependencies(self):
-
-        for fIdx, folder in enumerate(self.uf.get_folders()):
-            folder.calculate_dag_dependencies()
+        self.uf.calculate_dag_dependencies()
         return
+    
+    def cal_dag_dividers(self): 
+        dag_dividers = []
+        for tIdx, task in enumerate(self.uf.get_tasks()):
+            td = task.get_attribute(self.dag_divider)
+            if  td is not None and td not in dag_dividers:
+                dag_dividers.append(td)    
+        self.dag_dividers = dag_dividers
+        return 
 
-    def calc_dag_python_imports(self):
-
-        for fIdx, folder in enumerate(self.uf.get_folders()):
-            folder.calculate_dag_python_imports()
-        return
+    def get_dag_dividers(self): 
+        return self.dag_dividers
 
     def convert(self):
         if self.uf is None:
@@ -209,41 +216,39 @@ class Engine():
                 "AirShip: no data in universal format. nothing to convert!")
 
         # process the conversion of all universal format items
-        for fIdx, folder in enumerate(self.uf.get_folders()):
-            # process a single folder
-            for tIdx, task in enumerate(folder.get_tasks()):
-                # process a single task
-                task_type = task.get_attribute("TASKTYPE")
-                task_name = task.get_attribute("JOBNAME")
-                if task_type is None:
-                    raise ValueError(
-                        f"AirShip: no task/job_type in source for task {task_name}")
-                template_name = self.get_template_name(task_type)
-                # get the template from the template name
-                template = self.get_template(template_name)
-                if template is None:
-                    raise ValueError(
-                        f"AirShip: no template name provided that matches job type {task_type}")
+        for tIdx, task in enumerate(self.uf.get_tasks()):
+            # process a single task
+            task_type = task.get_attribute("TASKTYPE")
+            task_name = task.get_attribute("JOBNAME")
+            if task_type is None:
+                raise ValueError(
+                    f"AirShip: no task/job_type in source for task {task_name}")
+            template_name = self.get_template_name(task_type)
+            # get the template from the template name
+            template = self.get_template(template_name)
+            if template is None:
+                raise ValueError(
+                    f"AirShip: no template name provided that matches job type {task_type}")
 
-                src_platform_name = template["source"]["platform"].get(
-                    "name", "UNKNOWN_SOURCE_PLATFORM")
-                src_operator_name = template["source"]["operator"].get(
-                    "id", "UNKNOWN_SOURCE_PLATFORM")
-                tgt_platform_name = template["target"]["platform"].get(
-                    "name", "UNKNOWN_TARGET_PLATFORM")
-                tgt_operator_name = template["target"]["operator"].get(
-                    "name", "UNKNOWN_TARGET_PLATFORM")
-                print(
-                    f" --> Converting Job number {str(tIdx)}: {task_name}, \n \
- \t from Source Platform {src_platform_name} to Target Platform: {tgt_platform_name}\n \
- \t from Source Operator {src_operator_name} to Target Operator: {tgt_operator_name}\n \
- \t with template: {template_name}\n")
+            src_platform_name = template["source"]["platform"].get(
+                "name", "UNKNOWN_SOURCE_PLATFORM")
+            src_operator_name = template["source"]["operator"].get(
+                "id", "UNKNOWN_SOURCE_PLATFORM")
+            tgt_platform_name = template["target"]["platform"].get(
+                "name", "UNKNOWN_TARGET_PLATFORM")
+            tgt_operator_name = template["target"]["operator"].get(
+                "name", "UNKNOWN_TARGET_PLATFORM")
+            print(
+                f" --> Converting Job number {str(tIdx)}: {task_name}, \n \
+\t from Source Platform {src_platform_name} to Target Platform: {tgt_platform_name}\n \
+\t from Source Operator {src_operator_name} to Target Operator: {tgt_operator_name}\n \
+\t with template: {template_name}\n")
 
-                output = airflow_task_build(task, template)
-                task.set_airflow_task_output(output)
+            output = airflow_task_build(task, template)
+            task.set_airflow_task_output(output)
 
-                python_imports = airflow_task_python_imports_build(task, template)
-                task.set_airflow_task_python_imports(python_imports)
+            python_imports = airflow_task_python_imports_build(task, template)
+            task.set_airflow_task_python_imports(python_imports)
 
     def get_template(self, template_name):
         # Validate template_name is Provided
@@ -264,31 +269,36 @@ class Engine():
         # no match found
         return None
 
-    def get_distinct_job_types(self):
-        job_types = []
-        # iterate all folders
-        for folder in self.universal_format:
-            # iterate all jobs within a folder
-            for job in self.universal_format[folder]["jobs"]:
-                # capture the job task type
-                job_types.append(
-                    self.universal_format[folder]["jobs"][job]["task_type"].upper())
+    #def get_distinct_job_types(self):
+    #    job_types = []
+    #    # iterate all folders
+    #    for folder in self.universal_format:
+    #        # iterate all jobs within a folder
+    #        for job in self.universal_format[folder]["jobs"]:
+    #            # capture the job task type
+    #            job_types.append(
+    #                self.universal_format[folder]["jobs"][job]["task_type"].upper())
 
         # return distinct set of job types
-        return list(set(job_types))
+    #    return list(set(job_types))
 
     def generate_airflow_dags(self):
 
         if self.uf is None:
             raise ValueError("AirShip: no data in universal format. nothing to convert!")
-
-        tasks = []
-        # process the conversion of all universal format items
-        for fIdx, folder in enumerate(self.uf.get_folders()):
-            # process a single folder
-            for tIdx, task in enumerate(folder.get_tasks()):
-                # Capture the airflow tasks
-                tasks.append(task.get_airflow_task_output())
+        
+        for tIdx, dag_divider in enumerate(self.get_dag_dividers()):
+            tasks = []
+            for tIdx, task in enumerate(self.uf.get_tasks()):
+                # Capture the airflow tasks for each dag divider
+                if task.get_attribute(self.dag_divider) == dag_divider:
+                    tasks.append(task.get_airflow_task_output())
+            
+            # Calculate DAG Specific Python Imports
+            dag_python_imports = self.uf.calculate_dag_python_imports(
+                dag_divider_key=self.dag_divider,
+                dag_divider_value=dag_divider
+            )
 
             # Get DAG Template
             environment = Environment(
@@ -299,13 +309,13 @@ class Engine():
                 create_directory(self.output_path)
 
             # Create DAG File by Folder
-            filename = f"{self.output_path}/{folder.get_attribute('FOLDER_NAME')}.py"
+            filename = f"{self.output_path}/{dag_divider}.py"
             content = template.render(
                 baseline_imports=self.get_baseline_imports(),
-                custom_imports=folder.get_dag_python_imports(),
-                dag_id=folder.get_attribute("FOLDER_NAME"),
+                custom_imports=dag_python_imports,
+                dag_id=dag_divider,
                 tasks=tasks,
-                dependencies=folder.get_dag_dependencies()
+                dependencies=self.uf.get_dag_dependencies()
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
@@ -378,6 +388,11 @@ def airflow_task_build(task, template):
         # Construct Values for Output!
         values[targetKey] = targetValue
 
+    # Explicit Trigger Rule Handling 
+    values["trigger_rule"] = "TIMS_RULE"
+    for in_cond in task.get_in_conditions():
+        print(in_cond)
+    
     # Construct Output Python Object Text
     output = template["structure"].format(**values)
     return output

@@ -48,7 +48,15 @@ import click
               show_default="{}".format(
                   os.environ.get("AS_TEMPLATES_PATH",
                                  "./AirShip/templates")))
-def AirShip(source_path, output_path, config_file, templates):
+@click.option("-d",
+              "--dag-divider",
+              default=lambda: os.environ.get("AS_DAG_DIVIDER",
+                                             "PARENT_FOLDER"),
+              help="Which field in Job Definition should be used to divide up DAGS.",
+              show_default="{}".format(
+                  os.environ.get("AS_DAG_DIVIDER",
+                                 "PARENT_FOLDER")))
+def AirShip(source_path, output_path, config_file, templates, dag_divider):
     """Run AirShip."""
     print("Demo AirShip Engine")
 
@@ -57,6 +65,7 @@ def AirShip(source_path, output_path, config_file, templates):
         output_path=output_path,
         config_file=config_file,
         templates_path=templates,
+        dag_divider=dag_divider,
     )
 
 

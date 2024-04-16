@@ -21,7 +21,7 @@ class UF():
     T = TypeVar('T', bound='UF')
 
     def __init__(self):
-        self.folders = []
+        self.tasks = []
 
     def from_controlm_xml(self: Type[T], node: xml.etree.ElementTree.Element):
         for key, value in node.attrib.items():
@@ -44,40 +44,24 @@ class UF():
     def get_attribute(self, attribute: str) -> str:
         return getattr(self, attribute, None)
 
-    # add folder to the universal format
-    def add_folder(self, ufFolder):
-        self.folders.append(ufFolder)
+    # add task to the universal format
+    def add_task(self, ufTask):
+        self.tasks.append(ufTask)
 
-    # get folders from the universal format
-    def get_folders(self):
-        return self.folders
-
-    # get total count of folders from the universal format
-    def get_folder_count(self):
-        return len(self.folders)
+    # get tasks from the universal format
+    def get_tasks(self):
+        return self.tasks
+    
+    # get total count of tasks from the universal format
+    def get_task_count(self):
+        return len(self.tasks)
 
     def set_raw_xml_element(self, node):
         self.raw_xml_element = node
 
     def get_raw_xml(self):
         return self.raw_xml_element
-
-
-class UFFolder(UF):
-    T = TypeVar('T', bound='UFFolder')
-
-    def __init__(self):
-        self.tasks = []
-
-    def add_task(self, ufTask):
-        self.tasks.append(ufTask)
-
-    def get_tasks(self):
-        return self.tasks
-
-    def get_task_count(self):
-        return len(self.tasks)
-
+    
     def calculate_dag_dependencies(self):
         deps = []
         # Calculate Job Dependencies for every job.
@@ -116,22 +100,23 @@ class UFFolder(UF):
     def get_dag_dependencies_count(self):
         return len(self.dag_dependencies)
 
-    def calculate_dag_python_imports(self):
+    def calculate_dag_python_imports(self, dag_divider_key="", dag_divider_value=""):
         python_imports = []
         dag_imps = {}
         for task in self.get_tasks():
-            for task_import in task.get_airflow_task_python_imports():
-                if dag_imps.get(task_import['package'], None) is not None:
-                    existing_imports = dag_imps.get(task_import['package'], None)
-                    for new_imp in task_import['imports']:
-                        if new_imp not in existing_imports:
-                            dag_imps[task_import['package']].append(new_imp)
+            if task.get_attribute(dag_divider_key) == dag_divider_value or dag_divider_key == "":
+                for task_import in task.get_airflow_task_python_imports():
+                    if dag_imps.get(task_import['package'], None) is not None:
+                        existing_imports = dag_imps.get(task_import['package'], None)
+                        for new_imp in task_import['imports']:
+                            if new_imp not in existing_imports:
+                                dag_imps[task_import['package']].append(new_imp)
 
-                else:
-                    dag_imps[task_import['package']] = task_import['imports']
+                    else:
+                        dag_imps[task_import['package']] = task_import['imports']
 
-                # Sort the Import List
-                dag_imps[task_import['package']].sort()
+                    # Sort the Import List
+                    dag_imps[task_import['package']].sort()
         # Sort the Modules
         dag_imps = dict(sorted(dag_imps.items()))
 
@@ -141,13 +126,7 @@ class UFFolder(UF):
             python_imports.append(f"from {package} import {imports}")
 
         # Set the Python Imports for the DAG
-        self.dag_python_imports = python_imports
-
-    def get_dag_python_imports(self):
-        return self.dag_python_imports
-
-    def get_dag_python_imports_count(self):
-        return len(self.dag_python_imports)
+        return python_imports
 
 
 class UFTask(UF):
