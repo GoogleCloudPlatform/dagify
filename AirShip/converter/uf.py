@@ -62,43 +62,55 @@ class UF():
     def get_raw_xml(self):
         return self.raw_xml_element
     
-    def calculate_dag_dependencies(self):
-        deps = []
-        # Calculate Job Dependencies for every job.
+    #def calculate_dag_dependencies(self):
+    #    deps = []
+    #    # Calculate Job Dependencies for every job.
+    #    for task in self.get_tasks():
+    #        dep = ""
+    #        out_conds = task.get_out_conditions()
+    #        out_conds_positive = []
+
+    #        for out_cond in out_conds:
+    #            if out_cond.get_attribute("SIGN") == "+":
+    #                out_conds_positive.append(out_cond)
+
+    #        if len(out_conds_positive) > 0:
+    #            items = ""
+
+    #            for poutcon in out_conds_positive:
+    #                for obj in self.get_tasks():
+    #                    for in_conds in obj.get_in_conditions():
+    #                        if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
+    #                            items += obj.get_attribute("JOBNAME") + ", "
+    #            if items != "":
+    #                dep = task.get_attribute("JOBNAME") + " >> [" + items + "]"
+    #                dep = dep.replace(", ]", "]")
+
+    #        if dep != "":
+    #            deps.append(dep)
+
+    #    if len(deps) > 0:
+    #        self.dag_dependencies = deps
+    #    else:
+    #        self.dag_dependencies = []
+            
+    def calculate_dag_dependencies_v2(self):
         for task in self.get_tasks():
             dep = ""
             out_conds = task.get_out_conditions()
             out_conds_positive = []
-
             for out_cond in out_conds:
                 if out_cond.get_attribute("SIGN") == "+":
                     out_conds_positive.append(out_cond)
-
             if len(out_conds_positive) > 0:
                 items = ""
-
+                
                 for poutcon in out_conds_positive:
                     for obj in self.get_tasks():
                         for in_conds in obj.get_in_conditions():
                             if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
-                                items += obj.get_attribute("JOBNAME") + ", "
-                if items != "":
-                    dep = task.get_attribute("JOBNAME") + " >> [" + items + "]"
-                    dep = dep.replace(", ]", "]")
-
-            if dep != "":
-                deps.append(dep)
-
-        if len(deps) > 0:
-            self.dag_dependencies = deps
-        else:
-            self.dag_dependencies = []
-
-    def get_dag_dependencies(self):
-        return self.dag_dependencies
-
-    def get_dag_dependencies_count(self):
-        return len(self.dag_dependencies)
+                                    task.add_dependent_task(obj.get_dag_name(), obj.get_attribute("JOBNAME"))
+        self.dag_dependencies = []
 
     def calculate_dag_python_imports(self, dag_divider_key="", dag_divider_value=""):
         python_imports = []
@@ -137,6 +149,7 @@ class UFTask(UF):
         self.in_conditions = []
         self.out_conditions = []
         self.shouts = []
+        self.dep_tasks = []
         return
 
     # Handle Variables
@@ -196,6 +209,20 @@ class UFTask(UF):
         return etree.tostring(
             etree.fromstring(xmlstr),
             pretty_print=True).decode()
+    
+    def set_dag_name(self, dag_name):
+        self.dag_name = dag_name
+        return
+    
+    def get_dag_name(self):
+        return self.dag_name
+    
+    def get_dependent_tasks(self):
+        return self.dep_tasks
+    
+    def add_dependent_task(self, dag_name, task_name): 
+        self.dep_tasks.append({"dag_name": dag_name, "task_name": task_name})
+        return
 
 
 class UFTaskVariable(UFTask):

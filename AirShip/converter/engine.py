@@ -65,9 +65,7 @@ class Engine():
         self.convert()
         self.cal_dag_dividers()
         self.calc_dag_dependencies()
-        #self.calc_dag_python_imports()
         self.generate_airflow_dags()
-        self.cal_dag_dividers()
 
     def load_config(self):
         # Validate Template Path Provided
@@ -195,7 +193,8 @@ class Engine():
         return parent
 
     def calc_dag_dependencies(self):
-        self.uf.calculate_dag_dependencies()
+        #self.uf.calculate_dag_dependencies()
+        self.uf.calculate_dag_dependencies_v2()
         return
     
     def cal_dag_dividers(self): 
@@ -203,8 +202,10 @@ class Engine():
         for tIdx, task in enumerate(self.uf.get_tasks()):
             td = task.get_attribute(self.dag_divider)
             if  td is not None and td not in dag_dividers:
-                dag_dividers.append(td)    
+                dag_dividers.append(td)
+            task.set_dag_name(td)
         self.dag_dividers = dag_dividers
+        
         return 
 
     def get_dag_dividers(self): 
@@ -288,18 +289,19 @@ class Engine():
             raise ValueError("AirShip: no data in universal format. nothing to convert!")
         
         for tIdx, dag_divider in enumerate(self.get_dag_dividers()):
+            deps = []
             tasks = []
             for tIdx, task in enumerate(self.uf.get_tasks()):
                 # Capture the airflow tasks for each dag divider
                 if task.get_attribute(self.dag_divider) == dag_divider:
                     tasks.append(task.get_airflow_task_output())
-            
+                     
             # Calculate DAG Specific Python Imports
             dag_python_imports = self.uf.calculate_dag_python_imports(
                 dag_divider_key=self.dag_divider,
                 dag_divider_value=dag_divider
             )
-
+            
             # Get DAG Template
             environment = Environment(
                 loader=FileSystemLoader("./AirShip/converter/templates/"))
@@ -315,7 +317,7 @@ class Engine():
                 custom_imports=dag_python_imports,
                 dag_id=dag_divider,
                 tasks=tasks,
-                dependencies=self.uf.get_dag_dependencies()
+                #dependencies=self.uf.get_dag_dependencies()
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
