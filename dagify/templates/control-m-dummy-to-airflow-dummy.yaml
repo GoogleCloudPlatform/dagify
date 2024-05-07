@@ -18,7 +18,7 @@ metadata:
   version: "v0.0.1"
   author:
     name: "Google PSO"
-    email: "airship-code@google.com"
+    email: "dagify-code@google.com"
   description-short: "Control-M Dummy Job to Airflow Dummy Operator"
   description: "This template allows for the conversion of Control-M Jobs of type Dummy into the Airflow Dummy operator format."
   tags:

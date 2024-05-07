@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-int_test_base_folder="AirShip/test/integration"
+int_test_base_folder="dagify/test/integration"
 test_data_folder="test_data"
 test_references_folder="test_references"
 test_output_folder="test_outputs"
@@ -21,7 +21,7 @@ test_output_folder="test_outputs"
 has_failed=0
 for test_file in $int_test_base_folder/$test_data_folder/*.xml; do
 test_name=`echo $test_file | cut -d "/" -f 5 | cut -d "." -f 1`
-python3 AirShip.py --source-path=$test_file --output-path=$int_test_base_folder/$test_output_folder/$test_name > /dev/null
+python3 dagify.py --source-path=$test_file --output-path=$int_test_base_folder/$test_output_folder/$test_name > /dev/null
 diff -b -I '^#' -I '^ #' $int_test_base_folder/$test_output_folder/$test_name $int_test_base_folder/$test_references_folder/$test_name
 
 if [ $? -eq 0 ]; then

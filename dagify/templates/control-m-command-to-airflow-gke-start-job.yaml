@@ -13,18 +13,20 @@
 # limitations under the License.
 --- 
 metadata:
-  id: 0004
-  name: control-m-command-to-airflow-python
+  id: 0005
+  name: control-m-command-to-airflow-gke-start-job
   version: "v0.0.1"
   author:
     name: "Google PSO"
-    email: "airship-code@google.com"
-  description-short: "Control-M Command Job to Apache Airflow Python Operator"
-  description: "This template allows for the conversion of Control-M Jobs of type Command into the Apache Airflow Python operator format."
+    email: "dagify-code@google.com"
+  description-short: "Control-M Command Job to Apache Airflow GKE Start Job Operator"
+  description: "This template allows for the conversion of Control-M Jobs of type Command into the Apache Airflow GKE Start Job Operator format."
   tags:
     - control-m
     - airflow
-    - python
+    - gke
+    - google-cloud
+    - kubernetes
 source:
   platform: 
     id: "CONTROLM"
@@ -36,13 +38,13 @@ target:
       id: "APACHEAIRFLOW"
       name: "Apache Airflow"
   operator: 
-      id: "PythonOperator"
-      name: "Apache Airflow Python Operator"
-      docs: "https://airflow.apache.org/docs/apache-airflow/stable/howto/operator/python.html"
+      id: "GKEStartJobOperator"
+      name: "Apache Airflow GKE Start Job Operator"
+      docs: "https://airflow.apache.org/docs/apache-airflow-providers-google/stable/operators/cloud/kubernetes_engine.html#run-a-job-on-a-gke-cluster"
       imports: 
-        - package: "airflow.operators.python"
+        - package: "airflow.providers.google.cloud.operators.kubernetes_engine"
           imports:
-              - "PythonOperator"
+              - "GKEStartJobOperator"
 mappings:
   - source: JOBNAME
     target: task_id
@@ -53,10 +55,15 @@ mappings:
     target: command
     rules:
       - rule: escape_quotes
+
 structure: |
-  {task_id} = PythonOperator(
+  {task_id} = GKEStartJobOperator(
     task_id="{task_id}",
-    python_callable=helloWorld,
-    op_args=["{task_id}"],
-    dag=dag,
+    project_id=GCP_PROJECT_ID,
+    location=GCP_LOCATION,
+    cluster_name=CLUSTER_NAME,
+    namespace="default",
+    image="perl:5.34.0",
+    cmds=[{command}],
+    name="{task_id}",
   )

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from AirShip.converter import Engine
+from dagify.converter import Engine
 import os
 import click
 
@@ -36,18 +36,18 @@ import click
               "--config-file",
               default=lambda: os.environ.get("AS_CONFIG_FILE",
                                              "./config.yaml"),
-              help="Path to AirShip configuration file.",
+              help="Path to dagify configuration file.",
               show_default="{}".format(
                   os.environ.get("AS_CONFIG_FILE",
                                  "./config.yaml")))
 @click.option("-t",
               "--templates",
               default=lambda: os.environ.get("AS_TEMPLATES_PATH",
-                                             "./AirShip/templates"),
-              help="Path to AirShip configuration file.",
+                                             "./dagify/templates"),
+              help="Path to dagify configuration file.",
               show_default="{}".format(
                   os.environ.get("AS_TEMPLATES_PATH",
-                                 "./AirShip/templates")))
+                                 "./dagify/templates")))
 @click.option("-d",
               "--dag-divider",
               default=lambda: os.environ.get("AS_DAG_DIVIDER",
@@ -56,9 +56,9 @@ import click
               show_default="{}".format(
                   os.environ.get("AS_DAG_DIVIDER",
                                  "PARENT_FOLDER")))
-def AirShip(source_path, output_path, config_file, templates, dag_divider):
-    """Run AirShip."""
-    print("Demo AirShip Engine")
+def dagify(source_path, output_path, config_file, templates, dag_divider):
+    """Run dagify."""
+    print("Demo dagify Engine")
 
     Engine(
         source_path=source_path,
@@ -70,4 +70,4 @@ def AirShip(source_path, output_path, config_file, templates, dag_divider):
 
 
 if __name__ == '__main__':
-    AirShip()
+    dagify()

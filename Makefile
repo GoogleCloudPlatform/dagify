@@ -1,10 +1,10 @@
 
 ## Cleaning 
-clean: airship-clean
+clean: dagify-clean
 	@echo "Fully Cleaned!"
 	
-airship-clean: 
-	@echo "Cleaning AirShip Package"
+dagify-clean: 
+	@echo "Cleaning dagify Package"
 	rm -rf ./output
 	rm -rf ./venv
 	python3 -m venv ./venv
@@ -17,19 +17,19 @@ docker: docker-build docker-run
 
 docker-build: 
 	@echo "Building the Docker Container"
-	docker build -t localhost/airship:local . 
+	docker build -t localhost/dagify:local . 
 
 docker-run: 
 	@echo "Running the Docker Container"
-	docker run --env-file=.env.example localhost/airship:local
+	docker run --env-file=.env.example localhost/dagify:local
 
 # Linting
-lint: airship-lint
+lint: dagify-lint
 	@echo "Fully Linted!"
 
-airship-lint:
+dagify-lint:
 	@echo "Linting the API Server Environment"
-	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402,E501 --exclude=./AirShip/venv ./AirShip
+	autopep8 -r -v -v -v --in-place --aggressive --aggressive --aggressive --ignore=E402,E501 --exclude=./dagify/venv ./dagify
 	flake8 --ignore=E402,E501 --exit-zero --exclude=./venv ./
 
 # Building 
@@ -46,7 +46,7 @@ unit-tests:
 
 # run integration tests
 int-tests:
-	./AirShip/test/integration/run_integration-tests.sh
+	./dagify/test/integration/run_integration-tests.sh
 
 # run unit and integration tests
 all-tests: unit-tests int-tests

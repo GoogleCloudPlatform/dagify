@@ -70,9 +70,9 @@ class Engine():
     def load_config(self):
         # Validate Template Path Provided
         if self.config_file is None:
-            raise ValueError("AirShip: config file not provided")
+            raise ValueError("dagify: config file not provided")
         if file_exists(self.config_file) is False:
-            raise FileNotFoundError("AirShip: config file does not exist")
+            raise FileNotFoundError("dagify: config file does not exist")
 
         with open(self.config_file) as stream:
             try:
@@ -81,11 +81,11 @@ class Engine():
                 raise exc
 
         if self.config is None:
-            raise ValueError("AirShip: No configuration has been loaded")
+            raise ValueError("dagify: No configuration has been loaded")
 
         if self.config["config"]["mappings"] is None:
             raise ValueError(
-                "AirShip: Configuration loaded with error, no Operator/JobType Mappings loaded")
+                "dagify: Configuration loaded with error, no Operator/JobType Mappings loaded")
 
         # Modify Configration for Standardization:
         for idx, config in enumerate(self.config["config"]["mappings"]):
@@ -101,7 +101,7 @@ class Engine():
         # Template Name is in Templates;
 
         if self.output_path is None:
-            raise ValueError("AirShip: No output path provided")
+            raise ValueError("dagify: No output path provided")
         if directory_exists(self.output_path) is False:
             create_directory(self.output_path)
 
@@ -113,10 +113,10 @@ class Engine():
 
         # Validate Template Path Provided
         if self.templates_path is None:
-            raise ValueError("AirShip: Templates path not provided")
+            raise ValueError("dagify: Templates path not provided")
         if is_directory(self.templates_path) is False:
             raise NotADirectoryError(
-                "AirShip: Templates path is not a directory")
+                "dagify: Templates path is not a directory")
 
         # Load Templates
         for root, dirs, files in os.walk(self.templates_path):
@@ -135,14 +135,14 @@ class Engine():
 
     def load_source(self):
         # Read the Source File
-        # Parse into AirShip Universial Format
-        # Output the AirShip Universial Format Back to the Class
+        # Parse into dagify Universial Format
+        # Output the dagify Universial Format Back to the Class
         self.universal_format = None
         if self.source_path is None:
-            raise ValueError("AirShip: source file cannot be None or Empty")
+            raise ValueError("dagify: source file cannot be None or Empty")
         if file_exists(self.source_path) is False:
             raise FileNotFoundError(
-                "AirShip: source file not found at {}".format(
+                "dagify: source file not found at {}".format(
                     self.source_path))
 
         root = ET.parse(self.source_path).getroot()
@@ -214,7 +214,7 @@ class Engine():
     def convert(self):
         if self.uf is None:
             raise ValueError(
-                "AirShip: no data in universal format. nothing to convert!")
+                "dagify: no data in universal format. nothing to convert!")
 
         # process the conversion of all universal format items
         for tIdx, task in enumerate(self.uf.get_tasks()):
@@ -223,13 +223,13 @@ class Engine():
             task_name = task.get_attribute("JOBNAME")
             if task_type is None:
                 raise ValueError(
-                    f"AirShip: no task/job_type in source for task {task_name}")
+                    f"dagify: no task/job_type in source for task {task_name}")
             template_name = self.get_template_name(task_type)
             # get the template from the template name
             template = self.get_template(template_name)
             if template is None:
                 raise ValueError(
-                    f"AirShip: no template name provided that matches job type {task_type}")
+                    f"dagify: no template name provided that matches job type {task_type}")
 
             src_platform_name = template["source"]["platform"].get(
                 "name", "UNKNOWN_SOURCE_PLATFORM")
@@ -254,11 +254,11 @@ class Engine():
     def get_template(self, template_name):
         # Validate template_name is Provided
         if template_name is None:
-            raise ValueError("AirShip: template name must be provided")
+            raise ValueError("dagify: template name must be provided")
         template = self.templates.get(template_name, None)
         if template is None:
             raise ValueError(
-                f"AirShip: no template with name: '{template_name}' was not found among loaded templates.")
+                f"dagify: no template with name: '{template_name}' was not found among loaded templates.")
         return template
 
     # TODO Add Filter Support (Multiple Templates by Filters)
@@ -273,7 +273,7 @@ class Engine():
     def generate_airflow_dags(self):
 
         if self.uf is None:
-            raise ValueError("AirShip: no data in universal format. nothing to convert!")
+            raise ValueError("dagify: no data in universal format. nothing to convert!")
         
         for tIdx, dag_divider in enumerate(self.get_dag_dividers()):
             deps = []
@@ -305,7 +305,7 @@ class Engine():
             
             # Get DAG Template
             environment = Environment(
-                loader=FileSystemLoader("./AirShip/converter/templates/"))
+                loader=FileSystemLoader("./dagify/converter/templates/"))
             template = environment.get_template("dag.tmpl")
 
             if directory_exists(self.output_path) is False:
@@ -341,11 +341,11 @@ def airflow_task_build(task, template):
     # Load the Template Output Structure
     if template["structure"] is None:
         raise ValueError(
-            f"AirShip: no output structure in template: {template['metadata']['name']}, conversion will perform no action")
+            f"dagify: no output structure in template: {template['metadata']['name']}, conversion will perform no action")
 
     if template["mappings"] is None:
         raise ValueError(
-            f"AirShip: no mappings in template: {template['metadata']['name']}, conversion will perform no action")
+            f"dagify: no mappings in template: {template['metadata']['name']}, conversion will perform no action")
 
     # Declare Output Values Dictionary
     values = {}
@@ -405,13 +405,13 @@ def airflow_task_python_imports_build(task, template):
     # Load the Template Output Structure
     if template["target"] is None:
         raise ValueError(
-            f"AirShip: no target data in template: {template['metadata']['name']}, python imports can not be calculated")
+            f"dagify: no target data in template: {template['metadata']['name']}, python imports can not be calculated")
     if template["target"]['operator'] is None:
         raise ValueError(
-            f"AirShip: no target operator data in template: {template['metadata']['name']}, python imports can not be calculated")
+            f"dagify: no target operator data in template: {template['metadata']['name']}, python imports can not be calculated")
     if template["target"]['operator']['imports'] is None:
         raise ValueError(
-            f"AirShip: no target operator import data in template: {template['metadata']['name']}, python imports can not be calculated")
+            f"dagify: no target operator import data in template: {template['metadata']['name']}, python imports can not be calculated")
 
     python_imports = []
     for imp in template["target"]['operator']['imports']:

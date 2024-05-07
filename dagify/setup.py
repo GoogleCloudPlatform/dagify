@@ -29,7 +29,7 @@ long_description = read_file("README.md")
 requirements = read_requirements("requirements.txt")
 
 setup(
-    name='airship',
+    name='dagify',
     version='0.0.1',
     description='A python package to assist in converting enterprise scheduler\
          formats to Apache Airflow DAGs',
@@ -38,7 +38,7 @@ setup(
     long_description=long_description,
     url='https://github.com/KonradSchieban/cntrlm-to-airflow/issues/new',
     author='Konrad Schieban, Tim Hiatt, Google Cloud PSO',
-    author_email='airship-code@google.com',
+    author_email='dagify-code@google.com',
     license='Apache License',
     license_files='LICENCE',
     # Don't include test directory in binary distribution

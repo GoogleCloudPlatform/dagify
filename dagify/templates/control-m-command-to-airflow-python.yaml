@@ -13,20 +13,18 @@
 # limitations under the License.
 --- 
 metadata:
-  id: 0005
-  name: control-m-command-to-airflow-gke-start-job
+  id: 0004
+  name: control-m-command-to-airflow-python
   version: "v0.0.1"
   author:
     name: "Google PSO"
-    email: "airship-code@google.com"
-  description-short: "Control-M Command Job to Apache Airflow GKE Start Job Operator"
-  description: "This template allows for the conversion of Control-M Jobs of type Command into the Apache Airflow GKE Start Job Operator format."
+    email: "dagify-code@google.com"
+  description-short: "Control-M Command Job to Apache Airflow Python Operator"
+  description: "This template allows for the conversion of Control-M Jobs of type Command into the Apache Airflow Python operator format."
   tags:
     - control-m
     - airflow
-    - gke
-    - google-cloud
-    - kubernetes
+    - python
 source:
   platform: 
     id: "CONTROLM"
@@ -38,13 +36,13 @@ target:
       id: "APACHEAIRFLOW"
       name: "Apache Airflow"
   operator: 
-      id: "GKEStartJobOperator"
-      name: "Apache Airflow GKE Start Job Operator"
-      docs: "https://airflow.apache.org/docs/apache-airflow-providers-google/stable/operators/cloud/kubernetes_engine.html#run-a-job-on-a-gke-cluster"
+      id: "PythonOperator"
+      name: "Apache Airflow Python Operator"
+      docs: "https://airflow.apache.org/docs/apache-airflow/stable/howto/operator/python.html"
       imports: 
-        - package: "airflow.providers.google.cloud.operators.kubernetes_engine"
+        - package: "airflow.operators.python"
           imports:
-              - "GKEStartJobOperator"
+              - "PythonOperator"
 mappings:
   - source: JOBNAME
     target: task_id
@@ -55,15 +53,10 @@ mappings:
     target: command
     rules:
       - rule: escape_quotes
-
 structure: |
-  {task_id} = GKEStartJobOperator(
+  {task_id} = PythonOperator(
     task_id="{task_id}",
-    project_id=GCP_PROJECT_ID,
-    location=GCP_LOCATION,
-    cluster_name=CLUSTER_NAME,
-    namespace="default",
-    image="perl:5.34.0",
-    cmds=[{command}],
-    name="{task_id}",
+    python_callable=helloWorld,
+    op_args=["{task_id}"],
+    dag=dag,
   )

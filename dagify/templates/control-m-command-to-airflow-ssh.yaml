@@ -18,7 +18,7 @@ metadata:
   version: "v0.0.1"
   author:
     name: "Google PSO"
-    email: "airship-code@google.com"
+    email: "dagify-code@google.com"
   description-short: "Control-M Command Job to Airflow SSH Operator"
   description: "This template allows for the conversion of Control-M Jobs of type Command into the native Apache Airflow SSH operator format."
   tags:

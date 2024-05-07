@@ -88,7 +88,7 @@ def read_yaml_to_dict(yaml_file):
     """
     if yaml_file is None or not file_exists(yaml_file):
         raise FileNotFoundError(
-            "AirShip: template file provided is None or does not exist")
+            "dagify: template file provided is None or does not exist")
         return
 
     with open(yaml_file, 'r') as file:
