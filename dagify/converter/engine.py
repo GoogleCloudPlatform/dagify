@@ -158,9 +158,9 @@ class Engine():
         for node in root_node:
             match node.tag:
                 case "FOLDER" | "SMART_FOLDER":
-                    #ufFolder = UFFolder()
-                    #ufFolder.from_controlm_xml(node)
-                    #parent.add_folder(ufFolder)
+                    # ufFolder = UFFolder()
+                    # ufFolder.from_controlm_xml(node)
+                    # parent.add_folder(ufFolder)
                     self.parse_controlm_tree(node, parent)
                 case "JOB":
                     ufTask = UFTask()
@@ -193,22 +193,22 @@ class Engine():
         return parent
 
     def calc_dag_dependencies(self):
-        #self.uf.calculate_dag_dependencies()
+        # self.uf.calculate_dag_dependencies()
         self.uf.calculate_dag_dependencies_v2()
         return
-    
-    def cal_dag_dividers(self): 
+
+    def cal_dag_dividers(self):
         dag_dividers = []
         for tIdx, task in enumerate(self.uf.get_tasks()):
             td = task.get_attribute(self.dag_divider)
-            if  td is not None and td not in dag_dividers:
+            if td is not None and td not in dag_dividers:
                 dag_dividers.append(td)
             task.set_dag_name(td)
         self.dag_dividers = dag_dividers
-        
-        return 
 
-    def get_dag_dividers(self): 
+        return
+
+    def get_dag_dividers(self):
         return self.dag_dividers
 
     def convert(self):
@@ -274,7 +274,7 @@ class Engine():
 
         if self.uf is None:
             raise ValueError("dagify: no data in universal format. nothing to convert!")
-        
+
         for tIdx, dag_divider in enumerate(self.get_dag_dividers()):
             deps = []
             tasks = []
@@ -282,27 +282,27 @@ class Engine():
                 # Capture the airflow tasks for each dag divider
                 if task.get_attribute(self.dag_divider) == dag_divider:
                     tasks.append(task.get_airflow_task_output())
-                    
+
                     deps = task.get_dependent_tasks()
                     if len(deps) > 0:
                         print("\n\n")
                         print(f"===> DAG Divider:{dag_divider}")
                         print(f"===> DAG Task:{task.get_attribute('JOBNAME')}")
                         print("========> Internal DAG Dependencies:")
-                        for dep in deps: 
+                        for dep in deps:
                             if dep.get("dag_name") == dag_divider:
                                 print(dep.get("task_name"))
                         print("========> External DAG Dependencies:")
-                        for dep in deps: 
+                        for dep in deps:
                             if dep.get("dag_name") != dag_divider:
                                 print(dep.get("task_name"))
-            
+
             # Calculate DAG Specific Python Imports
             dag_python_imports = self.uf.calculate_dag_python_imports(
                 dag_divider_key=self.dag_divider,
                 dag_divider_value=dag_divider
             )
-            
+
             # Get DAG Template
             environment = Environment(
                 loader=FileSystemLoader("./dagify/converter/templates/"))
@@ -318,7 +318,7 @@ class Engine():
                 custom_imports=dag_python_imports,
                 dag_id=dag_divider,
                 tasks=tasks,
-                #dependencies=self.uf.get_dag_dependencies()
+                # dependencies=self.uf.get_dag_dependencies()
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
@@ -391,11 +391,11 @@ def airflow_task_build(task, template):
         # Construct Values for Output!
         values[targetKey] = targetValue
 
-    # Explicit Trigger Rule Handling 
+    # Explicit Trigger Rule Handling
     values["trigger_rule"] = "TIMS_RULE"
     for in_cond in task.get_in_conditions():
         print(in_cond)
-    
+
     # Construct Output Python Object Text
     output = template["structure"].format(**values)
     return output

@@ -51,7 +51,7 @@ class UF():
     # get tasks from the universal format
     def get_tasks(self):
         return self.tasks
-    
+
     # get total count of tasks from the universal format
     def get_task_count(self):
         return len(self.tasks)
@@ -61,8 +61,8 @@ class UF():
 
     def get_raw_xml(self):
         return self.raw_xml_element
-    
-    #def calculate_dag_dependencies(self):
+
+    # def calculate_dag_dependencies(self):
     #    deps = []
     #    # Calculate Job Dependencies for every job.
     #    for task in self.get_tasks():
@@ -93,7 +93,7 @@ class UF():
     #        self.dag_dependencies = deps
     #    else:
     #        self.dag_dependencies = []
-            
+
     def calculate_dag_dependencies_v2(self):
         for task in self.get_tasks():
             dep = ""
@@ -104,14 +104,14 @@ class UF():
                     out_conds_positive.append(out_cond)
             if len(out_conds_positive) > 0:
                 items = ""
-                
+
                 for poutcon in out_conds_positive:
                     for obj in self.get_tasks():
                         for in_conds in obj.get_in_conditions():
                             if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
-                                    task.add_dependent_task(obj.get_dag_name(), obj.get_attribute("JOBNAME"))
+                                task.add_dependent_task(obj.get_dag_name(), obj.get_attribute("JOBNAME"))
         self.dag_dependencies = []
-    
+
     def get_dag_dependencies_v2(self):
         for task in self.get_tasks():
             for dep_task in task.get_dependent_tasks():
@@ -215,18 +215,18 @@ class UFTask(UF):
         return etree.tostring(
             etree.fromstring(xmlstr),
             pretty_print=True).decode()
-    
+
     def set_dag_name(self, dag_name):
         self.dag_name = dag_name
         return
-    
+
     def get_dag_name(self):
         return self.dag_name
-    
+
     def get_dependent_tasks(self):
         return self.dep_tasks
-    
-    def add_dependent_task(self, dag_name, task_name): 
+
+    def add_dependent_task(self, dag_name, task_name):
         self.dep_tasks.append({"dag_name": dag_name, "task_name": task_name})
         return
 
