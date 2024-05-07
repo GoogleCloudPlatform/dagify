@@ -4,11 +4,11 @@ We welcome contribuiton; At this time the contribution guidelines are still bein
 ## Contribution Areas
 
 ### Template Contribution (Primary)
-AirShip utilizes templates to help map native scheduler formats to Apache Airflow Operator formats. Please consider whether the mapping you are requiring (example: Control-M Job --> Apache Airflow FTP or SSH Operator) is a pattern other users could benefit from. Template contribution is the best and easiest method of contributing to AirShip. 
+DAGify utilizes templates to help map native scheduler formats to Apache Airflow Operator formats. Please consider whether the mapping you are requiring (example: Control-M Job --> Apache Airflow FTP or SSH Operator) is a pattern other users could benefit from. Template contribution is the best and easiest method of contributing to DAGify. 
 
 ### Rules & Custom Function Contribution
 > Not Yet Available
-AirShip is highly extensible and the ability to extend AirFlow by adding custom field conversion rules is an important part of our roadmap. Rules are applied to fields as they are converted from Source to AirFlow Operator. It is our desire that rules could be contributed and considered for all users. 
+DAGify is highly extensible and the ability to extend AirFlow by adding custom field conversion rules is an important part of our roadmap. Rules are applied to fields as they are converted from Source to AirFlow Operator. It is our desire that rules could be contributed and considered for all users. 
 
 An example rule could be something as simple as ToUppercase() or ToLowercase() which takes the content of a field and converts it on route to its target mapping.  
 
@@ -52,4 +52,4 @@ git checkout -b rf/<github_issue_number>/<username>/<description>
 
 ## Stargazers over time
 
-[![Stargazers over time](https://starchart.cc/KonradSchieban/airship.svg?variant=dark)](https://starchart.cc/KonradSchieban/airship)
+[![Stargazers over time](https://starchart.cc/KonradSchieban/DAGify.svg?variant=dark)](https://starchart.cc/KonradSchieban/DAGify)

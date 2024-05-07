@@ -1,0 +1,62 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+--- 
+metadata:
+  id: 0004
+  name: control-m-command-to-airflow-python
+  version: "v0.0.1"
+  author:
+    name: "Google PSO"
+    email: "dagify-code@google.com"
+  description-short: "Control-M Command Job to Apache Airflow Python Operator"
+  description: "This template allows for the conversion of Control-M Jobs of type Command into the Apache Airflow Python operator format."
+  tags:
+    - control-m
+    - airflow
+    - python
+source:
+  platform: 
+    id: "CONTROLM"
+    name: "Control-M"
+  operator: 
+    id: "Command"
+target:
+  platform: 
+      id: "APACHEAIRFLOW"
+      name: "Apache Airflow"
+  operator: 
+      id: "PythonOperator"
+      name: "Apache Airflow Python Operator"
+      docs: "https://airflow.apache.org/docs/apache-airflow/stable/howto/operator/python.html"
+      imports: 
+        - package: "airflow.operators.python"
+          imports:
+              - "PythonOperator"
+mappings:
+  - source: JOBNAME
+    target: task_id
+    rules:
+      - rule: python_variable_safe
+      - rule: make_unique  
+  - source: CMDLINE
+    target: command
+    rules:
+      - rule: escape_quotes
+structure: |
+  {task_id} = PythonOperator(
+    task_id="{task_id}",
+    python_callable=helloWorld,
+    op_args=["{task_id}"],
+    dag=dag,
+  )
