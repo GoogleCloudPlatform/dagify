@@ -270,19 +270,6 @@ class Engine():
         # no match found
         return None
 
-    #def get_distinct_job_types(self):
-    #    job_types = []
-    #    # iterate all folders
-    #    for folder in self.universal_format:
-    #        # iterate all jobs within a folder
-    #        for job in self.universal_format[folder]["jobs"]:
-    #            # capture the job task type
-    #            job_types.append(
-    #                self.universal_format[folder]["jobs"][job]["task_type"].upper())
-
-        # return distinct set of job types
-    #    return list(set(job_types))
-
     def generate_airflow_dags(self):
 
         if self.uf is None:
@@ -295,7 +282,21 @@ class Engine():
                 # Capture the airflow tasks for each dag divider
                 if task.get_attribute(self.dag_divider) == dag_divider:
                     tasks.append(task.get_airflow_task_output())
-                     
+                    
+                    deps = task.get_dependent_tasks()
+                    if len(deps) > 0:
+                        print("\n\n")
+                        print(f"===> DAG Divider:{dag_divider}")
+                        print(f"===> DAG Task:{task.get_attribute('JOBNAME')}")
+                        print("========> Internal DAG Dependencies:")
+                        for dep in deps: 
+                            if dep.get("dag_name") == dag_divider:
+                                print(dep.get("task_name"))
+                        print("========> External DAG Dependencies:")
+                        for dep in deps: 
+                            if dep.get("dag_name") != dag_divider:
+                                print(dep.get("task_name"))
+            
             # Calculate DAG Specific Python Imports
             dag_python_imports = self.uf.calculate_dag_python_imports(
                 dag_divider_key=self.dag_divider,

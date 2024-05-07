@@ -111,6 +111,12 @@ class UF():
                             if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
                                     task.add_dependent_task(obj.get_dag_name(), obj.get_attribute("JOBNAME"))
         self.dag_dependencies = []
+    
+    def get_dag_dependencies_v2(self):
+        for task in self.get_tasks():
+            for dep_task in task.get_dependent_tasks():
+                print(dep_task)
+        return
 
     def calculate_dag_python_imports(self, dag_divider_key="", dag_divider_value=""):
         python_imports = []
