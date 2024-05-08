@@ -16,8 +16,9 @@ from dagify.converter import Engine
 import os
 import click
 
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
-@click.command()
+@click.command(context_settings=CONTEXT_SETTINGS)
 @click.option("-s",
               "--source-path",
               default=lambda: os.environ.get("AS_SOURCE_PATH", "./source"),
