@@ -16,10 +16,12 @@ class templateParser():
                 'metadata.id','metadata.name','metadata.version','metadata.author','metadata.description-short','metadata.description',
                 'source.platform','source.operator',
                 'target.platform', 'target.operator',
-                'mappings.'
             ])
-        self.required_keys[2] = set(['metadata.id','metadata.name','metadata.version','metadata.author','metadata.description-short','metadata.description',
-                            'source.platform','source.operator',
+        self.required_keys[2] = set(['metadata.author.name','metadata.author.email',
+        'source.platform.id','source.platform.name','source.operator.id',
+        'target.platform.id','target.platform.name',
+        'target.operator.id','target.operator.name','target.operator.docs','target.operator.imports',
+
         ])
 
     
@@ -78,8 +80,8 @@ class templateParser():
             else:
                 nested_key = current_key
             
+
             self.keys_by_indentation[indentation].append(nested_key)
-            
             # If the current_value itself is a dictionary, it must be flattened again - hence the recursive call
             if isinstance(current_val, dict): 
 
@@ -132,12 +134,12 @@ class templateParser():
             keys_in_template = set(keys_by_indentation[indentation])
             required_keys = self.required_keys[indentation]
 
-            intersected_set = required_keys.intersection(keys_in_template)
-            if (required_keys != intersected_set):
-                print("missing keys", (required_keys.difference(intersected_set)),"\n")
+            for key in required_keys:
+                if key not in keys_in_template:
+                    print("missing key", key, "\n")
             
             ## Validate that the values in yaml are correct ##
-            for key in keys_in_template:
+            for key in keys_by_indentation[indentation]:
                 # Things like "target" , "target.platform" should be skipped as those are parent keys without and immediate value
                 if key in flattened_dictionary: 
                     value = flattened_dictionary[key]
@@ -148,7 +150,8 @@ class templateParser():
                         
                     # Generic Tests from the last keyword #
                     last_keyword = key.split(".")[-1]
-                    if last_keyword == "email":                     
+              
+                    if last_keyword == "email":                    
                         pattern = re.compile("^[a-zA-Z0-9][\\s]+")
                         if pattern.match(value) == None:
                             print(key, "does not have a valid email","\n")
@@ -168,13 +171,12 @@ class templateParser():
 
 
 parser = templateParser()
-yaml_file = "/Users/shreyaprabhu/Documents/Work/airship/AirShip/templates/control-m-command-to-airflow-gke-start-job.yaml"
+yaml_file = "./dagify/dagify/templates/control-m-command-to-airflow-gke-start-job.yaml"
 template_dictionary = parser.read_yaml_to_dict(yaml_file)
-
 flattened_dictionary = parser.flatten_dict(template_dictionary,"",0)
 keys_by_indentation = parser.keys_by_indentation
-
 parser.validate_template(keys_by_indentation,flattened_dictionary)
+print("\n")
 
 
 
