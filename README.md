@@ -5,9 +5,9 @@
 <br>
 
 ## DAGify Overview 
-DAGify is a highly extensible, template driven, enterprise scheduler migration accelerator that helps organizations speed up their migration to Apache Airflow & Google Cloud Composer. While DAGify is not designed to be be a clear 1:1 migration tool it aims to heavily reduce the effort it takes for developers to convert their native enterprise scheduler formats into Native Python code in a Apache Airflow DAG format.  
+DAGify is a highly extensible, template driven, enterprise scheduler migration accelerator that helps organizations speed up their migration to Apache Airflow & Google Cloud Composer. While DAGify is not designed to be a clear 1:1 migration tool it aims to heavily reduce the effort it takes for developers to convert their native enterprise scheduler formats into native Python code in a Apache Airflow DAG format.  
 
-The primary goal with DAGify is never to be 100% but rather reduce the number of human hours required to undertake the conversion and therefore speed up migrations! 
+The primary goal with DAGify is not to migrate 100% of existing scheduler workflows but rather reduce the number of human hours required to undertake the conversion and therefore speed up migrations! 
 </br>
 
 ## Supported Features
