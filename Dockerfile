@@ -1,5 +1,5 @@
 # Stage 1: Build dagify Application
-FROM python
+FROM python:alpine3.20
 WORKDIR /app
 
 COPY . .

@@ -61,8 +61,7 @@ The above commands will use the built in default templates and also use your cus
 
 ---
 
-
-## Run DAGify (From Local Container)
+## Run DAGify (From Source Container)
 First you should update your .env.example file to use the environment variables you need. 
 When you run the below commands you will mount your current working directory to the container for execution.
 ### With Defaults
@@ -76,7 +75,29 @@ docker run -it --env-file=.env.example -v $(pwd):/app localhost/dagify:source
 
 
 ## Run DAGify (From Published Container)
-> Coming Soon
+
+First you should create a ```data``` directory on your local machine. Place your xml file or files in that data directory.
+
+Then run the remote container while mounting the local ```data``` directory to the container (```-v ${PWD}/data:/app/data```) in addition you should pass the direct path to the XML file within the data directory to the environment variable ```AS_SOURCE_PATH``` for example: (```-e AS_SOURCE_PATH=./data/test.xml```). You should also set the output directory environment variable ```AS_SOURCE_PATH``` to a folder within the data directory (```-e AS_OUTPUT_PATH=./data/output```). 
+
+You can run the following to use the tool;
+
+```bash
+mkdir data
+# Add your Source XML file to the /data directory
+mkdir data/output
+
+# run the container
+docker run -it \
+    -e AS_SOURCE_PATH=./data/test.xml \
+    -e AS_OUTPUT_PATH=./data/output \
+    -v ${PWD}/data:/app/data \
+    europe-docker.pkg.dev/dagify/dagify/dagify:latest  
+
+# view the output Airflow DAG's in /data/output
+
+```
+
 
 ---
 # Command Line Help
