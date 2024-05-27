@@ -1,8 +1,8 @@
-autopep8==2.1.0
+autopep8==2.1.1
 click==8.1.7
 flake8==7.0.0
 Jinja2==3.1.4
-lxml==5.1.0
+lxml==5.2.2
 MarkupSafe==2.1.5
 mccabe==0.7.0
 numpy==1.26.4
