@@ -1,0 +1,45 @@
+metadata: 
+  id: int(min=1, max=5)
+  name: str(required=True)
+  version: str(required=True)
+  author:
+    name: str(required=True)
+    email: myemail()
+  description-short: str(max=200, required=True)
+  description: str(required=True)
+  tags: list()
+source:
+  platform: 
+    id: str(required=True)
+    name: str(required=True)
+  operator: 
+    id: str(required=True)
+target:
+  platform: 
+      id: str(required=True)
+      name: str(required=True)
+  operator: 
+      id: str(required=True)
+      name: str(required=True)
+      docs: str(required=True)
+      imports: 
+        - package: str(required=True)
+          imports: list(str(required=True))
+mappings: include('mappings_struct')
+  # - source: str(required=True)
+  #   target: str(required=True)
+  #   rules: list()
+
+  # - source: str(required=True)
+  #   target: str(required=True)
+  #   rules: list()
+structure: any()
+
+---
+mappings_struct:
+  - source: str(required=True)
+    target: str(required=True)
+    rules: list()
+  - source: str(required=True)
+    target: str(required=True)
+    rules: list()
