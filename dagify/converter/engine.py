@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import os
+import yamale
+from .yaml_validator.custom_validator_yaml import validators
 import yaml
 import xml.etree.ElementTree as ET
 from jinja2 import Environment, FileSystemLoader
@@ -21,7 +23,6 @@ from .utils import (
     create_directory,
     directory_exists,
     is_directory,
-    read_yaml_to_dict,
 )
 from .rules import (
     Rule
@@ -55,6 +56,7 @@ class Engine():
         self.source_path = source_path
         self.output_path = output_path
         self.dag_divider = dag_divider
+        self.schema = "/Users/shreyaprabhu/Work-Folder/dagify-clone-harish-repo/dagify/dagify/converter/yaml_validator/schema.yaml"
 
         # Run the Proccess
         self.set_baseline_imports()
@@ -123,11 +125,27 @@ class Engine():
             for file in files:
                 if file.endswith(".yaml"):
                     # Loads a Single Template into a Dictionary from .yaml file
-                    template = read_yaml_to_dict(os.path.join(root, file))
+                    file_path = os.path.join(root, file)
+                    template = yamale.make_data(file_path)
+                    schema = yamale.make_schema(self.schema, validators=validators)
+                    
                     if template is not None:
                         # if the dict it not empty
                         self.templates_count += 1
-                        self.templates[template["metadata"]["name"]] = template
+
+                        # modified with new format
+                        self.templates[template[0][0]["metadata"]["name"]] = template 
+
+                        try:
+                            yamale.validate(schema, template)
+                            print(f"Validation succeeded for {file}!")
+                        except yamale.YamaleError as e:
+                            print(f"Validation failed for {file}!\n")
+                            for result in e.results:
+                                for error in result.errors:
+                                    # Print only the custom error message
+                                    print(error)
+
         return
 
     def get_template_count(self):
