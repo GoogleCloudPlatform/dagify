@@ -4,7 +4,7 @@ metadata:
   version: str(required=True)
   author:
     name: str(required=True)
-    email: myemail()
+    email: myEmailValidator()
   description-short: str(max=200, required=True)
   description: str(required=True)
   tags: list()
@@ -21,25 +21,14 @@ target:
   operator: 
       id: str(required=True)
       name: str(required=True)
-      docs: str(required=True)
+      docs: myURLValidator()
       imports: 
         - package: str(required=True)
           imports: list(str(required=True))
-mappings: include('mappings_struct')
-  # - source: str(required=True)
-  #   target: str(required=True)
-  #   rules: list()
-
-  # - source: str(required=True)
-  #   target: str(required=True)
-  #   rules: list()
+mappings : list(include('mappings_struct'),min=1)
 structure: any()
-
 ---
 mappings_struct:
-  - source: str(required=True)
-    target: str(required=True)
-    rules: list()
-  - source: str(required=True)
-    target: str(required=True)
-    rules: list()
+  source: str(required=True)
+  target: str(required=True)
+  rules: list()

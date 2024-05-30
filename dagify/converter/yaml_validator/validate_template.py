@@ -24,17 +24,6 @@ def validate_yaml_files_in_directory(directory, schema_file):
                         # Print only the custom error message
                         print(error)
 
-def main(directory_path, schema_file):
-    if not os.path.isdir(directory_path):
-        print(f"The path {directory_path} is not a directory.")
-        return
-    if not os.path.isfile(schema_file):
-        print(f"The file {schema_file} does not exist.")
-        return
-    validate_yaml_files_in_directory(directory_path, schema_file)
-
-if __name__ == "__main__":
-    # Example directory path and schema file
-    directory_path = '/Users/harishsridhar/Projects/har_dagify/dagify/dagify/templates' # Change path here
-    schema_file = './schema.yaml'
-    main(directory_path, schema_file)
+directory_path = '' # Change path here
+schema_file = ''
+validate_yaml_files_in_directory(directory_path, schema_file)
