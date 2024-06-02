@@ -42,6 +42,7 @@ class Engine():
         self,
         source_path=None,
         output_path=None,
+        schema_path="schema.yaml",
         templates_path="./templates",
         config_file="./config.yaml",
         dag_divider="PARENT_FOLDER",
@@ -56,7 +57,7 @@ class Engine():
         self.source_path = source_path
         self.output_path = output_path
         self.dag_divider = dag_divider
-        self.schema = "/Users/shreyaprabhu/Work-Folder/dagify-clone-harish-repo/dagify/dagify/converter/yaml_validator/schema.yaml"
+        self.schema = "schema.yaml"
 
         # Run the Proccess
         self.set_baseline_imports()

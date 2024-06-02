@@ -18,7 +18,7 @@ metadata:
   version: "v0.0.1"
   author:
     name: "Google PSO"
-    email: "dagify-odgoogle.com"
+    email: "dagify-od@google.com"
   description-short: "Control-M Command Job to Apache Airflow Python Operator"
   description: "This template allows for the conversion of Control-M Jobs of type Command into the Apache Airflow Python operator format."
   tags:
@@ -47,7 +47,7 @@ mappings:
   - source: JOBNAME
     target: task_id
     rules:
- 
+      - rule: escape_quotes
   - source: CMDLINE
     target: command
     rules:

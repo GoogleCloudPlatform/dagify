@@ -44,4 +44,13 @@ target:
           imports:
               - "SSHOperator"
 mappings: 
+  - source: JOBNAME
+    target: task_id
+    rules:
+      - rule: escape_quotes
+  - source: CMDLINE
+    target: command
+    rules:
+      - rule: escape_quotes
   
+structure: |
