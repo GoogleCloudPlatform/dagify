@@ -14,7 +14,7 @@
 
 import os
 import yamale
-from .yaml_validator.custom_validator_yaml import validators
+from .yaml_validator.custom_validator import validators
 import yaml
 import xml.etree.ElementTree as ET
 from jinja2 import Environment, FileSystemLoader
@@ -57,7 +57,7 @@ class Engine():
         self.source_path = source_path
         self.output_path = output_path
         self.dag_divider = dag_divider
-        self.schema = "schema.yaml"
+        self.schema = "./dagify/converter/yaml_validator/schema.yaml"
 
         # Run the Proccess
         self.set_baseline_imports()
@@ -131,21 +131,22 @@ class Engine():
                     schema = yamale.make_schema(self.schema, validators=validators)
                     
                     if template is not None:
-                        # if the dict it not empty
-                        self.templates_count += 1
-
-                        # modified with new format
-                        self.templates[template[0][0]["metadata"]["name"]] = template 
-
+                        
                         try:
+                            # if the dict it not empty
+                            self.templates_count += 1
+                            
+                            # modified with new format - [0][0] as the template dictionary is the first element of a tuple, in turn first element of a list
+                            self.templates[template[0][0]["metadata"]["name"]] = template 
                             yamale.validate(schema, template)
                             print(f"Validation succeeded for {file}!")
+
                         except yamale.YamaleError as e:
                             print(f"Validation failed for {file}!\n")
                             for result in e.results:
                                 for error in result.errors:
-                                    # Print only the custom error message
                                     print(error)
+                            raise ValueError(f"Template {file_path} incompatible")
 
         return
 
@@ -245,7 +246,8 @@ class Engine():
                     f"dagify: no task/job_type in source for task {task_name}")
             template_name = self.get_template_name(task_type)
             # get the template from the template name
-            template = self.get_template(template_name)
+            # [0][0] as the template dictionary is the first element of a tuple, in turn first element of a list
+            template = self.get_template(template_name)[0][0]
             if template is None:
                 raise ValueError(
                     f"dagify: no template name provided that matches job type {task_type}")

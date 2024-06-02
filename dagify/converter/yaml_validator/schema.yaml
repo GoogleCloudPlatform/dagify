@@ -1,0 +1,34 @@
+metadata: 
+  id: int(min=1, max=5)
+  name: str(required=True)
+  version: str(required=True)
+  author:
+    name: str(required=True)
+    email: myEmailValidator()
+  description-short: str(max=200, required=True)
+  description: str(required=True)
+  tags: list()
+source:
+  platform: 
+    id: str(required=True)
+    name: str(required=True)
+  operator: 
+    id: str(required=True)
+target:
+  platform: 
+      id: str(required=True)
+      name: str(required=True)
+  operator: 
+      id: str(required=True)
+      name: str(required=True)
+      docs: myURLValidator()
+      imports: 
+        - package: str(required=True)
+          imports: list(str(required=True))
+mappings : list(include('mappings_struct'),min=1)
+structure: any()
+---
+mappings_struct:
+  source: str(required=True)
+  target: str(required=True)
+  rules: list()
