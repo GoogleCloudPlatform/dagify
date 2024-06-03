@@ -14,8 +14,19 @@ class EmailValidator(Validator):
         return f'{value} is not a valid email address.'
 
 class URLValidator(Validator):
-    tag = 'myURLValidator'  # This is the tag you use in your schema
+    tag = 'validURL'  # This is the tag you use in your schema
     
+    def _is_valid(self, value):
+        
+        try:
+            response = requests.get(value)
+            return response.status_code == 200
+        except requests.exceptions.RequestException as e:
+            print(f"Error checking URL: {e}")
+
+     
+
+    """
     def _is_valid(self, value):
         response = requests.get(value)
         #add url code here 200
@@ -26,6 +37,7 @@ class URLValidator(Validator):
         response = requests.get(value)
         if response.status_code != 200:
             return f'{value} is not a valid url'
+    """
         
 # Extend default validators with your custom validators
 validators = DefaultValidators.copy()

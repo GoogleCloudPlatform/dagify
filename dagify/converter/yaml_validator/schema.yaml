@@ -21,7 +21,7 @@ target:
   operator: 
       id: str(required=True)
       name: str(required=True)
-      docs: myURLValidator()
+      docs: validURL()
       imports: 
         - package: str(required=True)
           imports: list(str(required=True))

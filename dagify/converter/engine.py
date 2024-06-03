@@ -23,6 +23,7 @@ from .utils import (
     create_directory,
     directory_exists,
     is_directory,
+    read_yaml_to_dict
 )
 from .rules import (
     Rule
@@ -91,10 +92,40 @@ class Engine():
                 "dagify: Configuration loaded with error, no Operator/JobType Mappings loaded")
 
         # Modify Configration for Standardization:
+        templatesToValidate = []
         for idx, config in enumerate(self.config["config"]["mappings"]):
             # Set Command Uppercase
             self.config["config"]["mappings"][idx]["job_type"] = \
                 self.config["config"]["mappings"][idx]["job_type"].upper()
+            templatesToValidate.append(self.config["config"]["mappings"][idx]["template_name"])
+        print("templates we need to validate")
+        print(templatesToValidate)
+        for root, dirs, files in os.walk(self.templates_path):
+            for file in files:
+                if file.endswith(".yaml"):
+                    template_name = file.split(".")[0]
+                    if template_name in templatesToValidate:
+                        print(f"{template_name} ready for validation")
+                    # Loads a Single Template into a Dictionary from .yaml file
+                    
+                        file_path = os.path.join(root, file)
+                        template = yamale.make_data(file_path)
+                        schema = yamale.make_schema(self.schema, validators=validators)
+                        
+                        if template is not None:
+                            
+                            try:
+                                                                
+                                yamale.validate(schema, template)
+                                print(f"Validation succeeded for {file}!")
+
+                            except yamale.YamaleError as e:
+                                print(f"Validation failed for {file}!\n")
+                                for result in e.results:
+                                    for error in result.errors:
+                                        print(error)
+                                raise ValueError(f"Template {file_path} incompatible")
+                    
         return
 
     def validate(self):
@@ -126,28 +157,11 @@ class Engine():
             for file in files:
                 if file.endswith(".yaml"):
                     # Loads a Single Template into a Dictionary from .yaml file
-                    file_path = os.path.join(root, file)
-                    template = yamale.make_data(file_path)
-                    schema = yamale.make_schema(self.schema, validators=validators)
-                    
+                    template = read_yaml_to_dict(os.path.join(root, file))
                     if template is not None:
-                        
-                        try:
-                            # if the dict it not empty
-                            self.templates_count += 1
-                            
-                            # modified with new format - [0][0] as the template dictionary is the first element of a tuple, in turn first element of a list
-                            self.templates[template[0][0]["metadata"]["name"]] = template 
-                            yamale.validate(schema, template)
-                            print(f"Validation succeeded for {file}!")
-
-                        except yamale.YamaleError as e:
-                            print(f"Validation failed for {file}!\n")
-                            for result in e.results:
-                                for error in result.errors:
-                                    print(error)
-                            raise ValueError(f"Template {file_path} incompatible")
-
+                        # if the dict it not empty
+                        self.templates_count += 1
+                        self.templates[template["metadata"]["name"]] = template
         return
 
     def get_template_count(self):
@@ -247,7 +261,7 @@ class Engine():
             template_name = self.get_template_name(task_type)
             # get the template from the template name
             # [0][0] as the template dictionary is the first element of a tuple, in turn first element of a list
-            template = self.get_template(template_name)[0][0]
+            template = self.get_template(template_name)
             if template is None:
                 raise ValueError(
                     f"dagify: no template name provided that matches job type {task_type}")
