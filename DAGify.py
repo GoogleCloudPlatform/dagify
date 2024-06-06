@@ -26,13 +26,6 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               show_default="{}".format(
                   os.environ.get("AS_SOURCE_PATH",
                                  "./source")))
-@click.option("-sch",
-              "--schema-path",
-              default=lambda: os.environ.get("AS_SCHEMA_PATH", "./schema.yaml"),
-              help="Path to schema file for validation.",
-              show_default="{}".format(
-                  os.environ.get("AS_SCHEMA_PATH",
-                                 "schema.yaml")))
 @click.option("-o",
               "--output-path",
               default=lambda: os.environ.get("AS_OUTPUT_PATH", "./output"),
@@ -65,13 +58,12 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
                   os.environ.get("AS_DAG_DIVIDER",
                                  "PARENT_FOLDER")))
 
-def dagify(source_path, schema_path, output_path, config_file, templates, dag_divider):
+def dagify(source_path, output_path, config_file, templates, dag_divider):
     """Run dagify."""
     print("Demo dagify Engine")
 
     Engine(
         source_path=source_path,
-        schema_path=schema_path,
         output_path=output_path,
         config_file=config_file,
         templates_path=templates,

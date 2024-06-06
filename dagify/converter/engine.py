@@ -43,7 +43,6 @@ class Engine():
         self,
         source_path=None,
         output_path=None,
-        schema_path="schema.yaml",
         templates_path="./templates",
         config_file="./config.yaml",
         dag_divider="PARENT_FOLDER",
@@ -98,8 +97,7 @@ class Engine():
             self.config["config"]["mappings"][idx]["job_type"] = \
                 self.config["config"]["mappings"][idx]["job_type"].upper()
             templatesToValidate.append(self.config["config"]["mappings"][idx]["template_name"])
-        print("templates we need to validate")
-        print(templatesToValidate)
+        
         for root, dirs, files in os.walk(self.templates_path):
             for file in files:
                 if file.endswith(".yaml"):
