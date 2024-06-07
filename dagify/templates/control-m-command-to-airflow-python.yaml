@@ -48,7 +48,7 @@ mappings:
     target: task_id
     rules:
       - rule: python_variable_safe
-      - rule: make_unique  
+      #- rule: make_unique  
   - source: CMDLINE
     target: command
     rules:
