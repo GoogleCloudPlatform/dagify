@@ -47,11 +47,12 @@ mappings:
   - source: JOBNAME
     target: task_id
     rules:
-      - rule: python_variable_safe
-      - rule: make_unique  
+      - rule: escape_quotes
   - source: CMDLINE
     target: command
     rules:
+      - rule: python_variable_safe
+      - rule: make_unique 
       - rule: escape_quotes
 structure: |
   {task_id} = PythonOperator(

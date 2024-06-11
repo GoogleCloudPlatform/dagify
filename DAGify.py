@@ -57,6 +57,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               show_default="{}".format(
                   os.environ.get("AS_DAG_DIVIDER",
                                  "PARENT_FOLDER")))
+
 def dagify(source_path, output_path, config_file, templates, dag_divider):
     """Run dagify."""
     print("Demo dagify Engine")
