@@ -55,7 +55,7 @@ make clean
 python3 DAGify.py --source-path=[YOUR-SOURCE-XML-FILE] --output-path=[YOUR-OUTPUT-PATH] --config-file=[YOUR-CUSTOM-CONFIGURATION-YAML]
 
 ```
-Make clean; will create a new virtual environment using Python3 and install all required DAGify dependencies using PIP into that virtual environment.
+`make clean` will create a new virtual environment using Python3 and install all required DAGify dependencies using PIP into that virtual environment.
 
 The above commands will use the built in default templates and also use your custom original template mapping configuration yaml file to conduct a conversion of your source file. Additionally it will output the converted Python DAG files to the output directory provided in the above command. 
 
