@@ -225,8 +225,8 @@ class Engine():
         return parent
 
     def calc_dag_dependencies(self):
-        # self.uf.calculate_dag_dependencies()
-        self.uf.calculate_dag_dependencies_v2()
+        self.uf.calculate_dag_dependencies()
+        #self.uf.calculate_dag_dependencies_v2()
         return
 
     def cal_dag_dividers(self):
@@ -351,7 +351,7 @@ class Engine():
                 custom_imports=dag_python_imports,
                 dag_id=dag_divider,
                 tasks=tasks,
-                # dependencies=self.uf.get_dag_dependencies()
+                dependencies=self.uf.get_dag_dependencies()
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
