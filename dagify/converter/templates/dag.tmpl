@@ -24,7 +24,12 @@ with DAG(
     {{task | indent(4)}}
     {%- endfor %}
 
-    # Airflow Task Dependencies
-    {%- for dependency in dependencies %}
+    # Airflow Task Internal Dependencies
+    {%- for dependency in dependencies_int %}
+    {{dependency | indent(4)}}
+    {%- endfor %}
+
+    # Airflow Task External Dependencies
+    {%- for dependency in dependencies_ext %}
     {{dependency | indent(4)}}
     {%- endfor %}

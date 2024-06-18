@@ -68,6 +68,7 @@ class Engine():
         self.convert()
         self.cal_dag_dividers()
         self.calc_dag_dependencies()
+        #self.generate_dag_dependency_statements()
         self.generate_airflow_dags()
 
     def load_config(self):
@@ -225,8 +226,12 @@ class Engine():
         return parent
 
     def calc_dag_dependencies(self):
-        self.uf.calculate_dag_dependencies()
-        #self.uf.calculate_dag_dependencies_v2()
+        #self.uf.calculate_dag_dependencies()
+        self.uf.calculate_dag_dependencies_v2()
+        return
+    
+    def generate_dag_dependency_statements(self):
+        self.uf.generate_dag_dependency_statements(self.dag_divider)
         return
 
     def cal_dag_dividers(self):
@@ -308,33 +313,30 @@ class Engine():
         if self.uf is None:
             raise ValueError("dagify: no data in universal format. nothing to convert!")
 
-        for tIdx, dag_divider in enumerate(self.get_dag_dividers()):
-            deps = []
+        for tIdx, dag_divider_value in enumerate(self.get_dag_dividers()):
+            airflow_task_outputs = []
             tasks = []
             for tIdx, task in enumerate(self.uf.get_tasks()):
                 # Capture the airflow tasks for each dag divider
-                if task.get_attribute(self.dag_divider) == dag_divider:
-                    tasks.append(task.get_airflow_task_output())
-
-                    deps = task.get_dependent_tasks()
-                    if len(deps) > 0:
-                        print("\n\n")
-                        print(f"===> DAG Divider:{dag_divider}")
-                        print(f"===> DAG Task:{task.get_attribute('JOBNAME')}")
-                        print("========> Internal DAG Dependencies:")
-                        for dep in deps:
-                            if dep.get("dag_name") == dag_divider:
-                                print(dep.get("task_name"))
-                        print("========> External DAG Dependencies:")
-                        for dep in deps:
-                            if dep.get("dag_name") != dag_divider:
-                                print(dep.get("task_name"))
+                if task.get_attribute(self.dag_divider) == dag_divider_value:
+                    tasks.append(task.get_attribute("JOBNAME"))
+                    airflow_task_outputs.append(task.get_airflow_task_output())
 
             # Calculate DAG Specific Python Imports
             dag_python_imports = self.uf.calculate_dag_python_imports(
                 dag_divider_key=self.dag_divider,
-                dag_divider_value=dag_divider
+                dag_divider_value=dag_divider_value
             )
+
+            # Calculate all internal and external task dependencies
+            dependencies = self.uf.generate_dag_dependencies_by_divider(self.dag_divider)
+            dependencies_in_dag_internal = []
+            dependencies_in_dag_external = []
+            for task in tasks:
+                if len(dependencies[dag_divider_value][task]['internal']) > 0:
+                    dependencies_in_dag_internal.append(self.uf.generate_dag_dependency_statement(task, dependencies[dag_divider_value][task]['internal']))
+                if len(dependencies[dag_divider_value][task]['external']) > 0:
+                    dependencies_in_dag_external.append(self.uf.generate_dag_dependency_statement(task, dependencies[dag_divider_value][task]['external']))
 
             # Get DAG Template
             environment = Environment(
@@ -345,13 +347,15 @@ class Engine():
                 create_directory(self.output_path)
 
             # Create DAG File by Folder
-            filename = f"{self.output_path}/{dag_divider}.py"
+            filename = f"{self.output_path}/{dag_divider_value}.py"
             content = template.render(
                 baseline_imports=self.get_baseline_imports(),
                 custom_imports=dag_python_imports,
-                dag_id=dag_divider,
-                tasks=tasks,
-                dependencies=self.uf.get_dag_dependencies()
+                dag_id=dag_divider_value,
+                tasks=airflow_task_outputs,
+                # dependencies=self.uf.get_dag_dependencies()
+                dependencies_int=dependencies_in_dag_internal,
+                dependencies_ext=dependencies_in_dag_external
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
