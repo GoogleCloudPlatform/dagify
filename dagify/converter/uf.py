@@ -69,38 +69,6 @@ class UF():
         return self.raw_xml_element
 
     def calculate_dag_dependencies(self):
-        deps = []
-        # Calculate Job Dependencies for every job.
-        for task in self.get_tasks():
-            dep = ""
-            out_conds = task.get_out_conditions()
-            out_conds_positive = []
-
-            for out_cond in out_conds:
-                if out_cond.get_attribute("SIGN") == "+":
-                    out_conds_positive.append(out_cond)
-
-            if len(out_conds_positive) > 0:
-                items = ""
-
-                for poutcon in out_conds_positive:
-                    for obj in self.get_tasks():
-                        for in_conds in obj.get_in_conditions():
-                            if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
-                                items += obj.get_attribute("JOBNAME") + ", "
-                if items != "":
-                    dep = task.get_attribute("JOBNAME") + " >> [" + items + "]"
-                    dep = dep.replace(", ]", "]")
-
-            if dep != "":
-                deps.append(dep)
-
-        if len(deps) > 0:
-            self.dag_dependencies = deps
-        else:
-            self.dag_dependencies = []
-
-    def calculate_dag_dependencies_v2(self):
         for task in self.get_tasks():
             out_conds = task.get_out_conditions()
             out_conds_positive = []
@@ -119,7 +87,7 @@ class UF():
     def generate_dag_dependencies_by_divider(self, dag_divider):
         dependencies = {}
         """
-        structure for dependencies
+        the following structure for dependencies will be created by this method:
         dependencies = {
             div1: {
                 task1: {
@@ -182,7 +150,7 @@ class UF():
     def generate_dag_dependency_statement(self, task, dependencies):
         statement = task + " >> "
         if len(dependencies) == 1:
-            statement += "[ " + dependencies[0] + " ]"
+            statement += "[" + dependencies[0] + "]"
         if len(dependencies) > 1:
             statement += "["
             for dep in dependencies:

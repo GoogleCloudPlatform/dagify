@@ -225,8 +225,7 @@ class Engine():
         return parent
 
     def calc_dag_dependencies(self):
-        #self.uf.calculate_dag_dependencies()
-        self.uf.calculate_dag_dependencies_v2()
+        self.uf.calculate_dag_dependencies()
         return
     
     def generate_dag_dependency_statements(self):
@@ -341,7 +340,6 @@ class Engine():
                 for dep in dependencies[dag_divider_value][task]['external']:
                     ext_task_uf = self.uf.get_task_by_attr("JOBNAME", dep)
                     dependencies_in_dag_external[task] = {'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 'ext_dep_task': dep}
-                    # dependencies_in_dag_external.append(self.uf.generate_dag_dependency_statement(task, dependencies[dag_divider_value][task]['external']))
 
             # Get DAG Template
             environment = Environment(
