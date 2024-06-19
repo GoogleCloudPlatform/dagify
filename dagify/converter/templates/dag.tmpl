@@ -30,6 +30,11 @@ with DAG(
     {%- endfor %}
 
     # Airflow Task External Dependencies
-    {%- for dependency in dependencies_ext %}
-    {{dependency | indent(4)}}
-    {%- endfor %}
+    {% for key, value in dependencies_ext.items() %}
+    {{ key }} = ExternalTaskMarker(
+        task_id="{{ key }}",
+        external_dag_id='{{ value['ext_dag'] }}',
+        external_task_id='{{ value['ext_dep_task'] }}'
+    )
+    {% endfor %}
+                        

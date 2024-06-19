@@ -68,7 +68,6 @@ class Engine():
         self.convert()
         self.cal_dag_dividers()
         self.calc_dag_dependencies()
-        #self.generate_dag_dependency_statements()
         self.generate_airflow_dags()
 
     def load_config(self):
@@ -233,6 +232,9 @@ class Engine():
     def generate_dag_dependency_statements(self):
         self.uf.generate_dag_dependency_statements(self.dag_divider)
         return
+    
+    def generate_ext_task_marker_statement(self, task, ext_dag_id, ext_task_id):
+        pass
 
     def cal_dag_dividers(self):
         dag_dividers = []
@@ -331,12 +333,15 @@ class Engine():
             # Calculate all internal and external task dependencies
             dependencies = self.uf.generate_dag_dependencies_by_divider(self.dag_divider)
             dependencies_in_dag_internal = []
-            dependencies_in_dag_external = []
+            dependencies_in_dag_external = {}
             for task in tasks:
                 if len(dependencies[dag_divider_value][task]['internal']) > 0:
                     dependencies_in_dag_internal.append(self.uf.generate_dag_dependency_statement(task, dependencies[dag_divider_value][task]['internal']))
-                if len(dependencies[dag_divider_value][task]['external']) > 0:
-                    dependencies_in_dag_external.append(self.uf.generate_dag_dependency_statement(task, dependencies[dag_divider_value][task]['external']))
+
+                for dep in dependencies[dag_divider_value][task]['external']:
+                    ext_task_uf = self.uf.get_task_by_attr("JOBNAME", dep)
+                    dependencies_in_dag_external[task] = {'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 'ext_dep_task': dep}
+                    # dependencies_in_dag_external.append(self.uf.generate_dag_dependency_statement(task, dependencies[dag_divider_value][task]['external']))
 
             # Get DAG Template
             environment = Environment(
@@ -366,6 +371,7 @@ class Engine():
         self.baseline_imports = [
             "from airflow import DAG",
             "from airflow.decorators import task",
+            "from airflow.sensors.external_task import ExternalTaskMarker",
             "import datetime"
         ]
         return

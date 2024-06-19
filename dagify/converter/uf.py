@@ -52,6 +52,12 @@ class UF():
     def get_tasks(self):
         return self.tasks
 
+    def get_task_by_attr(self, attribute, value):
+        for task in self.tasks:
+            if task.get_attribute(attribute) == value:
+                return task
+        return None
+
     # get total count of tasks from the universal format
     def get_task_count(self):
         return len(self.tasks)
@@ -178,11 +184,11 @@ class UF():
         if len(dependencies) == 1:
             statement += "[ " + dependencies[0] + " ]"
         if len(dependencies) > 1:
-            statement += "[ "
+            statement += "["
             for dep in dependencies:
                 statement += dep + ", "
             statement += "]"
-            dep = dep.replace(",]", "]")
+            dep = dep.replace(", ]", "]")
         return statement
 
     def get_dag_dependencies(self):
