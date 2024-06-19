@@ -110,7 +110,7 @@ class UF():
         """
 
         dependencies = {}
-        
+
         dag_divider_values = set(task.get_attribute(dag_divider) for task in self.get_tasks())
 
         for tIdx, dag_divider_value in enumerate(dag_divider_values):
