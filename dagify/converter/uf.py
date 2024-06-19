@@ -85,7 +85,6 @@ class UF():
         return
 
     def generate_dag_dependencies_by_divider(self, dag_divider):
-        dependencies = {}
         """
         the following structure for dependencies will be created by this method:
         dependencies = {
@@ -110,6 +109,8 @@ class UF():
         }
         """
 
+        dependencies = {}
+        
         dag_divider_values = set(task.get_attribute(dag_divider) for task in self.get_tasks())
 
         for tIdx, dag_divider_value in enumerate(dag_divider_values):
@@ -162,7 +163,7 @@ class UF():
     def get_dag_dependencies(self):
         return self.dag_dependencies
 
-    def get_dag_dependencies_v2(self):
+    def print_dag_dependencies(self):
         for task in self.get_tasks():
             for dep_task in task.get_dependent_tasks():
                 print(dep_task)
