@@ -157,7 +157,7 @@ class UF():
             for dep in dependencies:
                 statement += dep + ", "
             statement += "]"
-            dep = dep.replace(", ]", "]")
+            statement = statement.replace(", ]", "]")
         return statement
 
     def get_dag_dependencies(self):
