@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import unittest
-from converter import clean_converter_type
+from ..converter.utils import clean_converter_type
 
 
 class TestClass(unittest.TestCase):
