@@ -81,7 +81,7 @@ class UF():
                     for obj in self.get_tasks():
                         for in_conds in obj.get_in_conditions():
                             if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
-                                task.add_dependent_task(obj.get_dag_name(), obj.get_attribute("JOBNAME"))
+                                task.add_dependent_task(obj.get_dag_name(), obj.get_attribute("JOBNAME_ORIGINAL"))
         return
 
     def generate_dag_dependencies_by_divider(self, dag_divider):
@@ -118,7 +118,7 @@ class UF():
             deps = []
             tasks = []
             for tIdx, task in enumerate(self.get_tasks()):
-                current_task_name = task.get_attribute("JOBNAME")
+                current_task_name = task.get_attribute("JOBNAME_ORIGINAL")
                 dependencies.setdefault(dag_divider_value, {}).setdefault(current_task_name, {"internal": [], "external": []})
 
                 # Capture the airflow tasks for each dag divider

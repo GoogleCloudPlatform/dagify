@@ -320,7 +320,7 @@ class Engine():
             for tIdx, task in enumerate(self.uf.get_tasks()):
                 # Capture the airflow tasks for each dag divider
                 if task.get_attribute(self.dag_divider) == dag_divider_value:
-                    tasks.append(task.get_attribute("JOBNAME"))
+                    tasks.append(task.get_attribute("JOBNAME_ORIGINAL"))
                     airflow_task_outputs.append(task.get_airflow_task_output())
 
             # Calculate DAG Specific Python Imports
@@ -332,14 +332,14 @@ class Engine():
             # Calculate all internal and external task dependencies
             dependencies = self.uf.generate_dag_dependencies_by_divider(self.dag_divider)
             dependencies_in_dag_internal = []
-            dependencies_in_dag_external = {}
+            dependencies_in_dag_external = []
             for task in tasks:
                 if len(dependencies[dag_divider_value][task]['internal']) > 0:
                     dependencies_in_dag_internal.append(self.uf.generate_dag_dependency_statement(task, dependencies[dag_divider_value][task]['internal']))
 
                 for dep in dependencies[dag_divider_value][task]['external']:
-                    ext_task_uf = self.uf.get_task_by_attr("JOBNAME", dep)
-                    dependencies_in_dag_external[task] = {'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 'ext_dep_task': dep}
+                    ext_task_uf = self.uf.get_task_by_attr("JOBNAME_ORIGINAL", dep)
+                    dependencies_in_dag_external.append({'task_name': task, 'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 'ext_dep_task': dep})
 
             # Get DAG Template
             environment = Environment(
