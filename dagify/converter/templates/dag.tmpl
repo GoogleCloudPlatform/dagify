@@ -24,11 +24,14 @@ with DAG(
     {{task | indent(4)}}
     {%- endfor %}
 
+    {% if dependencies_int|length > 0 %}
     # Airflow Task Internal Dependencies
     {%- for dependency in dependencies_int %}
     {{dependency | indent(4)}}
     {%- endfor %}
+    {% endif %}
 
+    {% if dependencies_ext|length > 0 %}
     # Airflow Task External Dependencies
     {% for key, value in dependencies_ext.items() %}
     {{ key }} = ExternalTaskMarker(
@@ -37,4 +40,4 @@ with DAG(
         external_task_id='{{ value['ext_dep_task'] }}'
     )
     {% endfor %}
-                        
+    {% endif %}

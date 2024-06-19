@@ -97,7 +97,7 @@ class Engine():
             self.config["config"]["mappings"][idx]["job_type"] = \
                 self.config["config"]["mappings"][idx]["job_type"].upper()
             templatesToValidate.append(self.config["config"]["mappings"][idx]["template_name"])
-        
+
         for root, dirs, files in os.walk(self.templates_path):
             for file in files:
                 if file.endswith(".yaml"):
@@ -105,15 +105,15 @@ class Engine():
                     if template_name in templatesToValidate:
                         print(f"{template_name} ready for validation")
                     # Loads a Single Template into a Dictionary from .yaml file
-                    
+
                         file_path = os.path.join(root, file)
                         template = yamale.make_data(file_path)
                         schema = yamale.make_schema(self.schema, validators=validators)
-                        
+
                         if template is not None:
-                            
+
                             try:
-                                                                
+
                                 yamale.validate(schema, template)
                                 print(f"Validation succeeded for {file}!")
 
@@ -123,7 +123,7 @@ class Engine():
                                     for error in result.errors:
                                         print(error)
                                 raise ValueError(f"Template {file_path} incompatible")
-                    
+
         return
 
     def validate(self):
@@ -227,11 +227,11 @@ class Engine():
     def calc_dag_dependencies(self):
         self.uf.calculate_dag_dependencies()
         return
-    
+
     def generate_dag_dependency_statements(self):
         self.uf.generate_dag_dependency_statements(self.dag_divider)
         return
-    
+
     def generate_ext_task_marker_statement(self, task, ext_dag_id, ext_task_id):
         pass
 
