@@ -1,6 +1,7 @@
 # Apache Airflow Base Imports
 from airflow import DAG
 from airflow.decorators import task
+from airflow.sensors.external_task import ExternalTaskMarker
 import datetime
 # Apache Airflow Custom & DAG/Task Specific Imports
 from airflow.providers.ssh.operators.ssh import SSHOperator
@@ -10,7 +11,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="fast_x",
+    dag_id="fast_x_reports",
     start_date=datetime.datetime(2024, 1, 1),
     #schedule="@daily",
     schedule_interval='*/5 * * * *',
@@ -55,4 +56,13 @@ with DAG(
     )
 
 
-    # Airflow Task Dependencies
+    
+    # Airflow Task Internal Dependencies
+    fast_x_job_1 >> [fast_x_job_2, fast_x_job_3]
+    fast_x_job_2 >> [fast_x_job_3, fast_x_job_5]
+    fast_x_job_3 >> [fast_x_job_6]
+    fast_x_job_4 >> [fast_x_job_6]
+    fast_x_job_5 >> [fast_x_job_6]
+    
+
+    
