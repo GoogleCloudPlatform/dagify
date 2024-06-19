@@ -42,7 +42,7 @@ run: clean lint docker
 
 # run unit tests
 unit-tests: 
-	python3 -m unittest discover test
+	python3 -m unittest discover --pattern=test*.py
 
 # run integration tests
 int-tests:
