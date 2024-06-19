@@ -97,7 +97,7 @@ class Engine():
             self.config["config"]["mappings"][idx]["job_type"] = \
                 self.config["config"]["mappings"][idx]["job_type"].upper()
             templatesToValidate.append(self.config["config"]["mappings"][idx]["template_name"])
-        
+
         for root, dirs, files in os.walk(self.templates_path):
             for file in files:
                 if file.endswith(".yaml"):
@@ -105,15 +105,15 @@ class Engine():
                     if template_name in templatesToValidate:
                         print(f"{template_name} ready for validation")
                     # Loads a Single Template into a Dictionary from .yaml file
-                    
+
                         file_path = os.path.join(root, file)
                         template = yamale.make_data(file_path)
                         schema = yamale.make_schema(self.schema, validators=validators)
-                        
+
                         if template is not None:
-                            
+
                             try:
-                                                                
+
                                 yamale.validate(schema, template)
                                 print(f"Validation succeeded for {file}!")
 
@@ -123,7 +123,7 @@ class Engine():
                                     for error in result.errors:
                                         print(error)
                                 raise ValueError(f"Template {file_path} incompatible")
-                    
+
         return
 
     def validate(self):
@@ -226,8 +226,14 @@ class Engine():
 
     def calc_dag_dependencies(self):
         self.uf.calculate_dag_dependencies()
-        #self.uf.calculate_dag_dependencies_v2()
         return
+
+    def generate_dag_dependency_statements(self):
+        self.uf.generate_dag_dependency_statements(self.dag_divider)
+        return
+
+    def generate_ext_task_marker_statement(self, task, ext_dag_id, ext_task_id):
+        pass
 
     def cal_dag_dividers(self):
         dag_dividers = []
@@ -308,33 +314,32 @@ class Engine():
         if self.uf is None:
             raise ValueError("dagify: no data in universal format. nothing to convert!")
 
-        for tIdx, dag_divider in enumerate(self.get_dag_dividers()):
-            deps = []
+        for tIdx, dag_divider_value in enumerate(self.get_dag_dividers()):
+            airflow_task_outputs = []
             tasks = []
             for tIdx, task in enumerate(self.uf.get_tasks()):
                 # Capture the airflow tasks for each dag divider
-                if task.get_attribute(self.dag_divider) == dag_divider:
-                    tasks.append(task.get_airflow_task_output())
-
-                    deps = task.get_dependent_tasks()
-                    if len(deps) > 0:
-                        print("\n\n")
-                        print(f"===> DAG Divider:{dag_divider}")
-                        print(f"===> DAG Task:{task.get_attribute('JOBNAME')}")
-                        print("========> Internal DAG Dependencies:")
-                        for dep in deps:
-                            if dep.get("dag_name") == dag_divider:
-                                print(dep.get("task_name"))
-                        print("========> External DAG Dependencies:")
-                        for dep in deps:
-                            if dep.get("dag_name") != dag_divider:
-                                print(dep.get("task_name"))
+                if task.get_attribute(self.dag_divider) == dag_divider_value:
+                    tasks.append(task.get_attribute("JOBNAME_ORIGINAL"))
+                    airflow_task_outputs.append(task.get_airflow_task_output())
 
             # Calculate DAG Specific Python Imports
             dag_python_imports = self.uf.calculate_dag_python_imports(
                 dag_divider_key=self.dag_divider,
-                dag_divider_value=dag_divider
+                dag_divider_value=dag_divider_value
             )
+
+            # Calculate all internal and external task dependencies
+            dependencies = self.uf.generate_dag_dependencies_by_divider(self.dag_divider)
+            dependencies_in_dag_internal = []
+            dependencies_in_dag_external = []
+            for task in tasks:
+                if len(dependencies[dag_divider_value][task]['internal']) > 0:
+                    dependencies_in_dag_internal.append(self.uf.generate_dag_dependency_statement(task, dependencies[dag_divider_value][task]['internal']))
+
+                for dep in dependencies[dag_divider_value][task]['external']:
+                    ext_task_uf = self.uf.get_task_by_attr("JOBNAME_ORIGINAL", dep)
+                    dependencies_in_dag_external.append({'task_name': task, 'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 'ext_dep_task': dep})
 
             # Get DAG Template
             environment = Environment(
@@ -345,13 +350,15 @@ class Engine():
                 create_directory(self.output_path)
 
             # Create DAG File by Folder
-            filename = f"{self.output_path}/{dag_divider}.py"
+            filename = f"{self.output_path}/{dag_divider_value}.py"
             content = template.render(
                 baseline_imports=self.get_baseline_imports(),
                 custom_imports=dag_python_imports,
-                dag_id=dag_divider,
-                tasks=tasks,
-                dependencies=self.uf.get_dag_dependencies()
+                dag_id=dag_divider_value,
+                tasks=airflow_task_outputs,
+                # dependencies=self.uf.get_dag_dependencies()
+                dependencies_int=dependencies_in_dag_internal,
+                dependencies_ext=dependencies_in_dag_external
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
@@ -362,6 +369,7 @@ class Engine():
         self.baseline_imports = [
             "from airflow import DAG",
             "from airflow.decorators import task",
+            "from airflow.sensors.external_task import ExternalTaskMarker",
             "import datetime"
         ]
         return
