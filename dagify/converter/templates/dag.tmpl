@@ -24,7 +24,20 @@ with DAG(
     {{task | indent(4)}}
     {%- endfor %}
 
-    # Airflow Task Dependencies
-    {%- for dependency in dependencies %}
+    {% if dependencies_int|length > 0 %}
+    # Airflow Task Internal Dependencies
+    {%- for dependency in dependencies_int %}
     {{dependency | indent(4)}}
     {%- endfor %}
+    {% endif %}
+
+    {% if dependencies_ext|length > 0 %}
+    # Airflow Task External Dependencies
+    {% for dependency in dependencies_ext %}
+    {{ dependency['task_name'] }} = ExternalTaskMarker(
+        task_id="{{ dependency['task_name'] }}",
+        external_dag_id='{{ dependency['ext_dag'] }}',
+        external_task_id='{{ dependency['ext_dep_task'] }}'
+    )
+    {% endfor %}
+    {% endif %}

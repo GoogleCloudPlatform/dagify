@@ -52,6 +52,12 @@ class UF():
     def get_tasks(self):
         return self.tasks
 
+    def get_task_by_attr(self, attribute, value):
+        for task in self.tasks:
+            if task.get_attribute(attribute) == value:
+                return task
+        return None
+
     # get total count of tasks from the universal format
     def get_task_count(self):
         return len(self.tasks)
@@ -62,57 +68,102 @@ class UF():
     def get_raw_xml(self):
         return self.raw_xml_element
 
-    # def calculate_dag_dependencies(self):
-    #    deps = []
-    #    # Calculate Job Dependencies for every job.
-    #    for task in self.get_tasks():
-    #        dep = ""
-    #        out_conds = task.get_out_conditions()
-    #        out_conds_positive = []
-
-    #        for out_cond in out_conds:
-    #            if out_cond.get_attribute("SIGN") == "+":
-    #                out_conds_positive.append(out_cond)
-
-    #        if len(out_conds_positive) > 0:
-    #            items = ""
-
-    #            for poutcon in out_conds_positive:
-    #                for obj in self.get_tasks():
-    #                    for in_conds in obj.get_in_conditions():
-    #                        if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
-    #                            items += obj.get_attribute("JOBNAME") + ", "
-    #            if items != "":
-    #                dep = task.get_attribute("JOBNAME") + " >> [" + items + "]"
-    #                dep = dep.replace(", ]", "]")
-
-    #        if dep != "":
-    #            deps.append(dep)
-
-    #    if len(deps) > 0:
-    #        self.dag_dependencies = deps
-    #    else:
-    #        self.dag_dependencies = []
-
-    def calculate_dag_dependencies_v2(self):
+    def calculate_dag_dependencies(self):
         for task in self.get_tasks():
-            dep = ""
             out_conds = task.get_out_conditions()
             out_conds_positive = []
             for out_cond in out_conds:
                 if out_cond.get_attribute("SIGN") == "+":
                     out_conds_positive.append(out_cond)
             if len(out_conds_positive) > 0:
-                items = ""
 
                 for poutcon in out_conds_positive:
                     for obj in self.get_tasks():
                         for in_conds in obj.get_in_conditions():
                             if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
-                                task.add_dependent_task(obj.get_dag_name(), obj.get_attribute("JOBNAME"))
-        self.dag_dependencies = []
+                                task.add_dependent_task(obj.get_dag_name(), obj.get_attribute("JOBNAME_ORIGINAL"))
+        return
 
-    def get_dag_dependencies_v2(self):
+    def generate_dag_dependencies_by_divider(self, dag_divider):
+        """
+        the following structure for dependencies will be created by this method:
+        dependencies = {
+            div1: {
+                task1: {
+                    internal: [task2, task3, ...],
+                    external: [task4, task5, ...]
+                task2: {
+                    internal: [task1, task3, ...],
+                    external: [task5, task6, ...]
+                }
+            },
+            div2: {
+                task1: {
+                    internal: [task2, task3, ...],
+                    external: [task4, task5, ...]
+                task2: {
+                    internal: [task1, task3, ...],
+                    external: [task5, task6, ...]
+                }
+            }
+        }
+        """
+
+        dependencies = {}
+
+        dag_divider_values = set(task.get_attribute(dag_divider) for task in self.get_tasks())
+
+        for tIdx, dag_divider_value in enumerate(dag_divider_values):
+            dependencies.setdefault(dag_divider_value, {})
+            deps = []
+            tasks = []
+            for tIdx, task in enumerate(self.get_tasks()):
+                current_task_name = task.get_attribute("JOBNAME_ORIGINAL")
+                dependencies.setdefault(dag_divider_value, {}).setdefault(current_task_name, {"internal": [], "external": []})
+
+                # Capture the airflow tasks for each dag divider
+                if task.get_attribute(dag_divider) == dag_divider_value:
+                    tasks.append(task.get_airflow_task_output())
+
+                    deps = task.get_dependent_tasks()
+                    if len(deps) > 0:
+                        # ======== Internal DAG Dependencies ======== #
+                        for dep in deps:
+                            if dep.get("dag_name") == dag_divider_value:
+                                print(dep.get("task_name"))
+                                current_deps_for_divider = dependencies.get(dag_divider_value, {current_task_name: {"internal": [], "external": []}})
+                                current_internal_deps_for_task_in_divider = current_deps_for_divider[current_task_name]["internal"]
+
+                                current_internal_deps_for_task_in_divider.append(dep.get("task_name"))
+                                dependencies[dag_divider_value][current_task_name]["internal"] = current_internal_deps_for_task_in_divider
+
+                        # ======== External DAG Dependencies ======== #
+                        for dep in deps:
+                            if dep.get("dag_name") != dag_divider_value:
+                                print(dep.get("task_name"))
+                                current_deps_for_divider = dependencies.get(dag_divider_value, {current_task_name: {"internal": [], "external": []}})
+                                current_external_deps_for_task_in_divider = current_deps_for_divider[current_task_name]["external"]
+                                current_external_deps_for_task_in_divider.append(dep.get("task_name"))
+                                dependencies[dag_divider_value][current_task_name]["external"] = current_external_deps_for_task_in_divider
+
+        return dependencies
+
+    def generate_dag_dependency_statement(self, task, dependencies):
+        statement = task + " >> "
+        if len(dependencies) == 1:
+            statement += "[" + dependencies[0] + "]"
+        if len(dependencies) > 1:
+            statement += "["
+            for dep in dependencies:
+                statement += dep + ", "
+            statement += "]"
+            statement = statement.replace(", ]", "]")
+        return statement
+
+    def get_dag_dependencies(self):
+        return self.dag_dependencies
+
+    def print_dag_dependencies(self):
         for task in self.get_tasks():
             for dep_task in task.get_dependent_tasks():
                 print(dep_task)
