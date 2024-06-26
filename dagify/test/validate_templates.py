@@ -1,7 +1,9 @@
 import os
 import yamale
-from dagify.converter.yaml_validator.custom_validator import validators
 
+from ..converter.yaml_validator.custom_validator import validators
+
+# from dagify.dagify.converter.yaml_validator.custom_validator import validators
 
 def validate_templates(directory, schema_file):
     # Load the schema
@@ -25,8 +27,8 @@ def validate_templates(directory, schema_file):
                         # Print only the custom error message
                         print(error)
 
-if __name__ == "__main__":
-    directory="../../converter/templates",
-    schema_file="../../converter/yaml_validator/schema.yaml",
-    validate_templates(directory, schema_file)
+# if __name__ == "__main__":
+directory="../../converter/templates",
+schema_file="../../converter/yaml_validator/schema.yaml",
+validate_templates(directory, schema_file)
 
