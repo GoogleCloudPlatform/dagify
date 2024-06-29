@@ -53,7 +53,7 @@ all-tests: unit-tests int-tests
 	@echo "Completed execution of test suite"
 
 validate-templates:
-	python3 /Users/shreyaprabhu/Work-Folder/dagify-fork-shreya/dagify/dagify/test/template-integrity/validate_templates.py
+	python3 validate_templates.py
 
 licence: 
 	docker run -i -t -v ${PWD}:/src ghcr.io/google/addlicense -c "Google LLC"  **/*.py
