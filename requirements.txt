@@ -14,5 +14,6 @@ pytz==2024.1
 PyYAML==6.0.1
 six==1.16.0
 tzdata==2024.1
+apache-airflow==2.9.2
 yamale==5.2.1
 requests

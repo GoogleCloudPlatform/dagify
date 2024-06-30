@@ -23,22 +23,7 @@ class URLValidator(Validator):
             return response.status_code == 200
         except requests.exceptions.RequestException as e:
             print(f"Error checking URL: {e}")
-
-     
-
-    """
-    def _is_valid(self, value):
-        response = requests.get(value)
-        #add url code here 200
-        if response.status_code == 200:
-            return f'{value} is valid'
-
-    def fail(self, value):
-        response = requests.get(value)
-        if response.status_code != 200:
-            return f'{value} is not a valid url'
-    """
-        
+   
 # Extend default validators with your custom validators
 validators = DefaultValidators.copy()
 validators[EmailValidator.tag] = EmailValidator

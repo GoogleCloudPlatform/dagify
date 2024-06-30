@@ -42,7 +42,7 @@ run: clean lint docker
 
 # run unit tests
 unit-tests: 
-	python3 -m unittest discover test
+	python3 -m unittest discover --pattern=test*.py
 
 # run integration tests
 int-tests:
@@ -51,6 +51,9 @@ int-tests:
 # run unit and integration tests
 all-tests: unit-tests int-tests
 	@echo "Completed execution of test suite"
+
+validate-templates:
+	python3 validate_templates.py
 
 licence: 
 	docker run -i -t -v ${PWD}:/src ghcr.io/google/addlicense -c "Google LLC"  **/*.py
