@@ -43,3 +43,7 @@ jobs:
     - name: Run Integration Tests
       run: |
         make int-tests
+        
+    - name: Validate Templates
+      run: |
+        make validate-templates
