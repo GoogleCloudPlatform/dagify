@@ -32,9 +32,9 @@ with DAG(
     {% endif %}
 
     {% if dependencies_ext|length > 0 %}
-    # Airflow Task External Dependencies
+    # Airflow Downstream Task Dependencies (external dags)
     {% for dependency in dependencies_ext %}
-    {{ dependency['task_name'] }} = ExternalTaskMarker(
+    {{ dependency['marker_name'] }} = ExternalTaskMarker(
         task_id="{{ dependency['task_name'] }}",
         external_dag_id='{{ dependency['ext_dag'] }}',
         external_task_id='{{ dependency['ext_dep_task'] }}'
@@ -43,7 +43,7 @@ with DAG(
     {% endif %}
 
     {% if upstream_dependencies|length > 0 %}
-    # Airflow Upstream Task Dependencies
+    # Airflow Upstream Task Dependencies (external dags)
     {% for upstream_dependency in upstream_dependencies %}
     {{ upstream_dependency['sensor_name'] }} = ExternalTaskSensor(
         task_id="{{ upstream_dependency['sensor_name'] }}",

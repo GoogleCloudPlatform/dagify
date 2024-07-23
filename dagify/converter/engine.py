@@ -340,7 +340,12 @@ class Engine():
 
                 for dep in dependencies[dag_divider_value][task]['external']:
                     ext_task_uf = self.uf.get_task_by_attr("JOBNAME_ORIGINAL", dep)
-                    dependencies_in_dag_external.append({'task_name': task, 'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 'ext_dep_task': dep})
+                    dependencies_in_dag_external.append({
+                        'task_name': task, 
+                        'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 
+                        'ext_dep_task': dep,
+                        "marker_name": dep + "_marker_" + ''.join(random.choices('0123456789abcdef', k=4))
+                        })
 
             # Calculate external upstream dependencies where a task in the current dag depends on another dag's task
             # Such a dependency will require a DAG Sensor
