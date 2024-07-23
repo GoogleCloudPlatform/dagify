@@ -19,3 +19,5 @@ venv/
 **/output**
 
 .env.local
+
+**/.DS_Store

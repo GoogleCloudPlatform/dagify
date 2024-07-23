@@ -16,4 +16,5 @@ six==1.16.0
 tzdata==2024.1
 apache-airflow==2.9.3
 yamale==5.2.1
-requests
+requests==2.32.3
+fastapi

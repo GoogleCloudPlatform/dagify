@@ -1,0 +1,69 @@
+body {
+    font-family: sans-serif;
+    background-color: #a1d5ed; /* Light blue background */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 2.5rem; /* Example Bootstrap heading size */
+    font-weight: bold;
+}
+
+form {
+    display: flex;
+    margin-top: 40%;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.custom-file-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.custom-file-input label {
+    margin-bottom: 10px; /* Adjust for spacing */
+}
+
+.btn {
+    margin-bottom: 10px; /* Consistent margin for all buttons */
+}
+
+.download-box {
+    /* background-color: rgb(242, 230, 150);
+    border: 1px solid rgb(214, 92, 204); */
+    border-radius: 10px;
+    padding: 5px; /* Increased padding for aesthetics */
+    margin-top: 20px; /* Increased margin for better separation */
+    text-align: center; /* Center content within the box */
+}
+
+.download-box a {
+    color: #080211;
+    text-decoration: none;
+}
+
+.card-content {
+    padding: 20px;
+    background-color: antiquewhite;
+}
+
+.btn-light-green {
+    background-color: #42db6b; /* Darker shade of green */
+    color: #333; /* Adjust text color for contrast if needed */
+    border-color: #42db6b; /* Optional: Match border color */
+  }
+  
+  .btn-light-green:hover {
+    background-color: #52b388; /* Even darker on hover */
+    border-color: #52b388; 
+  }
+  
+
