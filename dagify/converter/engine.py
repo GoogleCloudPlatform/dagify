@@ -341,6 +341,27 @@ class Engine():
                     ext_task_uf = self.uf.get_task_by_attr("JOBNAME_ORIGINAL", dep)
                     dependencies_in_dag_external.append({'task_name': task, 'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 'ext_dep_task': dep})
 
+            # Calculate external task dependencies where a task depends on another dag's task
+            ext_task_dependencies = []
+
+            for _, divider_tasks in dependencies.items():
+                # print(f'--- Divider --- {divider}')
+                for task, int_ext_deps in divider_tasks.items():
+                    ext_deps = int_ext_deps["external"]
+                    # print(f'external deps: {ext_deps}')
+                    for ext_dep in ext_deps:
+                        if ext_dep in tasks:
+                            ext_task_uf = self.uf.get_task_by_attr("JOBNAME_ORIGINAL", task)
+                            other_dags_name = ext_task_uf.get_attribute(self.dag_divider)
+
+                            ext_task_dependencies.append({
+                                "task": ext_dep,
+                                "task_in_other_dag": task,
+                                "other_dags_name": other_dags_name
+                            })
+
+
+
             # Get DAG Template
             environment = Environment(
                 loader=FileSystemLoader("./dagify/converter/templates/"))
@@ -356,9 +377,9 @@ class Engine():
                 custom_imports=dag_python_imports,
                 dag_id=dag_divider_value,
                 tasks=airflow_task_outputs,
-                # dependencies=self.uf.get_dag_dependencies()
                 dependencies_int=dependencies_in_dag_internal,
-                dependencies_ext=dependencies_in_dag_external
+                dependencies_ext=dependencies_in_dag_external,
+                bwd_dependencies_ext=ext_task_dependencies
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
@@ -370,6 +391,7 @@ class Engine():
             "from airflow import DAG",
             "from airflow.decorators import task",
             "from airflow.sensors.external_task import ExternalTaskMarker",
+            "from airflow.sensors.external_task import ExternalTaskSensor",
             "import datetime"
         ]
         return
