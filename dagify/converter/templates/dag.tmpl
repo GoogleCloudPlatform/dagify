@@ -42,15 +42,15 @@ with DAG(
     {% endfor %}
     {% endif %}
 
-    {% if bwd_dependencies_ext|length > 0 %}
-    # Airflow Backward Task External Dependencies
-    {% for bwd_dependency in bwd_dependencies_ext %}
-    {{ bwd_dependency['task'] }}_sensor = ExternalTaskSensor(
-        task_id="{{ bwd_dependency['task'] }}",
-        external_dag_id="{{ bwd_dependency['other_dags_name'] }}",
-        external_task_id="{{ bwd_dependency['task_in_other_dag'] }}",
+    {% if upstream_dependencies|length > 0 %}
+    # Airflow Upstream Task Dependencies
+    {% for upstream_dependency in upstream_dependencies %}
+    {{ upstream_dependency['sensor_name'] }} = ExternalTaskSensor(
+        task_id="{{ upstream_dependency['sensor_name'] }}",
+        external_dag_id="{{ upstream_dependency['upstream_dag_name'] }}",
+        external_task_id="{{ upstream_dependency['task_in_upstream_dag'] }}",
         dag=dag
     )
-    {{ bwd_dependency['task'] }}_sensor >> {{ bwd_dependency['task'] }}
+    {{ upstream_dependency['sensor_name'] }} >> {{ upstream_dependency['task_name'] }}
     {% endfor %}
     {% endif %}
