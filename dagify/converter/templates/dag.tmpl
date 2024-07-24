@@ -35,7 +35,7 @@ with DAG(
     # Airflow Downstream Task Dependencies (external dags)
     {% for dependency in dependencies_ext %}
     {{ dependency['marker_name'] }} = ExternalTaskMarker(
-        task_id="{{ dependency['task_name'] }}",
+        task_id="{{ dependency['marker_name'] }}",
         external_dag_id='{{ dependency['ext_dag'] }}',
         external_task_id='{{ dependency['ext_dep_task'] }}'
     )
