@@ -48,6 +48,9 @@ unit-tests:
 int-tests:
 	./dagify/test/integration/run_integration-tests.sh
 
+regenerate-int-tests:
+	./dagify/test/integration/regenerate_int_tests.sh
+
 # run unit and integration tests
 all-tests: unit-tests int-tests
 	@echo "Completed execution of test suite"
