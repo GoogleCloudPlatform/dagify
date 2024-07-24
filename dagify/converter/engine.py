@@ -386,7 +386,7 @@ class Engine():
                 dependencies_int=dependencies_in_dag_internal,
                 dependencies_ext=dependencies_in_dag_external,
                 upstream_dependencies=upstream_dependencies
-            )
+                )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
 

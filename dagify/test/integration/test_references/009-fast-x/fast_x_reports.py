@@ -5,7 +5,7 @@ from airflow.sensors.external_task import ExternalTaskMarker
 from airflow.sensors.external_task import ExternalTaskSensor
 import datetime
 # Apache Airflow Custom & DAG/Task Specific Imports
-from airflow.providers.ssh.operators.ssh import SSHOperator
+from airflow.operators.bash import BashOperator
 
 default_args = {
     'owner': 'airflow',
@@ -20,39 +20,39 @@ with DAG(
 ) as dag:
 
     # DAG Tasks
-    fast_x_job_1 = SSHOperator(
+    fast_x_job_1 = BashOperator(
       task_id="fast_x_job_1",
-      command="",
+      bash_command="",
       dag=dag,
     )
 
-    fast_x_job_2 = SSHOperator(
+    fast_x_job_2 = BashOperator(
       task_id="fast_x_job_2",
-      command="",
+      bash_command="",
       dag=dag,
     )
 
-    fast_x_job_3 = SSHOperator(
+    fast_x_job_3 = BashOperator(
       task_id="fast_x_job_3",
-      command="",
+      bash_command="",
       dag=dag,
     )
 
-    fast_x_job_4 = SSHOperator(
+    fast_x_job_4 = BashOperator(
       task_id="fast_x_job_4",
-      command="",
+      bash_command="",
       dag=dag,
     )
 
-    fast_x_job_5 = SSHOperator(
+    fast_x_job_5 = BashOperator(
       task_id="fast_x_job_5",
-      command="",
+      bash_command="",
       dag=dag,
     )
 
-    fast_x_job_6 = SSHOperator(
+    fast_x_job_6 = BashOperator(
       task_id="fast_x_job_6",
-      command="",
+      bash_command="",
       dag=dag,
     )
 
