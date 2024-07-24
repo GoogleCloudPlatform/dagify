@@ -99,6 +99,23 @@ docker run -it \
 
 ```
 
+---
+## DAG Dividers
+
+If you have a large Control-M XML file you may consider splitting the Airflow tasks into multiple DAGs. DAGify has a commandline parameter `-d` or `--dag-divider` which specifies by which XML attribute jobs should be divided by. For example, you may have your Control-M jobs in a single folder but in distinct applications and sub-applications. If you want to create all tasks in a single DAG run:
+```bash
+./DAGify -d FOLDER
+```
+
+If you want to generate several DAGs that are separated by Control-M application, run:
+```bash
+./DAGify -d APPLICATION
+```
+or alternatively to seprate by sub-application:
+```bash
+./DAGify -d SUB_APPLICATION
+```
+
 
 ---
 ## Templates
