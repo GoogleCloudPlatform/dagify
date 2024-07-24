@@ -2,6 +2,7 @@
 from airflow import DAG
 from airflow.decorators import task
 from airflow.sensors.external_task import ExternalTaskMarker
+from airflow.sensors.external_task import ExternalTaskSensor
 import datetime
 # Apache Airflow Custom & DAG/Task Specific Imports
 from airflow.providers.ssh.operators.ssh import SSHOperator
@@ -63,6 +64,8 @@ with DAG(
     fast_x_job_3 >> [fast_x_job_6]
     fast_x_job_4 >> [fast_x_job_6]
     fast_x_job_5 >> [fast_x_job_6]
+    
+
     
 
     

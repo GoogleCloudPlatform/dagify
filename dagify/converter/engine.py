@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import random
 import yamale
 from .yaml_validator.custom_validator import validators
 import yaml
@@ -339,7 +340,33 @@ class Engine():
 
                 for dep in dependencies[dag_divider_value][task]['external']:
                     ext_task_uf = self.uf.get_task_by_attr("JOBNAME_ORIGINAL", dep)
-                    dependencies_in_dag_external.append({'task_name': task, 'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 'ext_dep_task': dep})
+                    dependencies_in_dag_external.append({
+                        'task_name': task, 
+                        'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 
+                        'ext_dep_task': dep,
+                        "marker_name": dep + "_marker_" + ''.join(random.choices('0123456789abcdef', k=4))
+                        })
+
+            # Calculate external upstream dependencies where a task in the current dag depends on another dag's task
+            # Such a dependency will require a DAG Sensor
+            # The approach that is implemented is to iterate over all external dependencies in the dependencies dictionary and identify the tasks that
+            # are also in the current dag.
+            upstream_dependencies = []
+
+            for _, divider_tasks in dependencies.items():
+                for task, int_ext_deps in divider_tasks.items():
+                    ext_deps = int_ext_deps["external"]
+                    for ext_dep in ext_deps:
+                        if ext_dep in tasks:
+                            ext_task_uf = self.uf.get_task_by_attr("JOBNAME_ORIGINAL", task)
+                            upstream_dag_name = ext_task_uf.get_attribute(self.dag_divider)
+
+                            upstream_dependencies.append({
+                                "task_name": ext_dep,
+                                "task_in_upstream_dag": task,
+                                "upstream_dag_name": upstream_dag_name,
+                                "sensor_name": ext_dep + "_sensor_" + ''.join(random.choices('0123456789abcdef', k=4))
+                            })
 
             # Get DAG Template
             environment = Environment(
@@ -356,9 +383,9 @@ class Engine():
                 custom_imports=dag_python_imports,
                 dag_id=dag_divider_value,
                 tasks=airflow_task_outputs,
-                # dependencies=self.uf.get_dag_dependencies()
                 dependencies_int=dependencies_in_dag_internal,
-                dependencies_ext=dependencies_in_dag_external
+                dependencies_ext=dependencies_in_dag_external,
+                upstream_dependencies=upstream_dependencies
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
@@ -370,6 +397,7 @@ class Engine():
             "from airflow import DAG",
             "from airflow.decorators import task",
             "from airflow.sensors.external_task import ExternalTaskMarker",
+            "from airflow.sensors.external_task import ExternalTaskSensor",
             "import datetime"
         ]
         return
