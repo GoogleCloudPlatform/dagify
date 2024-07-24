@@ -20,17 +20,24 @@ test_output_folder="test_outputs"
 
 has_failed=0
 for test_file in $int_test_base_folder/$test_data_folder/*.xml; do
-test_name=`echo $test_file | cut -d "/" -f 5 | cut -d "." -f 1`
-python3 DAGify.py -d SUB_APPLICATION --source-path=$test_file --output-path=$int_test_base_folder/$test_output_folder/$test_name > /dev/null
-diff -b -I '^#' -I '^ #' $int_test_base_folder/$test_output_folder/$test_name $int_test_base_folder/$test_references_folder/$test_name
+    test_name=`echo $test_file | cut -d "/" -f 5 | cut -d "." -f 1`
+    python3 DAGify.py -d SUB_APPLICATION --source-path=$test_file --output-path=$int_test_base_folder/$test_output_folder/$test_name > /dev/null
 
-if [ $? -eq 0 ]; then
-    echo "integration test for test file $test_name passed."
-else
-    echo "integration test for test file $test_name failed."
-    has_failed=1
-fi
-rm -rf $int_test_base_folder/$test_output_folder/*
+    # remove random strings from markers and sensors since they can't be reproduced
+    for output_file in $int_test_base_folder/$test_output_folder/$test_name/*.py; do
+        sed -i 's/_sensor.*/_sensor/' $output_file
+        sed -i 's/_marker.*/_marker/' $output_file
+    done
+
+    diff -b -I '^#' -I '^ #' $int_test_base_folder/$test_output_folder/$test_name $int_test_base_folder/$test_references_folder/$test_name
+
+    if [ $? -eq 0 ]; then
+        echo "integration test for test file $test_name passed."
+    else
+        echo "integration test for test file $test_name failed."
+        has_failed=1
+    fi
+    rm -rf $int_test_base_folder/$test_output_folder/*
 done
 
 if [ $has_failed -eq 0 ]; then

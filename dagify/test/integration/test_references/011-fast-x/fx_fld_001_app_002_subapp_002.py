@@ -2,6 +2,7 @@
 from airflow import DAG
 from airflow.decorators import task
 from airflow.sensors.external_task import ExternalTaskMarker
+from airflow.sensors.external_task import ExternalTaskSensor
 import datetime
 # Apache Airflow Custom & DAG/Task Specific Imports
 from airflow.providers.ssh.operators.ssh import SSHOperator
@@ -44,4 +45,17 @@ with DAG(
     fx_fld_001_app_002_subapp_002_job_002 >> [fx_fld_001_app_002_subapp_002_job_003]
     
 
+    
+
+    
+    # Airflow Upstream Task Dependencies (external dags)
+    
+    fx_fld_001_app_002_subapp_002_job_003_sensor
+        task_id="fx_fld_001_app_002_subapp_002_job_003_sensor
+        external_dag_id="fx_fld_001_app_001_subapp_001",
+        external_task_id="fx_fld_001_app_001_subapp_001_job_001",
+        dag=dag
+    )
+    fx_fld_001_app_002_subapp_002_job_003_sensor
+    
     
