@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from dagify.converter import Engine
+from dagify.converter.report_generator import Report
 import os
 import click
 
@@ -69,6 +70,13 @@ def dagify(source_path, output_path, config_file, templates, dag_divider):
         config_file=config_file,
         templates_path=templates,
         dag_divider=dag_divider,
+    )
+    
+    Report(
+        source_path=source_path,
+        output_path=output_path,
+        config_file=config_file,
+        templates_path=templates,
     )
 
 
