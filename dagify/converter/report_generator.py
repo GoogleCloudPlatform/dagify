@@ -88,13 +88,15 @@ class Report():
         ## Statistics Info parameters 
         converted_percentage = (config_job_types_source_count/job_types_source_count)*100
         non_converted_percentage = 0 if converted_percentage == 100 else (100-converted_percentage)
-        print(converted_percentage)
+        
+
+
+        
+        ## Table Info
         statistics= [
             f"Percentage of Jobtypes converted: {converted_percentage}%", 
             f"Percentage of Jobtypes converted: {non_converted_percentage}%"
             ]
-        
-        ##Table Info
         title = "DAGIFY REPORT"
         columns = ["TASK","INFO","COUNT"]
         rows = [

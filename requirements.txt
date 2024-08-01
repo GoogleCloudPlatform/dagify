@@ -17,3 +17,5 @@ tzdata==2024.1
 apache-airflow==2.9.3
 yamale==5.2.1
 requests
+prettytable
+
