@@ -28,20 +28,33 @@ class Report():
         self.generate_report()
 
     def generate_report(self):
+        
+        templatesToValidate = []
+
+        ##Config_File_Info parameters 
+        config_job_types_source = []
+        config_job_types_source_count = 0
+
+
+        ## Source_file_Info parameters
         source_files_count = 1
         source_file_info = []
-        templatesToValidate = []
         job_types_source= []
-        job_types_count = 0
+        job_types_source_count = 0
 
-        ## Get the Job_types
+        ## Get the Job_types from config_file
+        config_job_types_source, config_job_types_source_count = get_jobtypes_andcount(self.config_file)
+        print("******config_JobType********")
+        print(config_job_types_source)
+        print(config_job_types_source_count)
+
+        ## Get the Job_types from source xml
         if is_directory(self.source_path) is False:
-            job_types_source, job_types_count = get_jobtypes_andcount(self.source_path)
-            print("**************")
+            source_file_info.append(self.source_path.split("/")[-1])
+            job_types_source, job_types_source_count = get_jobtypes_andcount(self.source_path)
+            print("******SOURCEXML_JobType********")
             print(job_types_source)
-            print("**************")
-            print(job_types_count)
-            print("**************")
+            print(job_types_source_count)
         else:
             source_files_count = count_yaml_files(self.source_path)
             for filename in os.listdir(self.source_path):
@@ -49,12 +62,9 @@ class Report():
                     source_file_info.append(filename)
             filename = os.path.basename(self.source_path)
             source_file_info.append(filename)
-        print("**************")
+        print("******SOURCEXML********")
         print(source_file_info)
-        print("**************")
-        print("**************")
         print(source_files_count)
-        print("**************")
 
         ### Get templates INFO
         with open(self.config_file) as stream:
@@ -63,7 +73,7 @@ class Report():
             except yaml.YAMLError as exc:
                 raise exc
         for idx, config in enumerate(self.config["config"]["mappings"]):
-        # Set Command Uppercase
+            # Set Command Uppercase
             self.config["config"]["mappings"][idx]["job_type"] = \
                 self.config["config"]["mappings"][idx]["job_type"].upper()
             templatesToValidate.append(self.config["config"]["mappings"][idx]["template_name"])
@@ -75,6 +85,16 @@ class Report():
         print(templates_count)
         print("**************")
 
+        ## Statistics Info parameters 
+        converted_percentage = (config_job_types_source_count/job_types_source_count)*100
+        non_converted_percentage = 0 if converted_percentage == 100 else (100-converted_percentage)
+        print(converted_percentage)
+        statistics= [
+            f"Percentage of Jobtypes converted: {converted_percentage}%", 
+            f"Percentage of Jobtypes converted: {non_converted_percentage}%"
+            ]
+        
+        ##Table Info
         title = "DAGIFY REPORT"
         columns = ["TASK","INFO","COUNT"]
         rows = [
@@ -82,4 +102,6 @@ class Report():
                 ["Job_Types", job_types_source, len(job_types_source)],
                 ["Templates_validated", templatesToValidate, len(templatesToValidate)]
         ]
-        generate_report(title, columns, rows, self.output_path)
+        
+        
+        generate_report(statistics,title, columns, rows, self.output_path)
