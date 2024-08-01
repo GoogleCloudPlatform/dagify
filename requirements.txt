@@ -16,3 +16,5 @@ six==1.16.0
 tzdata==2024.1
 yamale==5.2.1
 requests
+prettytable
+
