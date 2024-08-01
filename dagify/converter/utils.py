@@ -129,7 +129,7 @@ def count_yaml_files(directory, case_sensitive=True, recursive=False):
 
   return count
 
-def generate_report(title,columns,rows,output_dir):
+def generate_report(lines,title,columns,rows,output_dir):
         report = PrettyTable()
         report.title = title
         i=0
@@ -144,15 +144,26 @@ def generate_report(title,columns,rows,output_dir):
 
         report_file = f"{output_dir}/Detailed-Report.txt"
         with open(report_file, "w") as final_report:
+            for line in lines:
+                final_report.write(line + '\n')
             final_report.write(str(report))
 
 def get_jobtypes_andcount(source_path):
-    tree = ET.parse(source_path)
-    root = tree.getroot()
-    # Find all JOB elements
-    job_elements = root.findall('.//JOB')
-    # Extract TASKTYPE values and store them in a set to ensure uniqueness
-    job_types_source = list({job.get('TASKTYPE') for job in job_elements})
-    job_types_count = len(job_types_source)
-
+    job_types_source = []
+    job_types_count = 0
+    if source_path.endswith('.xml'):
+        tree = ET.parse(source_path)
+        root = tree.getroot()
+        # Find all JOB elements
+        job_elements = root.findall('.//JOB')
+        # Extract TASKTYPE values and store them in a set to ensure uniqueness
+        job_types_source = list({job.get('TASKTYPE') for job in job_elements})
+        job_types_count = len(job_types_source)
+    elif source_path.endswith('config.yaml'):
+        with open(source_path, 'r') as file:
+            data = yaml.safe_load(file)
+        job_types = []
+        for mapping in data['config']['mappings']:
+            job_types_source.append(mapping['job_type'])
+        job_types_count = len(job_types_source)
     return job_types_source,job_types_count
