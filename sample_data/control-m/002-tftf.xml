@@ -62,7 +62,7 @@
 		<OUTCOND NAME="fx_fld_001_app_002_subapp_002_job_002_ok" ODATE="ODAT" SIGN="+" />
 	</JOB>
 	<!-- Folder 001, Application 002, Sub Application 002, Job 003 -->
-	<JOB APPLICATION="fx_fld_001_app_002" SUB_APPLICATION="fx_fld_001_app_002_subapp_002" JOBNAME="fx_fld_001_app_002_subapp_002_job_003" DESCRIPTION="fx_fld_001_app_002_subapp_002_job_003_reports"  TASKTYPE="Command" CMDLINE="" PARENT_FOLDER="fx_fld_001">
+	<JOB APPLICATION="fx_fld_001_app_002" SUB_APPLICATION="fx_fld_001_app_002_subapp_002" JOBNAME="fx_fld_001_app_002_subapp_002_job_003" DESCRIPTION="fx_fld_001_app_002_subapp_002_job_003_reports"  TASKTYPE="XYZ" CMDLINE="" PARENT_FOLDER="fx_fld_001">
 		<INCOND NAME="fx_fld_001_app_002_subapp_002_job_001_ok" ODATE="ODAT" AND_OR="A" />
 		<INCOND NAME="fx_fld_001_app_002_subapp_002_job_002_ok" ODATE="ODAT" AND_OR="A" />
 		<OUTCOND NAME="fx_fld_001_app_002_subapp_002_job_003_ok" ODATE="ODAT" SIGN="+" />

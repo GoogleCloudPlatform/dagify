@@ -1,11 +1,14 @@
 import xml.etree.ElementTree as ET
 import os
 import yaml
+import json
 from .utils import (
     is_directory,
     count_yaml_files,
     generate_report,
-    get_jobtypes_andcount
+    get_jobtypes_andcount,
+    generate_json,
+    format_table_data
 )
 
 class Report():
@@ -30,12 +33,9 @@ class Report():
     def generate_report(self):
         
         templatesToValidate = []
-
         ##Config_File_Info parameters 
         config_job_types_source = []
         config_job_types_source_count = 0
-
-
         ## Source_file_Info parameters
         source_files_count = 1
         source_file_info = []
@@ -89,13 +89,10 @@ class Report():
         converted_percentage = (config_job_types_source_count/job_types_source_count)*100
         non_converted_percentage = 0 if converted_percentage == 100 else (100-converted_percentage)
         
-
-
-        
         ## Table Info
         statistics= [
             f"Percentage of Jobtypes converted: {converted_percentage}%", 
-            f"Percentage of Jobtypes converted: {non_converted_percentage}%"
+            f"Percentage of Jobtypes not converted: {non_converted_percentage}%"
             ]
         title = "DAGIFY REPORT"
         columns = ["TASK","INFO","COUNT"]
@@ -105,5 +102,12 @@ class Report():
                 ["Templates_validated", templatesToValidate, len(templatesToValidate)]
         ]
         
-        
+        formatted_table_data = format_table_data(title,columns,rows)
+
+        generate_json(statistics,formatted_table_data,self.output_path)
         generate_report(statistics,title, columns, rows, self.output_path)
+
+        ## Show which operators the job_type was converted to.
+        ## Show the count with the job_name converted
+        ## Details the job_names converted
+        ## Remove the duplicates in the job_types list
