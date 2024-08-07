@@ -34,8 +34,8 @@ class Report():
         
         templatesToValidate = []
         ##Config_File_Info parameters 
-        config_job_types_source = []
-        config_job_types_source_count = 0
+        config_job_types = []
+        config_job_types_count = 0
         ## Source_file_Info parameters
         source_files_count = 1
         source_file_info = []
@@ -43,10 +43,10 @@ class Report():
         job_types_source_count = 0
 
         ## Get the Job_types from config_file
-        config_job_types_source, config_job_types_source_count = get_jobtypes_andcount(self.config_file)
+        config_job_types, config_job_types_count = get_jobtypes_andcount(self.config_file)
         print("******config_JobType********")
-        print(config_job_types_source)
-        print(config_job_types_source_count)
+        print(config_job_types)
+        print(config_job_types_count)
 
         ## Get the Job_types from source xml
         if is_directory(self.source_path) is False:
@@ -55,13 +55,13 @@ class Report():
             print("******SOURCEXML_JobType********")
             print(job_types_source)
             print(job_types_source_count)
-        else:
-            source_files_count = count_yaml_files(self.source_path)
-            for filename in os.listdir(self.source_path):
-                if filename.endswith('.yaml') or filename.endswith('.yml'):
-                    source_file_info.append(filename)
-            filename = os.path.basename(self.source_path)
-            source_file_info.append(filename)
+        # else:
+        #     source_files_count = count_yaml_files(self.source_path)
+        #     for filename in os.listdir(self.source_path):
+        #         if filename.endswith('.yaml') or filename.endswith('.yml'):
+        #             source_file_info.append(filename)
+        #     filename = os.path.basename(self.source_path)
+        #     source_file_info.append(filename)
         print("******SOURCEXML********")
         print(source_file_info)
         print(source_files_count)
@@ -86,8 +86,7 @@ class Report():
         print("**************")
 
         ## Statistics Info parameters 
-        converted_percentage = (config_job_types_source_count/job_types_source_count)*100
-        non_converted_percentage = 0 if converted_percentage == 100 else (100-converted_percentage)
+        job_types_converted,job_types_not_converted,converted_percentage, non_converted_percentage = self.get_statistics(job_types_source,config_job_types)
         
         ## Table Info
         statistics= [
@@ -98,7 +97,9 @@ class Report():
         columns = ["TASK","INFO","COUNT"]
         rows = [
                 ["Source_files", source_file_info, source_files_count],
-                ["Job_Types", job_types_source, len(job_types_source)],
+                ["Source_File_Job_Types", job_types_source, len(job_types_source)],
+                ["Job_Types_Converted",job_types_converted,len(job_types_converted)], 
+                ["Job_types_Not_Converted",job_types_not_converted,len(job_types_not_converted)],
                 ["Templates_validated", templatesToValidate, len(templatesToValidate)]
         ]
         
@@ -111,3 +112,20 @@ class Report():
         ## Show the count with the job_name converted
         ## Details the job_names converted
         ## Remove the duplicates in the job_types list
+
+    def get_statistics(self,source_jt, config_jt):
+        converted_percent = 0
+        non_converted_percent = 0
+
+        ## Conversion Info
+        job_types_converted = list(set(config_jt) & set(source_jt))
+        job_types_not_converted = list(set(source_jt) - set(config_jt))
+        print("%%%%%%%%")
+        print(job_types_converted)
+        print(job_types_not_converted)
+
+        ## Percentages
+        non_converted_percent = (len(job_types_not_converted)/len(source_jt))*100 
+        converted_percent = 100 - non_converted_percent
+
+        return job_types_converted,job_types_not_converted,converted_percent,non_converted_percent
