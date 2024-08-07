@@ -294,8 +294,10 @@ class Engine():
     def get_template(self, template_name):
         # Validate template_name is Provided
         if template_name is None:
-            raise ValueError("dagify: template name must be provided")
-        template = self.templates.get(template_name, None)
+            #raise ValueError("dagify: template name must be provided")
+            template = self.templates.get("control-m-dummy-to-airflow-dummy",None)
+        else:
+            template = self.templates.get(template_name, None)            
         if template is None:
             raise ValueError(
                 f"dagify: no template with name: '{template_name}' was not found among loaded templates.")

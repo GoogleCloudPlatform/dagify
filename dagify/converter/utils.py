@@ -150,6 +150,7 @@ def generate_report(lines,title,columns,rows,output_dir):
             final_report.write(str(report))
 
 def get_jobtypes_andcount(source_path):
+    unique_job_types = []
     job_types_source = []
     job_types_count = 0
     if source_path.endswith('.xml'):
@@ -159,14 +160,21 @@ def get_jobtypes_andcount(source_path):
         job_elements = root.findall('.//JOB')
         # Extract TASKTYPE values and store them in a set to ensure uniqueness
         job_types_source = list({job.get('TASKTYPE') for job in job_elements})
-        job_types_count = len(job_types_source)
+        ## Convert all to lowercase for comparision
+        job_types_source = [item.lower() for item in job_types_source]
+        unique_job_types = list(set(job_types_source))
+        job_types_count = len(unique_job_types)
     elif source_path.endswith('config.yaml'):
         with open(source_path, 'r') as file:
             data = yaml.safe_load(file)
         for mapping in data['config']['mappings']:
             job_types_source.append(mapping['job_type'])
-        job_types_count = len(job_types_source)
-    return job_types_source,job_types_count
+        
+        ## Convert all to lowercase for comparision
+        job_types_source = [item.lower() for item in job_types_source]
+        unique_job_types = list(set(job_types_source))
+        job_types_count = len(unique_job_types)
+    return unique_job_types,job_types_count
 
 def format_table_data(title, columns, rows):
     """Formats table data into a JSON-friendly structure"""

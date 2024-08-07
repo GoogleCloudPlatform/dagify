@@ -20,5 +20,5 @@ config:
       template_name: "control-m-command-to-airflow-ssh"
     #- job_type: "command"
     #  template_name: "control-m-command-to-airflow-python"
-    - job_type: "DUMMY"
+    - job_type: "sample"
       template_name: "control-m-dummy-to-airflow-dummy"
