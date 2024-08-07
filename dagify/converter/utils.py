@@ -18,6 +18,7 @@ import yaml
 import pprint
 from prettytable import PrettyTable
 import xml.etree.ElementTree as ET
+import json
 
 
 def clean_converter_type(converter_type):
@@ -162,8 +163,36 @@ def get_jobtypes_andcount(source_path):
     elif source_path.endswith('config.yaml'):
         with open(source_path, 'r') as file:
             data = yaml.safe_load(file)
-        job_types = []
         for mapping in data['config']['mappings']:
             job_types_source.append(mapping['job_type'])
         job_types_count = len(job_types_source)
     return job_types_source,job_types_count
+
+def format_table_data(title, columns, rows):
+    """Formats table data into a JSON-friendly structure"""
+
+    table_data = {
+        "title": title,
+        "columns": columns,
+        "rows": []
+    }
+
+    for row in rows:
+        row_dict = {}
+        for col_index, value in enumerate(row):
+            row_dict[columns[col_index]] = value
+        table_data["rows"].append(row_dict)
+
+    return table_data
+
+def generate_json(statistics, table_data, output_file_path):
+    """Creates a JSON file with intro text, table data, and conclusion text"""
+
+    data = {
+        "High_Level_Info": statistics,
+        "table_data": table_data,
+    }
+    json_file_path = f"{output_file_path}/report.json"
+    with open(json_file_path, "w") as json_file:
+        json.dump(data, json_file, indent=2)  # indent for better readability
+
