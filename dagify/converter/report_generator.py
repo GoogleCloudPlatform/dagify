@@ -105,8 +105,10 @@ class Report():
         
         formatted_table_data = format_table_data(title,columns,rows)
 
+        warning_line = "NOTE: If the job_type is not defined in the config.yaml or if the job_type does not have a matching template defined, it would be by default converted into a DUMMYOPERATOR"
+
         generate_json(statistics,formatted_table_data,self.output_path)
-        generate_report(statistics,title, columns, rows, self.output_path)
+        generate_report(statistics,title, columns, rows, warning_line,self.output_path)
 
         ## Show which operators the job_type was converted to.
         ## Show the count with the job_name converted

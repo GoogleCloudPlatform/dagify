@@ -130,7 +130,7 @@ def count_yaml_files(directory, case_sensitive=True, recursive=False):
 
   return count
 
-def generate_report(lines,title,columns,rows,output_dir):
+def generate_report(lines,title,columns,rows,warning_line,output_dir):
         report = PrettyTable()
         report.title = title
         i=0
@@ -147,7 +147,8 @@ def generate_report(lines,title,columns,rows,output_dir):
         with open(report_file, "w") as final_report:
             for line in lines:
                 final_report.write(line + '\n')
-            final_report.write(str(report))
+            final_report.write(str(report) + '\n')
+            final_report.write(warning_line)
 
 def get_jobtypes_andcount(source_path):
     unique_job_types = []
