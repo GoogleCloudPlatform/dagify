@@ -13,7 +13,7 @@ default_args = {
 
 with DAG(
     dag_id="{{dag_id}}",
-    {% if schedule_interval %}schedule_interval="{{ schedule_interval }}"{% else %} schedule_interval="@daily",  # Did not find a schedule, default value set to @daily{% endif %},
+    {% if schedule_interval %}schedule_interval="{{ schedule_interval }}"{% else %} schedule_interval="@daily",  # TIMEFROM not found, default schedule set to @daily{% endif %},
     catchup=False,
 ) as dag:
 

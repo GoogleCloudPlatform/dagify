@@ -363,7 +363,6 @@ class Engine():
             raise ValueError("dagify: no data in universal format. nothing to convert!")
 
         for tIdx, dag_divider_value in enumerate(self.get_dag_dividers()):
-            print("\n\n\n DAG Divider\n\n",self.get_dag_dividers())
             airflow_task_outputs = []
             tasks = []
             schedule_interval = None
