@@ -310,27 +310,27 @@ class Engine():
         # no match found
         return None
 
-    def calculate_cron_schedule(self,task):
-        
+    def calculate_cron_schedule(self, task):
+
         timefrom = task.get_attribute("TIMEFROM")
 
         if not timefrom:
-            return None 
+            return None
 
         schedule_interval = None
-        minute = timefrom[2:]  
-        hour = timefrom[:2]  
-        weekdays = task.get_attribute("WEEKDAYS")  
+        minute = timefrom[2:]
+        hour = timefrom[:2]
+        weekdays = task.get_attribute("WEEKDAYS")
         if weekdays:
-            day_of_week = ",".join(weekdays.split(","))  
+            day_of_week = ",".join(weekdays.split(","))
         else:
-            day_of_week = "*"  
+            day_of_week = "*"
 
         month_abbreviations = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
         # Get the list of months that are set to "1"
         months = [i + 1 for i, month in enumerate(month_abbreviations) if task.get_attribute(month) == "1"]
         if months:
-            months.sort() 
+            months.sort()
             # Identify consecutive month ranges
             month_ranges = []
             current_range = [months[0]]
@@ -349,11 +349,11 @@ class Engine():
                 else:
                     month_parts.append(f"{r[0]}-{r[-1]}")  # Month range
 
-            month_schedule = ",".join(month_parts) 
+            month_schedule = ",".join(month_parts)
         else:
-            month_schedule = "*"  
+            month_schedule = "*"
 
-        schedule_interval = [minute, hour, "*", month_schedule, day_of_week]  #Day of month to start is set to "*"
+        schedule_interval = [minute, hour, "*", month_schedule, day_of_week]  # Day of month to start is set to "*"
         schedule_interval = " ".join(schedule_interval)
         return schedule_interval
 
@@ -391,11 +391,11 @@ class Engine():
                 for dep in dependencies[dag_divider_value][task]['external']:
                     ext_task_uf = self.uf.get_task_by_attr("JOBNAME_ORIGINAL", dep)
                     dependencies_in_dag_external.append({
-                        'task_name': task, 
-                        'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 
+                        'task_name': task,
+                        'ext_dag': ext_task_uf.get_attribute(self.dag_divider),
                         'ext_dep_task': dep,
                         "marker_name": dep + "_marker_" + ''.join(random.choices('0123456789abcdef', k=4))
-                        })
+                    })
 
             # Calculate external upstream dependencies where a task in the current dag depends on another dag's task
             # Such a dependency will require a DAG Sensor
@@ -437,7 +437,7 @@ class Engine():
                 dependencies_int=dependencies_in_dag_internal,
                 dependencies_ext=dependencies_in_dag_external,
                 upstream_dependencies=upstream_dependencies
-                )
+            )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
 
