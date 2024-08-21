@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dagify.converter import Engine
-from dagify.converter.report_generator import Report
 import os
 import click
+from dagify.converter import Engine
+from dagify.converter.report_generator import Report
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -59,8 +59,14 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               show_default="{}".format(
                   os.environ.get("AS_DAG_DIVIDER",
                                  "PARENT_FOLDER")))
+@click.option("-r",
+              "--report-gen", 
+              is_flag=True,
+              default=False,
+              help="Generate report in txt and json format which \
+                gives an overview of job_types converted")
 
-def dagify(source_path, output_path, config_file, templates, dag_divider):
+def dagify(source_path, output_path, config_file, templates, dag_divider,report_gen):
     """Run dagify."""
     print("Demo dagify Engine")
 
@@ -71,13 +77,13 @@ def dagify(source_path, output_path, config_file, templates, dag_divider):
         templates_path=templates,
         dag_divider=dag_divider,
     )
-    
-    Report(
-        source_path=source_path,
-        output_path=output_path,
-        config_file=config_file,
-        templates_path=templates,
-    )
+    if report_gen:
+        Report(
+            source_path=source_path,
+            output_path=output_path,
+            config_file=config_file,
+            templates_path=templates,
+        )
 
 
 if __name__ == '__main__':
