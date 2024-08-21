@@ -294,10 +294,10 @@ class Engine():
     def get_template(self, template_name):
         # Validate template_name is Provided
         if template_name is None:
-            #raise ValueError("dagify: template name must be provided")
-            template = self.templates.get("control-m-dummy-to-airflow-dummy",None)
+            # raise ValueError("dagify: template name must be provided")
+            template = self.templates.get("control-m-dummy-to-airflow-dummy", None)
         else:
-            template = self.templates.get(template_name, None)            
+            template = self.templates.get(template_name, None)
         if template is None:
             raise ValueError(
                 f"dagify: no template with name: '{template_name}' was not found among loaded templates.")
@@ -343,11 +343,11 @@ class Engine():
                 for dep in dependencies[dag_divider_value][task]['external']:
                     ext_task_uf = self.uf.get_task_by_attr("JOBNAME_ORIGINAL", dep)
                     dependencies_in_dag_external.append({
-                        'task_name': task, 
-                        'ext_dag': ext_task_uf.get_attribute(self.dag_divider), 
+                        'task_name': task,
+                        'ext_dag': ext_task_uf.get_attribute(self.dag_divider),
                         'ext_dep_task': dep,
                         "marker_name": dep + "_marker_" + ''.join(random.choices('0123456789abcdef', k=4))
-                        })
+                    })
 
             # Calculate external upstream dependencies where a task in the current dag depends on another dag's task
             # Such a dependency will require a DAG Sensor
@@ -388,7 +388,7 @@ class Engine():
                 dependencies_int=dependencies_in_dag_internal,
                 dependencies_ext=dependencies_in_dag_external,
                 upstream_dependencies=upstream_dependencies
-                )
+            )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
                 dag_file.write(content)
 
