@@ -310,19 +310,70 @@ class Engine():
         # no match found
         return None
 
+    def calculate_cron_schedule(self,task):
+        
+        timefrom = task.get_attribute("TIMEFROM")
+
+        if not timefrom:
+            return None 
+
+        schedule_interval = None
+        minute = timefrom[2:]  
+        hour = timefrom[:2]  
+        weekdays = task.get_attribute("WEEKDAYS")  
+        if weekdays:
+            day_of_week = ",".join(weekdays.split(","))  
+        else:
+            day_of_week = "*"  
+
+        month_abbreviations = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
+        # Get the list of months that are set to "1"
+        months = [i + 1 for i, month in enumerate(month_abbreviations) if task.get_attribute(month) == "1"]
+        if months:
+            months.sort() 
+            # Identify consecutive month ranges
+            month_ranges = []
+            current_range = [months[0]]
+            for i in range(1, len(months)):
+                if months[i] == current_range[-1] + 1:  # Check for consecutive months
+                    current_range.append(months[i])
+                else:
+                    month_ranges.append(current_range)  # Start a new range if not consecutive
+                    current_range = [months[i]]
+            month_ranges.append(current_range)  # Add the last range
+
+            month_parts = []
+            for r in month_ranges:
+                if len(r) == 1:
+                    month_parts.append(str(r[0]))  # Single month
+                else:
+                    month_parts.append(f"{r[0]}-{r[-1]}")  # Month range
+
+            month_schedule = ",".join(month_parts) 
+        else:
+            month_schedule = "*"  
+
+        schedule_interval = [minute, hour, "*", month_schedule, day_of_week]  #Day of month to start is set to "*"
+        schedule_interval = " ".join(schedule_interval)
+        return schedule_interval
+
     def generate_airflow_dags(self):
 
         if self.uf is None:
             raise ValueError("dagify: no data in universal format. nothing to convert!")
 
         for tIdx, dag_divider_value in enumerate(self.get_dag_dividers()):
+            print("\n\n\n DAG Divider\n\n",self.get_dag_dividers())
             airflow_task_outputs = []
             tasks = []
+            schedule_interval = None
             for tIdx, task in enumerate(self.uf.get_tasks()):
                 # Capture the airflow tasks for each dag divider
                 if task.get_attribute(self.dag_divider) == dag_divider_value:
                     tasks.append(task.get_attribute("JOBNAME_ORIGINAL"))
                     airflow_task_outputs.append(task.get_airflow_task_output())
+                    if not schedule_interval:
+                        schedule_interval = self.calculate_cron_schedule(task)
 
             # Calculate DAG Specific Python Imports
             dag_python_imports = self.uf.calculate_dag_python_imports(
@@ -382,6 +433,7 @@ class Engine():
                 baseline_imports=self.get_baseline_imports(),
                 custom_imports=dag_python_imports,
                 dag_id=dag_divider_value,
+                schedule_interval=schedule_interval,
                 tasks=airflow_task_outputs,
                 dependencies_int=dependencies_in_dag_internal,
                 dependencies_ext=dependencies_in_dag_external,
