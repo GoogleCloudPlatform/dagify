@@ -106,51 +106,49 @@ def display_dict(dict):
     """
     pprint.pprint(dict)
 
-
 def count_yaml_files(directory, case_sensitive=True, recursive=False):
-    """
-    Counts the number of YAML files (.yaml or .yml) in a directory.
+  """
+  Counts the number of YAML files (.yaml or .yml) in a directory.
 
-    Args:
-        directory (str): The path to the directory to search.
-        case_sensitive (bool): Whether the search should be case-sensitive (default: True).
-        recursive (bool): Whether to search subdirectories recursively (default: False).
+  Args:
+      directory (str): The path to the directory to search.
+      case_sensitive (bool): Whether the search should be case-sensitive (default: True).
+      recursive (bool): Whether to search subdirectories recursively (default: False).
 
-    Returns:
-        int: The number of YAML files found.
-    """
+  Returns:
+      int: The number of YAML files found.
+  """
 
-    count = 0
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            if (case_sensitive and file.endswith(('.yaml', '.yml'))) or \
-               (not case_sensitive and file.lower().endswith(('.yaml', '.yml'))):
-                count += 1
-        if not recursive:
-            break  # Stop after the first level if not recursive
+  count = 0
+  for root, dirs, files in os.walk(directory):
+      for file in files:
+          if (case_sensitive and file.endswith(('.yaml', '.yml'))) or \
+             (not case_sensitive and file.lower().endswith(('.yaml', '.yml'))):
+              count += 1
+      if not recursive:
+          break  # Stop after the first level if not recursive
 
-    return count
+  return count
+
+def generate_report(lines,title,columns,rows,warning_line,output_dir):
+        report = PrettyTable()
+        report.title = title
+        i=0
+        # Column config
+        report.field_names = columns
+        for col in columns:
+            report.align[col] = "l"
+
+        # Row config
+        report.add_rows(rows)
 
 
-def generate_report(lines, title, columns, rows, warning_line, output_dir):
-    report = PrettyTable()
-    report.title = title
-    i = 0
-    # Column config
-    report.field_names = columns
-    for col in columns:
-        report.align[col] = "l"
-
-    # Row config
-    report.add_rows(rows)
-
-    report_file = f"{output_dir}/Detailed-Report.txt"
-    with open(report_file, "w") as final_report:
-        for line in lines:
-            final_report.write(line + '\n')
-        final_report.write(str(report) + '\n')
-        final_report.write(warning_line)
-
+        report_file = f"{output_dir}/Detailed-Report.txt"
+        with open(report_file, "w") as final_report:
+            for line in lines:
+                final_report.write(line + '\n')
+            final_report.write(str(report) + '\n')
+            final_report.write(warning_line)
 
 def get_jobtypes_andcount(source_path):
     unique_job_types = []
@@ -163,7 +161,7 @@ def get_jobtypes_andcount(source_path):
         job_elements = root.findall('.//JOB')
         # Extract TASKTYPE values and store them in a set to ensure uniqueness
         job_types_source = list({job.get('TASKTYPE') for job in job_elements})
-        # Convert all to lowercase for comparision
+        ## Convert all to lowercase for comparision
         job_types_source = [item.lower() for item in job_types_source]
         unique_job_types = list(set(job_types_source))
         job_types_count = len(unique_job_types)
@@ -172,13 +170,12 @@ def get_jobtypes_andcount(source_path):
             data = yaml.safe_load(file)
         for mapping in data['config']['mappings']:
             job_types_source.append(mapping['job_type'])
-
-        # Convert all to lowercase for comparision
+        
+        ## Convert all to lowercase for comparision
         job_types_source = [item.lower() for item in job_types_source]
         unique_job_types = list(set(job_types_source))
         job_types_count = len(unique_job_types)
-    return unique_job_types, job_types_count
-
+    return unique_job_types,job_types_count
 
 def format_table_data(title, columns, rows):
     """Formats table data into a JSON-friendly structure"""
@@ -197,7 +194,6 @@ def format_table_data(title, columns, rows):
 
     return table_data
 
-
 def generate_json(statistics, table_data, output_file_path):
     """Creates a JSON file with intro text, table data, and conclusion text"""
 
@@ -208,3 +204,4 @@ def generate_json(statistics, table_data, output_file_path):
     json_file_path = f"{output_file_path}/report.json"
     with open(json_file_path, "w") as json_file:
         json.dump(data, json_file, indent=2)  # indent for better readability
+
