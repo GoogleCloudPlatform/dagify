@@ -59,13 +59,8 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               show_default="{}".format(
                   os.environ.get("AS_DAG_DIVIDER",
                                  "PARENT_FOLDER")))
-@click.option("-r",
-              "--report-gen", 
-              is_flag=True,
-              default=False,
-              help="Generate a report with details on the amount of converted DAG's in the output_folder with the default being true")
 
-def dagify(source_path, output_path, config_file, templates, dag_divider,report_gen):
+def dagify(source_path, output_path, config_file, templates, dag_divider):
     """Run dagify."""
     print("Demo dagify Engine")
 
@@ -77,13 +72,12 @@ def dagify(source_path, output_path, config_file, templates, dag_divider,report_
         dag_divider=dag_divider,
     )
     
-    if report_gen:
-        Report(
-            source_path=source_path,
-            output_path=output_path,
-            config_file=config_file,
-            templates_path=templates,
-        )
+    Report(
+        source_path=source_path,
+        output_path=output_path,
+        config_file=config_file,
+        templates_path=templates,
+    )
 
 
 if __name__ == '__main__':
