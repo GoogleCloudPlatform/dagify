@@ -66,7 +66,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               default=False,
               help="Generate report in txt and json format which \
                 gives an overview of job_types converted")
-def dagify(source_path, output_path, config_file, templates, dag_divider, report_gen):
+def dagify(source_path, output_path, config_file, templates, dag_divider, report):
     """Run dagify."""
     print("Demo dagify Engine")
 
@@ -77,7 +77,7 @@ def dagify(source_path, output_path, config_file, templates, dag_divider, report
         templates_path=templates,
         dag_divider=dag_divider,
     )
-    if report_gen:
+    if report:
         Report(
             source_path=source_path,
             output_path=output_path,
