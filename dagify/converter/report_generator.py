@@ -1,10 +1,6 @@
-import xml.etree.ElementTree as ET
-import os
 import yaml
-import json
 from .utils import (
     is_directory,
-    count_yaml_files,
     generate_report,
     get_jobtypes_andcount,
     generate_json,
@@ -12,7 +8,7 @@ from .utils import (
 )
 
 class Report():
-
+    """Report generating module """
     def __init__(
         self,
         source_path=None,
@@ -31,7 +27,7 @@ class Report():
         self.generate_report()
 
     def generate_report(self):
-        
+        """Function that generates the json and txt report"""
         templates_to_validate = []
         ##Config_File_Info parameters 
         config_job_types = []
@@ -52,12 +48,12 @@ class Report():
             job_types_source, job_types_source_count = get_jobtypes_andcount(self.source_path)
 
         ### Get templates INFO
-        with open(self.config_file) as stream:
+        with open(self.config_file, encoding="utf-8") as stream:
             try:
                 self.config = yaml.safe_load(stream)
             except yaml.YAMLError as exc:
                 raise exc
-        for idx, config in enumerate(self.config["config"]["mappings"]):
+        for idx,config in enumerate(self.config["config"]["mappings"]):
             # Set Command Uppercase
             self.config["config"]["mappings"][idx]["job_type"] = \
                 self.config["config"]["mappings"][idx]["job_type"].upper()
@@ -94,6 +90,7 @@ class Report():
         generate_report(statistics,title, columns, rows, warning_line,self.output_path)
 
     def get_statistics(self,source_jt, config_jt):
+        """Function to caluculate the percentage conversion"""
         converted_percent = 0
         non_converted_percent = 0
 
