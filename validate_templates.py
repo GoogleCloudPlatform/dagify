@@ -2,8 +2,9 @@ import os
 import yamale
 from dagify.converter.yaml_validator.custom_validator import validators
 
-def validate(templates_path,schema_file):
-    
+
+def validate(templates_path, schema_file):
+
     for root, dirs, files in os.walk(templates_path):
         for file in files:
             template_name = file.split(".")[0]
@@ -26,9 +27,8 @@ def validate(templates_path,schema_file):
                         for error in result.errors:
                             print(error)
                     raise ValueError(f"Template {file_path} incompatible")
-    
 
 
-templates_path="../dagify/dagify/templates"
-schema_file="../dagify/dagify/converter/yaml_validator/schema.yaml"
+templates_path = "../dagify/dagify/templates"
+schema_file = "../dagify/dagify/converter/yaml_validator/schema.yaml"
 validate(templates_path, schema_file)

@@ -20,6 +20,7 @@ from dagify.converter.report_generator import Report
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
+
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option("-s",
               "--source-path",
@@ -60,13 +61,12 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
                   os.environ.get("AS_DAG_DIVIDER",
                                  "PARENT_FOLDER")))
 @click.option("-r",
-              "--report-gen", 
+              "--report",
               is_flag=True,
               default=False,
               help="Generate report in txt and json format which \
                 gives an overview of job_types converted")
-
-def dagify(source_path, output_path, config_file, templates, dag_divider,report_gen):
+def dagify(source_path, output_path, config_file, templates, dag_divider, report_gen):
     """Run dagify."""
     print("Demo dagify Engine")
 
