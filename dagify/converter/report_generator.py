@@ -1,3 +1,4 @@
+"""Module providing function to manipulate yaml files"""
 import yaml
 from .utils import (
     is_directory,
@@ -103,4 +104,3 @@ class Report():
         converted_percent = 100 - non_converted_percent
 
         return job_types_converted,job_types_not_converted,converted_percent,non_converted_percent
-    
