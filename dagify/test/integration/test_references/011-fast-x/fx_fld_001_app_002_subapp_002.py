@@ -13,9 +13,7 @@ default_args = {
 
 with DAG(
     dag_id="fx_fld_001_app_002_subapp_002",
-    start_date=datetime.datetime(2024, 1, 1),
-    #schedule="@daily",
-    schedule_interval='*/5 * * * *',
+    schedule_interval="@daily",  # TIMEFROM not found, default schedule set to @daily,
     catchup=False,
 ) as dag:
 
@@ -50,12 +48,12 @@ with DAG(
     
     # Airflow Upstream Task Dependencies (external dags)
     
-    fx_fld_001_app_002_subapp_002_job_003_sensor
-        task_id="fx_fld_001_app_002_subapp_002_job_003_sensor
+    fx_fld_001_app_002_subapp_002_job_003_sensor_2b59 = ExternalTaskSensor(
+        task_id="fx_fld_001_app_002_subapp_002_job_003_sensor_2b59",
         external_dag_id="fx_fld_001_app_001_subapp_001",
         external_task_id="fx_fld_001_app_001_subapp_001_job_001",
         dag=dag
     )
-    fx_fld_001_app_002_subapp_002_job_003_sensor
+    fx_fld_001_app_002_subapp_002_job_003_sensor_2b59 >> fx_fld_001_app_002_subapp_002_job_003
     
     
