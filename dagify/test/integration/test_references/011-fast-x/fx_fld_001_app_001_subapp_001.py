@@ -13,7 +13,9 @@ default_args = {
 
 with DAG(
     dag_id="fx_fld_001_app_001_subapp_001",
-    schedule_interval="@daily",  # TIMEFROM not found, default schedule set to @daily,
+    start_date=datetime.datetime(2024, 1, 1),
+    #schedule="@daily",
+    schedule_interval='*/5 * * * *',
     catchup=False,
 ) as dag:
 
@@ -46,8 +48,8 @@ with DAG(
     
     # Airflow Downstream Task Dependencies (external dags)
     
-    fx_fld_001_app_002_subapp_002_job_003_marker_a61c = ExternalTaskMarker(
-        task_id="fx_fld_001_app_002_subapp_002_job_003_marker_a61c",
+    fx_fld_001_app_002_subapp_002_job_003_marker
+        task_id="fx_fld_001_app_002_subapp_002_job_003_marker
         external_dag_id='fx_fld_001_app_002_subapp_002',
         external_task_id='fx_fld_001_app_002_subapp_002_job_003'
     )
