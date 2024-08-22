@@ -14,11 +14,12 @@
 
 import re
 import os
-import yaml
 import pprint
-from prettytable import PrettyTable
 import xml.etree.ElementTree as ET
 import json
+import yaml
+from prettytable import PrettyTable
+
 
 
 def clean_converter_type(converter_type):
@@ -131,6 +132,7 @@ def count_yaml_files(directory, case_sensitive=True, recursive=False):
   return count
 
 def generate_report(lines,title,columns,rows,warning_line,output_dir):
+        """ Function to open a file and write the contents of the report in the file """
         report = PrettyTable()
         report.title = title
         i=0
@@ -151,6 +153,7 @@ def generate_report(lines,title,columns,rows,warning_line,output_dir):
             final_report.write(warning_line)
 
 def get_jobtypes_andcount(source_path):
+    """Generic function that calculates the job_types and the count from any input"""
     unique_job_types = []
     job_types_source = []
     job_types_count = 0
