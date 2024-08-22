@@ -13,9 +13,7 @@ default_args = {
 
 with DAG(
     dag_id="fast_x_reports",
-    start_date=datetime.datetime(2024, 1, 1),
-    #schedule="@daily",
-    schedule_interval='*/5 * * * *',
+    schedule_interval="@daily",  # TIMEFROM not found, default schedule set to @daily,
     catchup=False,
 ) as dag:
 
