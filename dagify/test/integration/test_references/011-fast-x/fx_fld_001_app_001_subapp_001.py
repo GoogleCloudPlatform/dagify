@@ -44,8 +44,8 @@ with DAG(
 
     # Airflow Downstream Task Dependencies (external dags)
 
-    fx_fld_001_app_002_subapp_002_job_003_marker
-        task_id="fx_fld_001_app_002_subapp_002_job_003_marker
+    fx_fld_001_app_002_subapp_002_job_003_marker_xxxx = ExternalTaskMarker(
+        task_id="fx_fld_001_app_002_subapp_002_job_003_marker_xxxx",
         external_dag_id='fx_fld_001_app_002_subapp_002',
         external_task_id='fx_fld_001_app_002_subapp_002_job_003'
     )
