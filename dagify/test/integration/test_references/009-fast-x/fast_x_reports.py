@@ -21,36 +21,42 @@ with DAG(
     fast_x_job_1 = BashOperator(
         task_id="fast_x_job_1",
         bash_command="",
+        trigger_rule="all_success",
         dag=dag,
     )
 
     fast_x_job_2 = BashOperator(
         task_id="fast_x_job_2",
         bash_command="",
+        trigger_rule="all_success",
         dag=dag,
     )
 
     fast_x_job_3 = BashOperator(
         task_id="fast_x_job_3",
         bash_command="",
+        trigger_rule="all_success",
         dag=dag,
     )
 
     fast_x_job_4 = BashOperator(
         task_id="fast_x_job_4",
         bash_command="",
+        trigger_rule="all_success",
         dag=dag,
     )
 
     fast_x_job_5 = BashOperator(
         task_id="fast_x_job_5",
         bash_command="",
+        trigger_rule="all_success",
         dag=dag,
     )
 
     fast_x_job_6 = BashOperator(
         task_id="fast_x_job_6",
         bash_command="",
+        trigger_rule="all_success",
         dag=dag,
     )
 
