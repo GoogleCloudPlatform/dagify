@@ -13,6 +13,7 @@ default_args = {
 
 with DAG(
     dag_id="fx_fld_002_app_001_subapp_001",
+    start_date=datetime.datetime(2024, 1, 1),
     schedule_interval="@daily",  # TIMEFROM not found, default schedule set to @daily,
     catchup=False,
 ) as dag:
