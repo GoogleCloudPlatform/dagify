@@ -19,6 +19,7 @@ from .yaml_validator.custom_validator import validators
 import yaml
 import xml.etree.ElementTree as ET
 from jinja2 import Environment, FileSystemLoader
+import autopep8
 from .utils import (
     file_exists,
     create_directory,
@@ -441,7 +442,8 @@ class Engine():
                 upstream_dependencies=upstream_dependencies
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
-                dag_file.write(content)
+                content_linted = autopep8.fix_code(content)
+                dag_file.write(content_linted)
 
         return
 
