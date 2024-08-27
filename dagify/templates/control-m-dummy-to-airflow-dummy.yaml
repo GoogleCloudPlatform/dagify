@@ -52,5 +52,6 @@ mappings:
 structure: |
   {task_id} = DummyOperator(
     task_id='{task_id}',
+    trigger_rule="{trigger_rule}",
     dag=dag,
   )

@@ -66,4 +66,5 @@ structure: |
     image="perl:5.34.0",
     cmds=[{command}],
     name="{task_id}",
+    trigger_rule="{trigger_rule}",
   )
