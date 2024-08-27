@@ -21,18 +21,21 @@ with DAG(
     fx_fld_001_app_001_subapp_001_job_001 = BashOperator(
         task_id="fx_fld_001_app_001_subapp_001_job_001",
         bash_command="",
+        trigger_rule="all_success",
         dag=dag,
     )
 
     fx_fld_001_app_001_subapp_001_job_002 = BashOperator(
         task_id="fx_fld_001_app_001_subapp_001_job_002",
         bash_command="",
+        trigger_rule="all_success",
         dag=dag,
     )
 
     fx_fld_001_app_001_subapp_001_job_003 = BashOperator(
         task_id="fx_fld_001_app_001_subapp_001_job_003",
         bash_command="",
+        trigger_rule="all_success",
         dag=dag,
     )
 

@@ -56,6 +56,7 @@ structure: |
   {task_id} = SSHOperator(
     task_id="{task_id}",
     command="{command}",
+    trigger_rule="{trigger_rule}",
     dag=dag,
   )
 
