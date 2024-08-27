@@ -23,10 +23,10 @@ for test_file in $int_test_base_folder/$test_data_folder/*.xml; do
     test_name=`echo $test_file | cut -d "/" -f 5 | cut -d "." -f 1`
     python3 DAGify.py -d SUB_APPLICATION --source-path=$test_file --output-path=$int_test_base_folder/$test_output_folder/$test_name > /dev/null
 
-    # remove random strings from markers and sensors since they can't be reproduced
+    # replace random strings from markers and sensors with "xxxx" since they can't be reproduced
     for output_file in $int_test_base_folder/$test_output_folder/$test_name/*.py; do
-        sed -i 's/_sensor.*/_sensor/' $output_file
-        sed -i 's/_marker.*/_marker/' $output_file
+        sed -i 's/\(_sensor_\)\(....\)\(.*\)/\1xxxx\3/' $output_file
+        sed -i 's/\(_marker_\)\(....\)\(.*\)/\1xxxx\3/' $output_file
     done
 
     diff -b -I '^#' -I '^ #' $int_test_base_folder/$test_output_folder/$test_name $int_test_base_folder/$test_references_folder/$test_name
