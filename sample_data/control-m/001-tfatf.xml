@@ -20,12 +20,12 @@
 		<OUTCOND NAME="fx_fld_001_app_001_subapp_001_job_001_ok" ODATE="ODAT" SIGN="+" />
 	</JOB>
 	<!-- Folder 001, Application 001, Sub Application 001, Job 002 -->
-	<JOB APPLICATION="fx_fld_001_app_001" SUB_APPLICATION="fx_fld_001_app_001_subapp_001" JOBNAME="fx_fld_001_app_001_subapp_001_job_002" DESCRIPTION="fx_fld_001_app_001_subapp_001_job_002_reports"  TASKTYPE="Command" CMDLINE="echo I am task B"  PARENT_FOLDER="fx_fld_001">
+	<JOB APPLICATION="fx_fld_001_app_001" SUB_APPLICATION="fx_fld_001_app_001_subapp_001" JOBNAME="fx_fld_001_app_001_subapp_001_job_002" DESCRIPTION="fx_fld_001_app_001_subapp_001_job_002_reports"  TASKTYPE="Air" CMDLINE="echo I am task B"  PARENT_FOLDER="fx_fld_001">
 		<INCOND NAME="fx_fld_001_app_001_subapp_001_job_001_ok" ODATE="ODAT" AND_OR="A" />
 		<OUTCOND NAME="fx_fld_001_app_001_subapp_001_job_002_ok" ODATE="ODAT" SIGN="+" />
 	</JOB>
 	<!-- Folder 001, Application 002, Sub Application 001, Job 001 -->
-	<JOB APPLICATION="fx_fld_001_app_002" SUB_APPLICATION="fx_fld_001_app_002_subapp_001" JOBNAME="fx_fld_001_app_002_subapp_001_job_001" DESCRIPTION="fx_fld_001_app_002_subapp_001_job_001_reports"  TASKTYPE="Command" CMDLINE="echo I am task C" PARENT_FOLDER="fx_fld_001">
+	<JOB APPLICATION="fx_fld_001_app_002" SUB_APPLICATION="fx_fld_001_app_002_subapp_001" JOBNAME="fx_fld_001_app_002_subapp_001_job_001" DESCRIPTION="fx_fld_001_app_002_subapp_001_job_001_reports"  TASKTYPE="Water" CMDLINE="echo I am task C" PARENT_FOLDER="fx_fld_001" CONFIRM="0">
 		<INCOND NAME="fx_fld_001_app_001_subapp_001_job_001_ok" ODATE="ODAT" AND_OR="A" />
 		<INCOND NAME="fx_fld_001_app_001_subapp_001_job_002_ok" ODATE="ODAT" AND_OR="A" />
 		<OUTCOND NAME="fx_fld_001_app_002_subapp_001_job_001_ok" ODATE="ODAT" SIGN="+" />
