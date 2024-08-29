@@ -5,7 +5,11 @@ from .utils import (
     generate_report,
     get_jobtypes_andcount,
     generate_json,
-    format_table_data
+    format_table_data,
+    get_job_info,
+    get_tasktype_statistics,
+    get_job_statistics,
+    filter_jobs_by_parameter_in_child
 )
 
 
@@ -56,19 +60,28 @@ class Report():
             except yaml.YAMLError as exc:
                 raise exc
         for idx, config in enumerate(self.config["config"]["mappings"]):
-            # Set Command Uppercase
             self.config["config"]["mappings"][idx]["job_type"] = \
                 self.config["config"]["mappings"][idx]["job_type"].upper()
             templates_to_validate.append(self.config["config"]["mappings"][idx]["template_name"])
 
+        # Get job related info
+        job_info = get_job_info(self.source_path)
+        unconverted_job_name, converted_job_name, \
+        non_converted_job_percent, converted_job_percent = \
+            get_job_statistics(job_info,config_job_types)
         # Statistics Info parameters
         job_types_converted, job_types_not_converted, converted_percentage, \
             non_converted_percentage = \
-            self.get_statistics(job_types_source, config_job_types)
+            get_tasktype_statistics(job_types_source, config_job_types)  
+        # Get Manual Intervention Job_Name Info
+        manual_job_names = filter_jobs_by_parameter_in_child(self.source_path,"CONFIRM")
+
         # Table Info
         statistics = [
             f"Percentage of Jobtypes converted: {converted_percentage}%",
-            f"Percentage of Jobtypes not converted: {non_converted_percentage}%"
+            f"Percentage of Jobtypes not converted: {non_converted_percentage}%",
+            f"Percentage of Jobs converted: {non_converted_job_percent}%",
+            f"Percentage of Jobs not converted: {converted_job_percent}%",
         ]
         title = "DAGIFY REPORT"
         columns = ["TASK", "INFO", "COUNT"]
@@ -78,29 +91,18 @@ class Report():
             ["Config_File_Job_Types", config_job_types, config_job_types_count],
             ["Job_Types_Converted", job_types_converted, len(job_types_converted)],
             ["Job_types_Not_Converted", job_types_not_converted, len(job_types_not_converted)],
-            ["Templates_validated", templates_to_validate, len(templates_to_validate)]
+            ["Jobs_Converted", converted_job_name, len(converted_job_name)],
+            ["Jobs_Not_Converted", unconverted_job_name, len(unconverted_job_name)],
+            ["Jobs_Requiring_Manual_Approval", manual_job_names, len(manual_job_names)],
+            ["Templates_Validated", templates_to_validate, len(templates_to_validate)]
         ]
         formatted_table_data = format_table_data(title, columns, rows)
 
-        warning_line = "NOTE: If the job_type \
-            is not defined in the config.yaml or \
-            if the job_type does not have a matching template defined, \
-            it would be by default converted into a DUMMYOPERATOR"
+        warning_line = "NOTE: \n \
+            1. If the job_type is not defined in the config.yaml or \
+            if the job_type does not have a matching template defined,it would be by default converted into a DUMMYOPERATOR\n \
+            2. Jobs_Requiring_Manual_Approval - indicates that the job has CONFIRM PARAMTER defined in job, \
+                meaning the workflow has to be changed for manual approval for these jobs/job"
 
         generate_json(statistics, formatted_table_data, self.output_path)
         generate_report(statistics, title, columns, rows, warning_line, self.output_path)
-
-    def get_statistics(self, source_jt, config_jt):
-        """Function to caluculate the percentage conversion"""
-        converted_percent = 0
-        non_converted_percent = 0
-
-        # Conversion Info
-        job_types_converted = list(set(config_jt) & set(source_jt))
-        job_types_not_converted = list(set(source_jt) - set(config_jt))
-
-        # Percentages
-        non_converted_percent = (len(job_types_not_converted) / len(source_jt)) * 100
-        converted_percent = 100 - non_converted_percent
-
-        return job_types_converted, job_types_not_converted, converted_percent, non_converted_percent

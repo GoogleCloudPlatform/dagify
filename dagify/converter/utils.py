@@ -136,15 +136,12 @@ def generate_report(lines, title, columns, rows, warning_line, output_dir):
     """ Function to open a file and write the contents of the report in the file """
     report = PrettyTable()
     report.title = title
-    i = 0
     # Column config
     report.field_names = columns
     for col in columns:
         report.align[col] = "l"
-
     # Row config
     report.add_rows(rows)
-
     report_file = f"{output_dir}/Detailed-Report.txt"
     with open(report_file, "w") as final_report:
         for line in lines:
@@ -152,6 +149,28 @@ def generate_report(lines, title, columns, rows, warning_line, output_dir):
         final_report.write(str(report) + '\n')
         final_report.write(warning_line)
 
+def calculate_percentages(not_converted,converted):
+    """Function to calculate the percentages"""
+    total = len(not_converted) + len(converted)
+    non_converted_percent = (len(not_converted) / total) * 100
+    converted_percent = 100 - non_converted_percent
+
+    return non_converted_percent,converted_percent
+
+def get_tasktype_statistics(source_jt, config_jt):
+    """Function to caluculate the percentage conversion"""
+    converted_percent = 0
+    non_converted_percent = 0
+
+    # Conversion Info
+    job_types_converted = list(set(config_jt) & set(source_jt))
+    job_types_not_converted = list(set(source_jt) - set(config_jt))
+
+    # Percentages
+    non_converted_percent,converted_percent = \
+        calculate_percentages(job_types_not_converted,job_types_converted)
+
+    return job_types_converted, job_types_not_converted, converted_percent, non_converted_percent
 
 def get_jobtypes_andcount(source_path):
     """Generic function that calculates the job_types and the count from any input"""
@@ -210,3 +229,43 @@ def generate_json(statistics, table_data, output_file_path):
     json_file_path = f"{output_file_path}/report.json"
     with open(json_file_path, "w") as json_file:
         json.dump(data, json_file, indent=2)  # indent for better readability
+
+def get_job_info(file_path):
+    """Function to get and return a dictionary of job_name and its task_type"""
+    if not file_path.endswith('.xml'):
+        raise ValueError(f"Invalid file format: {file_path}. Only XML files are supported.")
+    job_info_list = []
+    tree = ET.parse(file_path)
+    root = tree.getroot()
+    # Find all JOB elements
+    for job in root.findall('.//JOB'):  # Find all JOB elements
+        job_name = job.attrib['JOBNAME']
+        task_type = job.attrib['TASKTYPE'].lower()
+        job_info_list.append({'job_name': job_name, 'task_type': task_type})
+    return job_info_list
+
+def get_job_statistics(job_info_list,config_task_type):
+    """Function to calculate and return job_name statistics"""
+    unconverted_job_name = [job['job_name'] for job in job_info_list \
+                            if job['task_type'] not in config_task_type]
+    converted_job_name = [job['job_name'] for job in job_info_list \
+                          if job['task_type'] in config_task_type]
+    non_converted_job_percent,converted_job_percent = \
+        calculate_percentages(unconverted_job_name,converted_job_name)
+    return unconverted_job_name, converted_job_name, \
+        non_converted_job_percent, converted_job_percent
+
+def filter_jobs_by_parameter_in_child(xml_file_path, parameter_name, child_element_name=None):
+    """Function to return job_name with a particular paramter"""
+    tree = ET.parse(xml_file_path)
+    root = tree.getroot()
+    matching_job_names = []
+    for job in root.findall('.//JOB'):
+        if child_element_name:
+            child_element = job.find(f'./{child_element_name}')
+            if child_element is not None and child_element.attrib.get(parameter_name) is not None:
+                matching_job_names.append(job.attrib['JOBNAME'])
+        else:  # Search within the JOB tag itself
+            if job.attrib.get(parameter_name) is not None:
+                matching_job_names.append(job.attrib['JOBNAME'])
+    return matching_job_names
