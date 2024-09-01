@@ -347,4 +347,3 @@ def filter_jobs_by_parameter_in_child(xml_file_path, parameter_name, child_eleme
                 matching_job_names.append(job.attrib['JOBNAME'])
 
     return matching_job_names
-
