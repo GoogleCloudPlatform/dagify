@@ -24,7 +24,8 @@ from .utils import (
     create_directory,
     directory_exists,
     is_directory,
-    read_yaml_to_dict
+    read_yaml_to_dict,
+    calculate_cron_schedule
 )
 from .rules import (
     Rule
@@ -56,7 +57,8 @@ class Engine():
         self.config = {}
         self.config_file = config_file
         self.source_path = source_path
-        self.output_path = output_path
+        source_xml_name = self.source_path.split("/")[-1].split(".")[0]
+        self.output_path = f"{output_path}/{source_xml_name}"
         self.dag_divider = dag_divider
         self.schema = "./dagify/converter/yaml_validator/schema.yaml"
 
@@ -312,53 +314,6 @@ class Engine():
         # no match found
         return None
 
-    def calculate_cron_schedule(self, task):
-
-        timefrom = task.get_attribute("TIMEFROM")
-
-        if not timefrom:
-            return None
-
-        schedule_interval = None
-        minute = timefrom[2:]
-        hour = timefrom[:2]
-        weekdays = task.get_attribute("WEEKDAYS")
-        if weekdays:
-            day_of_week = ",".join(weekdays.split(","))
-        else:
-            day_of_week = "*"
-
-        month_abbreviations = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
-        # Get the list of months that are set to "1"
-        months = [i + 1 for i, month in enumerate(month_abbreviations) if task.get_attribute(month) == "1"]
-        if months:
-            months.sort()
-            # Identify consecutive month ranges
-            month_ranges = []
-            current_range = [months[0]]
-            for i in range(1, len(months)):
-                if months[i] == current_range[-1] + 1:  # Check for consecutive months
-                    current_range.append(months[i])
-                else:
-                    month_ranges.append(current_range)  # Start a new range if not consecutive
-                    current_range = [months[i]]
-            month_ranges.append(current_range)  # Add the last range
-
-            month_parts = []
-            for r in month_ranges:
-                if len(r) == 1:
-                    month_parts.append(str(r[0]))  # Single month
-                else:
-                    month_parts.append(f"{r[0]}-{r[-1]}")  # Month range
-
-            month_schedule = ",".join(month_parts)
-        else:
-            month_schedule = "*"
-
-        schedule_interval = [minute, hour, "*", month_schedule, day_of_week]  # Day of month to start is set to "*"
-        schedule_interval = " ".join(schedule_interval)
-        return schedule_interval
-
     def generate_airflow_dags(self):
 
         if self.uf is None:
@@ -374,7 +329,7 @@ class Engine():
                     tasks.append(task.get_attribute("JOBNAME_ORIGINAL"))
                     airflow_task_outputs.append(task.get_airflow_task_output())
                     if not schedule_interval:
-                        schedule_interval = self.calculate_cron_schedule(task)
+                        schedule_interval = calculate_cron_schedule(task)
 
             # Calculate DAG Specific Python Imports
             dag_python_imports = self.uf.calculate_dag_python_imports(
@@ -430,6 +385,8 @@ class Engine():
 
             # Create DAG File by Folder
             filename = f"{self.output_path}/{dag_divider_value}.py"
+            
+            print("\n\n\n filename \n\n\n",filename)
             content = template.render(
                 baseline_imports=self.get_baseline_imports(),
                 custom_imports=dag_python_imports,
