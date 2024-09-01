@@ -1,15 +1,31 @@
 """Module providing function to manipulate yaml files"""
 import yaml
+import xml.etree.ElementTree as ET
+
+from .uf import (
+    UF,
+    UFTask,
+    UFTaskVariable,
+    UFTaskInCondition,
+    UFTaskOutCondition,
+    UFTaskShout,
+)
+
 from .utils import (
+    file_exists,
     is_directory,
-    generate_report,
+    generate_report_utils,
     get_jobtypes_andcount,
     generate_json,
-    format_table_data,
+    format_table_json,
     get_job_info,
     get_tasktype_statistics,
     get_job_statistics,
-    filter_jobs_by_parameter_in_child
+    filter_jobs_by_parameter_in_child,
+    calculate_cron_schedule,
+    directory_exists,
+    create_directory,
+    generate_table
 )
 
 
@@ -27,11 +43,108 @@ class Report():
         self.config = {}
         self.templates = {}
         self.source_path = source_path
-        self.output_path = output_path
+        source_xml_name = self.source_path.split("/")[-1].split(".")[0]
+        self.output_path = f"{output_path}/{source_xml_name}"
         self.templates_path = templates_path
 
         # Run the Proccess
-        self.generate_report()
+        self.load_source()
+        self.write_report()
+
+    def load_source(self):
+        # Read the Source File
+        # Parse into dagify Universial Format
+        # Output the dagify Universial Format Back to the Class
+        self.universal_format = None
+        if self.source_path is None:
+            raise ValueError("dagify: source file cannot be None or Empty")
+        if file_exists(self.source_path) is False:
+            raise FileNotFoundError(
+                "dagify: source file not found at {}".format(
+                    self.source_path))
+
+        root = ET.parse(self.source_path).getroot()
+        self.uf = self.parse_universal_format(root)
+        return
+
+    def parse_universal_format(self, source):
+        uf = UF()
+        uf = self.parse_controlm_tree(source, uf)
+        return uf
+
+    def parse_controlm_tree(self, root_node, parent):
+        for node in root_node:
+            match node.tag:
+                case "FOLDER" | "SMART_FOLDER":
+                    # ufFolder = UFFolder()
+                    # ufFolder.from_controlm_xml(node)
+                    # parent.add_folder(ufFolder)
+                    self.parse_controlm_tree(node, parent)
+                case "JOB":
+                    ufTask = UFTask()
+                    ufTask.from_controlm_xml(node)
+                    parent.add_task(ufTask)
+                    self.parse_controlm_tree(node, ufTask)
+                case "VARIABLE":
+                    ufTaskVariable = UFTaskVariable()
+                    ufTaskVariable.from_controlm_xml(node)
+                    parent.add_variable(ufTaskVariable)
+                    self.parse_controlm_tree(node, ufTaskVariable)
+                case "INCOND":
+                    ufTaskInCondition = UFTaskInCondition()
+                    ufTaskInCondition.from_controlm_xml(node)
+                    parent.add_in_condition(ufTaskInCondition)
+                    self.parse_controlm_tree(node, ufTaskInCondition)
+                case "OUTCOND":
+                    ufTaskOutCondition = UFTaskOutCondition()
+                    ufTaskOutCondition.from_controlm_xml(node)
+                    parent.add_out_condition(ufTaskOutCondition)
+                    self.parse_controlm_tree(node, ufTaskOutCondition)
+                case "SHOUT":
+                    ufTaskShout = UFTaskShout()
+                    ufTaskShout.from_controlm_xml(node)
+                    parent.add_shout(ufTaskShout)
+                    self.parse_controlm_tree(node, ufTaskShout)
+                case _:
+                    print("Node: " + node.tag + " is not currently supported.")
+
+        return parent
+
+    def check_schedules(self, xml_file_path, dag_divider):
+
+        title = "Updated Job Schedules"
+        columns = ["JOB NAME", "DAG DIVIDER","SCHEDULE CHANGE", "ORIGINAL SCHEDULE", "DAG SCHEDULE"]
+        rows = []
+        prev_divider = None
+        dag_schedule = None
+
+        universal_format = self.uf
+        tasks = universal_format.get_tasks()
+        for tIdx, task in enumerate(tasks):
+            current_divider = task.get_attribute(dag_divider)
+
+            if not prev_divider:
+                prev_divider = current_divider
+
+            if prev_divider and prev_divider != current_divider:  # New DAG and schedule will be created
+                prev_divider = current_divider
+                dag_schedule = None  # reset schedule to empty
+
+            if not dag_schedule:  # first schedule for this dag , defined for all jobs with this divider
+                dag_schedule = calculate_cron_schedule(task)
+                if not dag_schedule:
+                    dag_schedule = "@daily"
+
+            if current_divider == prev_divider:
+                current_schedule = calculate_cron_schedule(task)
+                job_name = task.get_attribute("JOBNAME")
+                if current_schedule != dag_schedule:
+
+                    rows.append((job_name,current_divider, "YES", current_schedule, dag_schedule))
+                else:
+                    rows.append((job_name,current_divider, "NO", current_schedule, dag_schedule))
+
+        return title, columns, rows
 
     def generate_report(self):
         """Function that generates the json and txt report"""
@@ -67,14 +180,14 @@ class Report():
         # Get job related info
         job_info = get_job_info(self.source_path)
         unconverted_job_name, converted_job_name, \
-        non_converted_job_percent, converted_job_percent = \
-            get_job_statistics(job_info,config_job_types)
+            non_converted_job_percent, converted_job_percent = \
+            get_job_statistics(job_info, config_job_types)
         # Statistics Info parameters
         job_types_converted, job_types_not_converted, converted_percentage, \
             non_converted_percentage = \
-            get_tasktype_statistics(job_types_source, config_job_types)  
+            get_tasktype_statistics(job_types_source, config_job_types)
         # Get Manual Intervention Job_Name Info
-        manual_job_names = filter_jobs_by_parameter_in_child(self.source_path,"CONFIRM")
+        manual_job_names = filter_jobs_by_parameter_in_child(self.source_path, "CONFIRM")
 
         # Table Info
         statistics = [
@@ -96,13 +209,30 @@ class Report():
             ["Jobs_Requiring_Manual_Approval", manual_job_names, len(manual_job_names)],
             ["Templates_Validated", templates_to_validate, len(templates_to_validate)]
         ]
-        formatted_table_data = format_table_data(title, columns, rows)
+        formatted_table_data = format_table_json(title, columns, rows)
+
+        # Writes out JSON
+        generate_json(statistics, formatted_table_data, self.output_path)
 
         warning_line = "NOTE: \n \
-            1. If the job_type is not defined in the config.yaml or \
-            if the job_type does not have a matching template defined,it would be by default converted into a DUMMYOPERATOR\n \
-            2. Jobs_Requiring_Manual_Approval - indicates that the job has CONFIRM PARAMTER defined in job, \
-                meaning the workflow has to be changed for manual approval for these jobs/job"
+        1. If the job_type is not defined in the config.yaml or if the job_type does not have a matching template defined,it would be by default converted into a DUMMYOPERATOR\n \
+        2. Jobs_Requiring_Manual_Approval - indicates that the job has CONFIRM PARAMTER defined in job, meaning the workflow has to be changed for manual approval for these jobs/job"
 
-        generate_json(statistics, formatted_table_data, self.output_path)
-        generate_report(statistics, title, columns, rows, warning_line, self.output_path)
+        return title, columns, rows, statistics, warning_line
+
+    def write_report(self):
+
+        report_tables = []
+        if not directory_exists(self.output_path):
+            create_directory(self.output_path)
+            # clear_directory(self.output_path)
+
+        job_title, job_columns, job_rows, job_statistics, job_warning = self.generate_report()
+        job_conversion_table = generate_table(job_title, job_columns, job_rows)
+
+        schedules_title, schedules_columns, schedules_rows = self.check_schedules(self.source_path, dag_divider="PARENT_FOLDER")
+        schedule_table = generate_table(schedules_title, schedules_columns, schedules_rows)
+
+        report_tables.append(job_conversion_table)
+        report_tables.append(schedule_table)
+        generate_report_utils(report_tables, self.output_path, job_statistics, job_warning)
