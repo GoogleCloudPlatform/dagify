@@ -113,7 +113,7 @@ class Report():
     def check_schedules(self, xml_file_path, dag_divider):
 
         title = "Updated Job Schedules"
-        columns = ["JOB NAME", "DAG DIVIDER","SCHEDULE CHANGE", "ORIGINAL SCHEDULE", "DAG SCHEDULE"]
+        columns = ["JOB NAME", "DAG DIVIDER", "SCHEDULE CHANGE", "ORIGINAL SCHEDULE", "DAG SCHEDULE"]
         rows = []
         prev_divider = None
         dag_schedule = None
@@ -140,9 +140,9 @@ class Report():
                 job_name = task.get_attribute("JOBNAME")
                 if current_schedule != dag_schedule:
 
-                    rows.append((job_name,current_divider, "YES", current_schedule, dag_schedule))
+                    rows.append((job_name, current_divider, "YES", current_schedule, dag_schedule))
                 else:
-                    rows.append((job_name,current_divider, "NO", current_schedule, dag_schedule))
+                    rows.append((job_name, current_divider, "NO", current_schedule, dag_schedule))
 
         return title, columns, rows
 
