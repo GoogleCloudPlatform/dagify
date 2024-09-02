@@ -167,8 +167,8 @@ def generate_report_utils(tables, output_dir, lines=None, warning_line=None):
 def calculate_percentages(not_converted, converted):
     """Function to calculate the percentages"""
     total = len(not_converted) + len(converted)
-    non_converted_percent = (len(not_converted) / total) * 100
-    converted_percent = 100 - non_converted_percent
+    non_converted_percent = round((len(not_converted) / total) * 100,2)
+    converted_percent = round(100 - non_converted_percent,2)
 
     return non_converted_percent, converted_percent
 
@@ -236,12 +236,13 @@ def format_table_json(title, columns, rows):
     return table_data
 
 
-def generate_json(statistics, table_data, output_file_path):
+def generate_json(statistics, job_table_data, schedule_table_data,output_file_path):
     """Creates a JSON file with intro text, table data, and conclusion text"""
 
     data = {
         "High_Level_Info": statistics,
-        "table_data": table_data,
+        "Job_info_table": job_table_data,
+        "Schedule_info_table": schedule_table_data
     }
     json_file_path = f"{output_file_path}/report.json"
     with open(json_file_path, "w") as json_file:
@@ -269,13 +270,15 @@ def get_job_statistics(job_info_list, config_task_type):
                             if job['task_type'] not in config_task_type]
     converted_job_name = [job['job_name'] for job in job_info_list
                           if job['task_type'] in config_task_type]
+    conv_job_count = len(converted_job_name)
     non_converted_job_percent, converted_job_percent = \
         calculate_percentages(unconverted_job_name, converted_job_name)
     return unconverted_job_name, converted_job_name, \
-        non_converted_job_percent, converted_job_percent
+        non_converted_job_percent, converted_job_percent,conv_job_count
 
 
 def get_template_name(self, job_type):
+    """Function to return template_name for a particular job_type"""
     for mapping in self.config["config"]["mappings"]:
         if mapping["job_type"] == job_type.upper():
             return mapping["template_name"]

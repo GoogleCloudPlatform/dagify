@@ -180,7 +180,7 @@ class Report():
         # Get job related info
         job_info = get_job_info(self.source_path)
         unconverted_job_name, converted_job_name, \
-            non_converted_job_percent, converted_job_percent = \
+            non_converted_job_percent, converted_job_percent,conv_job_count = \
             get_job_statistics(job_info, config_job_types)
         # Statistics Info parameters
         job_types_converted, job_types_not_converted, converted_percentage, \
@@ -191,10 +191,12 @@ class Report():
 
         # Table Info
         statistics = [
+            f"Jobtypes converted: {len(job_types_converted)}/{len(job_types_source)}",
             f"Percentage of Jobtypes converted: {converted_percentage}%",
             f"Percentage of Jobtypes not converted: {non_converted_percentage}%",
-            f"Percentage of Jobs converted: {non_converted_job_percent}%",
-            f"Percentage of Jobs not converted: {converted_job_percent}%",
+            f"Jobs converted: {conv_job_count}/{len(job_info)}",
+            f"Percentage of Jobs converted: {converted_job_percent}%",
+            f"Percentage of Jobs not converted: {non_converted_job_percent}%",
         ]
         title = "DAGIFY REPORT"
         columns = ["TASK", "INFO", "COUNT"]
@@ -209,10 +211,10 @@ class Report():
             ["Jobs_Requiring_Manual_Approval", manual_job_names, len(manual_job_names)],
             ["Templates_Validated", templates_to_validate, len(templates_to_validate)]
         ]
-        formatted_table_data = format_table_json(title, columns, rows)
+        #formatted_table_data = format_table_json(title, columns, rows)
 
         # Writes out JSON
-        generate_json(statistics, formatted_table_data, self.output_path)
+        #generate_json(statistics, formatted_table_data, self.output_path)
 
         warning_line = "NOTE: \n \
         1. If the job_type is not defined in the config.yaml or if the job_type does not have a matching template defined,it would be by default converted into a DUMMYOPERATOR\n \
@@ -221,7 +223,7 @@ class Report():
         return title, columns, rows, statistics, warning_line
 
     def write_report(self):
-
+        """Function that generates the json and txt report"""
         report_tables = []
         if not directory_exists(self.output_path):
             create_directory(self.output_path)
@@ -236,3 +238,7 @@ class Report():
         report_tables.append(job_conversion_table)
         report_tables.append(schedule_table)
         generate_report_utils(report_tables, self.output_path, job_statistics, job_warning)
+        #json_generation
+        formatted_job_table_data = format_table_json(job_title, job_columns, job_rows)
+        formatted_schedule_table_data = format_table_json(schedules_title, schedules_columns, schedules_rows)
+        generate_json(job_statistics, formatted_job_table_data,formatted_schedule_table_data, self.output_path)
