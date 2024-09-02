@@ -217,6 +217,12 @@ This table outlines the schedulers that are currently supported by DAGify and wh
 | UC4           | Roadmap        | TBC                | Only under consideration    |
 |               |                |                    |                             |
 
+## Generate a Conversion Status Report
+To generate a detailed report on the conversion process, include the **-r** parameter in your command. The report will be saved in the same output folder (customizable using the -o parameter). Key information included in the report:
+
+Conversion Summary: Overall conversion statistics, including the count and percentage of converted TASKTYPEs.
+Conversion Details: A comprehensive table outlining specific TASKTYPE conversions, jobs requiring manual approval, and utilized templates.
+Schedule Adjustments: A separate table detailing any changes made to job schedules during the conversion.
 
 ---
 
