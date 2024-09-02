@@ -68,7 +68,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
                 gives an overview of job_types converted")
 def dagify(source_path, output_path, config_file, templates, dag_divider, report):
     """Run dagify."""
-    print("Demo dagify Engine")
+    print("Run DAGify Engine")
 
     Engine(
         source_path=source_path,
