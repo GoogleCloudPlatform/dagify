@@ -20,6 +20,79 @@ import json
 import yaml
 from prettytable import PrettyTable
 
+from .uf import (
+    UF,
+    UFTask,
+    UFTaskVariable,
+    UFTaskInCondition,
+    UFTaskOutCondition,
+    UFTaskShout,
+)
+
+
+def load_source(source_path):
+    """ Read the Source File
+        Parse into dagify Universial Format
+        Output the dagify Universial Format Back to the Class"""
+    universal_format = None
+    if source_path is None:
+        raise ValueError("dagify: source file cannot be None or Empty")
+    if file_exists(source_path) is False:
+        raise FileNotFoundError(
+            "dagify: source file not found at {}".format(
+                source_path))
+
+    root = ET.parse(source_path).getroot()
+    uf = parse_universal_format(root)
+    return uf
+
+
+def parse_universal_format(source):
+    """Function to parse uf"""
+    uf = UF()
+    uf = parse_controlm_tree(source, uf)
+    return uf
+
+
+def parse_controlm_tree(root_node, parent):
+    """Function to parse control m"""
+    for node in root_node:
+        match node.tag:
+            case "FOLDER" | "SMART_FOLDER":
+                # ufFolder = UFFolder()
+                # ufFolder.from_controlm_xml(node)
+                # parent.add_folder(ufFolder)
+                parse_controlm_tree(node, parent)
+            case "JOB":
+                ufTask = UFTask()
+                ufTask.from_controlm_xml(node)
+                parent.add_task(ufTask)
+                parse_controlm_tree(node, ufTask)
+            case "VARIABLE":
+                ufTaskVariable = UFTaskVariable()
+                ufTaskVariable.from_controlm_xml(node)
+                parent.add_variable(ufTaskVariable)
+                parse_controlm_tree(node, ufTaskVariable)
+            case "INCOND":
+                ufTaskInCondition = UFTaskInCondition()
+                ufTaskInCondition.from_controlm_xml(node)
+                parent.add_in_condition(ufTaskInCondition)
+                parse_controlm_tree(node, ufTaskInCondition)
+            case "OUTCOND":
+                ufTaskOutCondition = UFTaskOutCondition()
+                ufTaskOutCondition.from_controlm_xml(node)
+                parent.add_out_condition(ufTaskOutCondition)
+                parse_controlm_tree(node, ufTaskOutCondition)
+            case "SHOUT":
+                ufTaskShout = UFTaskShout()
+                ufTaskShout.from_controlm_xml(node)
+                parent.add_shout(ufTaskShout)
+                parse_controlm_tree(node, ufTaskShout)
+            case _:
+                print("Node: " + node.tag + " is not currently supported.")
+
+    return parent
+
 
 def clean_converter_type(converter_type):
     """Cleans a converter type string by removing all non-alphanumeric characters and converting it to uppercase.
@@ -167,8 +240,8 @@ def generate_report_utils(tables, output_dir, lines=None, warning_line=None):
 def calculate_percentages(not_converted, converted):
     """Function to calculate the percentages"""
     total = len(not_converted) + len(converted)
-    non_converted_percent = round((len(not_converted) / total) * 100,2)
-    converted_percent = round(100 - non_converted_percent,2)
+    non_converted_percent = round((len(not_converted) / total) * 100, 2)
+    converted_percent = round(100 - non_converted_percent, 2)
 
     return non_converted_percent, converted_percent
 
@@ -236,7 +309,7 @@ def format_table_json(title, columns, rows):
     return table_data
 
 
-def generate_json(statistics, job_table_data, schedule_table_data,output_file_path):
+def generate_json(statistics, job_table_data, schedule_table_data, output_file_path):
     """Creates a JSON file with intro text, table data, and conclusion text"""
 
     data = {
@@ -274,7 +347,7 @@ def get_job_statistics(job_info_list, config_task_type):
     non_converted_job_percent, converted_job_percent = \
         calculate_percentages(unconverted_job_name, converted_job_name)
     return unconverted_job_name, converted_job_name, \
-        non_converted_job_percent, converted_job_percent,conv_job_count
+        non_converted_job_percent, converted_job_percent, conv_job_count
 
 
 def get_template_name(self, job_type):

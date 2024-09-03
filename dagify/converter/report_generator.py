@@ -2,17 +2,8 @@
 import xml.etree.ElementTree as ET
 import yaml
 
-from .uf import (
-    UF,
-    UFTask,
-    UFTaskVariable,
-    UFTaskInCondition,
-    UFTaskOutCondition,
-    UFTaskShout,
-)
 
 from .utils import (
-    file_exists,
     is_directory,
     generate_report_utils,
     get_jobtypes_andcount,
@@ -25,7 +16,8 @@ from .utils import (
     calculate_cron_schedule,
     directory_exists,
     create_directory,
-    generate_table
+    generate_table,
+    load_source
 )
 
 
@@ -46,71 +38,9 @@ class Report():
         source_xml_name = self.source_path.split("/")[-1].split(".")[0]
         self.output_path = f"{output_path}/{source_xml_name}"
         self.templates_path = templates_path
-
+        self.uf = load_source(self.source_path)
         # Run the Proccess
-        self.load_source()
         self.write_report()
-
-    def load_source(self):
-        """ Read the Source File
-            Parse into dagify Universial Format
-            Output the dagify Universial Format Back to the Class"""
-        self.universal_format = None
-        if self.source_path is None:
-            raise ValueError("dagify: source file cannot be None or Empty")
-        if file_exists(self.source_path) is False:
-            raise FileNotFoundError(
-                "dagify: source file not found at {}".format(
-                    self.source_path))
-
-        root = ET.parse(self.source_path).getroot()
-        self.uf = self.parse_universal_format(root)
-        return
-
-    def parse_universal_format(self, source):
-        """Function to parse uf"""
-        uf = UF()
-        uf = self.parse_controlm_tree(source, uf)
-        return uf
-
-    def parse_controlm_tree(self, root_node, parent):
-        """Function to parse control m"""
-        for node in root_node:
-            match node.tag:
-                case "FOLDER" | "SMART_FOLDER":
-                    # ufFolder = UFFolder()
-                    # ufFolder.from_controlm_xml(node)
-                    # parent.add_folder(ufFolder)
-                    self.parse_controlm_tree(node, parent)
-                case "JOB":
-                    ufTask = UFTask()
-                    ufTask.from_controlm_xml(node)
-                    parent.add_task(ufTask)
-                    self.parse_controlm_tree(node, ufTask)
-                case "VARIABLE":
-                    ufTaskVariable = UFTaskVariable()
-                    ufTaskVariable.from_controlm_xml(node)
-                    parent.add_variable(ufTaskVariable)
-                    self.parse_controlm_tree(node, ufTaskVariable)
-                case "INCOND":
-                    ufTaskInCondition = UFTaskInCondition()
-                    ufTaskInCondition.from_controlm_xml(node)
-                    parent.add_in_condition(ufTaskInCondition)
-                    self.parse_controlm_tree(node, ufTaskInCondition)
-                case "OUTCOND":
-                    ufTaskOutCondition = UFTaskOutCondition()
-                    ufTaskOutCondition.from_controlm_xml(node)
-                    parent.add_out_condition(ufTaskOutCondition)
-                    self.parse_controlm_tree(node, ufTaskOutCondition)
-                case "SHOUT":
-                    ufTaskShout = UFTaskShout()
-                    ufTaskShout.from_controlm_xml(node)
-                    parent.add_shout(ufTaskShout)
-                    self.parse_controlm_tree(node, ufTaskShout)
-                case _:
-                    print("Node: " + node.tag + " is not currently supported.")
-
-        return parent
 
     def check_schedules(self, xml_file_path, dag_divider):
         """Function to check schedules exist and generate reprot table"""
@@ -182,7 +112,7 @@ class Report():
         # Get job related info
         job_info = get_job_info(self.source_path)
         unconverted_job_name, converted_job_name, \
-            non_converted_job_percent, converted_job_percent,conv_job_count = \
+            non_converted_job_percent, converted_job_percent, conv_job_count = \
             get_job_statistics(job_info, config_job_types)
         # Statistics Info parameters
         job_types_converted, job_types_not_converted, converted_percentage, \
@@ -213,10 +143,6 @@ class Report():
             ["Jobs_Requiring_Manual_Approval", manual_job_names, len(manual_job_names)],
             ["Templates_Validated", templates_to_validate, len(templates_to_validate)]
         ]
-        #formatted_table_data = format_table_json(title, columns, rows)
-
-        # Writes out JSON
-        #generate_json(statistics, formatted_table_data, self.output_path)
 
         warning_line = "NOTE: \n \
         1. If the job_type is not defined in the config.yaml or if the job_type does not have a matching template defined,it would be by default converted into a DUMMYOPERATOR\n \
@@ -240,7 +166,7 @@ class Report():
         report_tables.append(job_conversion_table)
         report_tables.append(schedule_table)
         generate_report_utils(report_tables, self.output_path, job_statistics, job_warning)
-        #json_generation
+        # json_generation
         formatted_job_table_data = format_table_json(job_title, job_columns, job_rows)
         formatted_schedule_table_data = format_table_json(schedules_title, schedules_columns, schedules_rows)
-        generate_json(job_statistics, formatted_job_table_data,formatted_schedule_table_data, self.output_path)
+        generate_json(job_statistics, formatted_job_table_data, formatted_schedule_table_data, self.output_path)
