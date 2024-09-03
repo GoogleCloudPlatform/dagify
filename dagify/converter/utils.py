@@ -34,7 +34,6 @@ def load_source(source_path):
     """ Read the Source File
         Parse into dagify Universial Format
         Output the dagify Universial Format Back to the Class"""
-    universal_format = None
     if source_path is None:
         raise ValueError("dagify: source file cannot be None or Empty")
     if file_exists(source_path) is False:
