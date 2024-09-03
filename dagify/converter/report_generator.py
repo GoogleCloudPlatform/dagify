@@ -1,6 +1,6 @@
 """Module providing function to manipulate yaml files"""
-import yaml
 import xml.etree.ElementTree as ET
+import yaml
 
 from .uf import (
     UF,
@@ -52,9 +52,9 @@ class Report():
         self.write_report()
 
     def load_source(self):
-        # Read the Source File
-        # Parse into dagify Universial Format
-        # Output the dagify Universial Format Back to the Class
+        """ Read the Source File
+            Parse into dagify Universial Format
+            Output the dagify Universial Format Back to the Class"""
         self.universal_format = None
         if self.source_path is None:
             raise ValueError("dagify: source file cannot be None or Empty")
@@ -68,11 +68,13 @@ class Report():
         return
 
     def parse_universal_format(self, source):
+        """Function to parse uf"""
         uf = UF()
         uf = self.parse_controlm_tree(source, uf)
         return uf
 
     def parse_controlm_tree(self, root_node, parent):
+        """Function to parse control m"""
         for node in root_node:
             match node.tag:
                 case "FOLDER" | "SMART_FOLDER":
@@ -111,7 +113,7 @@ class Report():
         return parent
 
     def check_schedules(self, xml_file_path, dag_divider):
-
+        """Function to check schedules exist and generate reprot table"""
         title = "Updated Job Schedules"
         columns = ["JOB NAME", "DAG DIVIDER", "SCHEDULE CHANGE", "ORIGINAL SCHEDULE", "DAG SCHEDULE"]
         rows = []
