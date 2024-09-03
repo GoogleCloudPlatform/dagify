@@ -25,18 +25,11 @@ from .utils import (
     directory_exists,
     is_directory,
     read_yaml_to_dict,
-    calculate_cron_schedule
+    calculate_cron_schedule,
+    load_source
 )
 from .rules import (
     Rule
-)
-from .uf import (
-    UF,
-    UFTask,
-    UFTaskVariable,
-    UFTaskInCondition,
-    UFTaskOutCondition,
-    UFTaskShout,
 )
 
 
@@ -61,12 +54,13 @@ class Engine():
         self.output_path = f"{output_path}/{source_xml_name}"
         self.dag_divider = dag_divider
         self.schema = "./dagify/converter/yaml_validator/schema.yaml"
+        self.uf = load_source(self.source_path)
 
         # Run the Proccess
         self.set_baseline_imports()
         self.load_config()
         self.load_templates()
-        self.load_source()
+        # self.load_source()
         self.validate()
         self.convert()
         self.cal_dag_dividers()
@@ -167,65 +161,6 @@ class Engine():
 
     def get_template_count(self):
         return self.templates_count
-
-    def load_source(self):
-        # Read the Source File
-        # Parse into dagify Universial Format
-        # Output the dagify Universial Format Back to the Class
-        self.universal_format = None
-        if self.source_path is None:
-            raise ValueError("dagify: source file cannot be None or Empty")
-        if file_exists(self.source_path) is False:
-            raise FileNotFoundError(
-                "dagify: source file not found at {}".format(
-                    self.source_path))
-
-        root = ET.parse(self.source_path).getroot()
-        self.uf = self.parse_universal_format(root)
-        return
-
-    def parse_universal_format(self, source):
-        uf = UF()
-        uf = self.parse_controlm_tree(source, uf)
-        return uf
-
-    def parse_controlm_tree(self, root_node, parent):
-        for node in root_node:
-            match node.tag:
-                case "FOLDER" | "SMART_FOLDER":
-                    # ufFolder = UFFolder()
-                    # ufFolder.from_controlm_xml(node)
-                    # parent.add_folder(ufFolder)
-                    self.parse_controlm_tree(node, parent)
-                case "JOB":
-                    ufTask = UFTask()
-                    ufTask.from_controlm_xml(node)
-                    parent.add_task(ufTask)
-                    self.parse_controlm_tree(node, ufTask)
-                case "VARIABLE":
-                    ufTaskVariable = UFTaskVariable()
-                    ufTaskVariable.from_controlm_xml(node)
-                    parent.add_variable(ufTaskVariable)
-                    self.parse_controlm_tree(node, ufTaskVariable)
-                case "INCOND":
-                    ufTaskInCondition = UFTaskInCondition()
-                    ufTaskInCondition.from_controlm_xml(node)
-                    parent.add_in_condition(ufTaskInCondition)
-                    self.parse_controlm_tree(node, ufTaskInCondition)
-                case "OUTCOND":
-                    ufTaskOutCondition = UFTaskOutCondition()
-                    ufTaskOutCondition.from_controlm_xml(node)
-                    parent.add_out_condition(ufTaskOutCondition)
-                    self.parse_controlm_tree(node, ufTaskOutCondition)
-                case "SHOUT":
-                    ufTaskShout = UFTaskShout()
-                    ufTaskShout.from_controlm_xml(node)
-                    parent.add_shout(ufTaskShout)
-                    self.parse_controlm_tree(node, ufTaskShout)
-                case _:
-                    print("Node: " + node.tag + " is not currently supported.")
-
-        return parent
 
     def calc_dag_dependencies(self):
         self.uf.calculate_dag_dependencies()
