@@ -42,7 +42,7 @@ class Report():
         # Run the Proccess
         self.write_report()
 
-    def check_schedules(self, xml_file_path, dag_divider):
+    def check_schedules(self, dag_divider):
         """Function to check schedules exist and generate reprot table"""
         title = "Updated Job Schedules"
         columns = ["JOB NAME", "DAG DIVIDER", "SCHEDULE CHANGE", "ORIGINAL SCHEDULE", "DAG SCHEDULE"]
@@ -155,12 +155,11 @@ class Report():
         report_tables = []
         if not directory_exists(self.output_path):
             create_directory(self.output_path)
-            # clear_directory(self.output_path)
-
+            
         job_title, job_columns, job_rows, job_statistics, job_warning = self.generate_report()
         job_conversion_table = generate_table(job_title, job_columns, job_rows)
 
-        schedules_title, schedules_columns, schedules_rows = self.check_schedules(self.source_path, dag_divider="PARENT_FOLDER")
+        schedules_title, schedules_columns, schedules_rows = self.check_schedules(dag_divider="PARENT_FOLDER")
         schedule_table = generate_table(schedules_title, schedules_columns, schedules_rows)
 
         report_tables.append(job_conversion_table)

@@ -60,7 +60,6 @@ class Engine():
         self.set_baseline_imports()
         self.load_config()
         self.load_templates()
-        # self.load_source()
         self.validate()
         self.convert()
         self.cal_dag_dividers()
