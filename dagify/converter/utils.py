@@ -121,7 +121,7 @@ def count_yaml_files(directory, case_sensitive=True, recursive=False):
     """
 
     count = 0
-    for root, dirs, files in os.walk(directory):
+    for files in os.walk(directory):
         for file in files:
             if (case_sensitive and file.endswith(('.yaml', '.yml'))) or \
                (not case_sensitive and file.lower().endswith(('.yaml', '.yml'))):
@@ -334,7 +334,7 @@ def calculate_cron_schedule(task):
     return schedule_interval
 
 
-def filter_jobs_by_parameter_in_child(xml_file_path, parameter_name, child_element_name=None, dag_divider=None):
+def filter_jobs_by_parameter_in_child(xml_file_path, parameter_name, child_element_name=None):
     """Function to return job_name with a particular paramter"""
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
