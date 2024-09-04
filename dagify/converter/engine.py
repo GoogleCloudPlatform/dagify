@@ -19,6 +19,7 @@ from .yaml_validator.custom_validator import validators
 import yaml
 import xml.etree.ElementTree as ET
 from jinja2 import Environment, FileSystemLoader
+import autopep8
 from .utils import (
     file_exists,
     create_directory,
@@ -331,7 +332,8 @@ class Engine():
                 upstream_dependencies=upstream_dependencies
             )
             with open(filename, mode="w", encoding="utf-8") as dag_file:
-                dag_file.write(content)
+                content_linted = autopep8.fix_code(content)
+                dag_file.write(content_linted)
 
         return
 
@@ -404,9 +406,12 @@ def airflow_task_build(task, template):
         values[targetKey] = targetValue
 
     # Explicit Trigger Rule Handling
-    values["trigger_rule"] = "TIMS_RULE"
-    for in_cond in task.get_in_conditions():
-        print(in_cond)
+    # By default, the trigger rule will be all_success unless there is an in-condition with "OR" relationship
+    trigger_rule = "all_success"
+    for in_condition in task.get_in_conditions():
+        if in_condition.get_attribute("AND_OR") == 'O':
+            trigger_rule =  'one_success'
+    values["trigger_rule"] = trigger_rule
 
     # Construct Output Python Object Text
     output = template["structure"].format(**values)

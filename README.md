@@ -7,7 +7,9 @@
 ## Table of Contents
 **[DAGify Overview](#dagify-overview)**<br>
 **[Running Locally](#running-locally)**<br>
+**[DAG Dividers](#dag-dividers)**<br>
 **[Templates](#templates)**<br>
+**[Rules Engine](#rules-engine)**<br>
 **[Supported Features](#supported-features)**<br>
 **[Supported Schedulers](#supported-schedulers)**<br>
 **[Generate Report](#generate-report)**<br>

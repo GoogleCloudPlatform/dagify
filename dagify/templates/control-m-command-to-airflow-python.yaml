@@ -61,5 +61,6 @@ structure: |
     task_id="{task_id}",
     python_callable=helloWorld,
     op_args=["{task_id}"],
+    trigger_rule="{trigger_rule}",
     dag=dag,
   )

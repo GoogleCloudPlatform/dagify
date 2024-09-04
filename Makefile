@@ -5,10 +5,13 @@ clean: dagify-clean
 	
 dagify-clean: 
 	@echo "Cleaning dagify Package"
-	rm -rf ./output
-	rm -rf ./venv
-	python3 -m venv ./venv
-	. ./venv/bin/activate; pip install -r ./requirements.txt
+	( \
+		rm -rf ./output; \
+		rm -rf ./venv; \
+		python3 -m venv ./venv; \
+		source ./venv/bin/activate; \
+		pip install -r ./requirements.txt; \
+	)
 	echo ${PWD}
 
 # Containers
