@@ -21,7 +21,7 @@ test_output_folder="test_outputs"
 has_failed=0
 for test_file in $int_test_base_folder/$test_data_folder/*.xml; do
     test_name=`echo $test_file | cut -d "/" -f 5 | cut -d "." -f 1`
-    python3 DAGify.py -d SUB_APPLICATION --source-path=$test_file --output-path=$int_test_base_folder/$test_output_folder/$test_name > /dev/null
+    python3 DAGify.py -d SUB_APPLICATION --source-path=$test_file --output-path=$int_test_base_folder/$test_output_folder > /dev/null
 
     # replace random strings from markers and sensors with "xxxx" since they can't be reproduced
     for output_file in $int_test_base_folder/$test_output_folder/$test_name/*.py; do
