@@ -83,6 +83,7 @@ def dagify(source_path, output_path, config_file, templates, dag_divider, report
             output_path=output_path,
             config_file=config_file,
             templates_path=templates,
+            dag_divider=dag_divider,
         )
 
 
