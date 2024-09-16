@@ -71,10 +71,6 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
              help="Generate report in txt and json format which \
                gives an overview of job_types converted")
 def dagify(source_path, output_path, config_file, templates, dag_divider, report):
-<<<<<<< HEAD
-    """Run dagify."""
-    print("Run DAGify Engine")
-=======
    """Run dagify."""
    print("Run DAGify Engine")
 
@@ -95,7 +91,6 @@ def dagify(source_path, output_path, config_file, templates, dag_divider, report
            dag_divider=dag_divider,
        )
 
->>>>>>> a7ee0cc (dynamic variable dag_divider for report)
 
 
 
