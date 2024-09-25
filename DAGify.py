@@ -93,6 +93,22 @@ def dagify(source_path, output_path, config_file, templates, dag_divider, report
 
 
 
+    Engine(
+        source_path=source_path,
+        output_path=output_path,
+        config_file=config_file,
+        templates_path=templates,
+        dag_divider=dag_divider,
+    )
+    if report:
+        Report(
+            source_path=source_path,
+            output_path=output_path,
+            config_file=config_file,
+            templates_path=templates,
+            dag_divider=dag_divider,
+        )
+
 
 if __name__ == '__main__':
    dagify()
