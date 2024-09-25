@@ -4,9 +4,8 @@
 name: DAGify Python Tests
 
 on:
-  # push:
-  #   branches: 
-  #     - main
+  push:
+  
   pull_request:
     branches: 
       - main
