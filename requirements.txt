@@ -18,4 +18,4 @@ yamale==5.2.1
 requests==2.32.3
 fastapi
 prettytable
-
+fastapi
