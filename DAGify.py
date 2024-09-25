@@ -13,62 +13,67 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import os
 import click
 from dagify.converter import Engine
 from dagify.converter.report_generator import Report
 
+
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option("-s",
-              "--source-path",
-              default=lambda: os.environ.get("AS_SOURCE_PATH", "./source"),
-              help="Path to source files for conversion",
-              show_default="{}".format(
-                  os.environ.get("AS_SOURCE_PATH",
-                                 "./source")))
+             "--source-path",
+             default=lambda: os.environ.get("AS_SOURCE_PATH", "./source"),
+             help="Path to source files for conversion",
+             show_default="{}".format(
+                 os.environ.get("AS_SOURCE_PATH",
+                                "./source")))
 @click.option("-o",
-              "--output-path",
-              default=lambda: os.environ.get("AS_OUTPUT_PATH", "./output"),
-              help="Path to output files after conversion.",
-              show_default="{}".format(
-                  os.environ.get("AS_OUTPUT_PATH",
-                                 "./output")))
+             "--output-path",
+             default=lambda: os.environ.get("AS_OUTPUT_PATH", "./output"),
+             help="Path to output files after conversion.",
+             show_default="{}".format(
+                 os.environ.get("AS_OUTPUT_PATH",
+                                "./output")))
 @click.option("-c",
-              "--config-file",
-              default=lambda: os.environ.get("AS_CONFIG_FILE",
-                                             "./config.yaml"),
-              help="Path to dagify configuration file.",
-              show_default="{}".format(
-                  os.environ.get("AS_CONFIG_FILE",
-                                 "./config.yaml")))
+             "--config-file",
+             default=lambda: os.environ.get("AS_CONFIG_FILE",
+                                            "./config.yaml"),
+             help="Path to dagify configuration file.",
+             show_default="{}".format(
+                 os.environ.get("AS_CONFIG_FILE",
+                                "./config.yaml")))
 @click.option("-t",
-              "--templates",
-              default=lambda: os.environ.get("AS_TEMPLATES_PATH",
-                                             "./dagify/templates"),
-              help="Path to dagify configuration file.",
-              show_default="{}".format(
-                  os.environ.get("AS_TEMPLATES_PATH",
-                                 "./dagify/templates")))
+             "--templates",
+             default=lambda: os.environ.get("AS_TEMPLATES_PATH",
+                                            "./dagify/templates"),
+             help="Path to dagify configuration file.",
+             show_default="{}".format(
+                 os.environ.get("AS_TEMPLATES_PATH",
+                                "./dagify/templates")))
 @click.option("-d",
-              "--dag-divider",
-              default=lambda: os.environ.get("AS_DAG_DIVIDER",
-                                             "PARENT_FOLDER"),
-              help="Which field in Job Definition should be used to divide up DAGS.",
-              show_default="{}".format(
-                  os.environ.get("AS_DAG_DIVIDER",
-                                 "PARENT_FOLDER")))
+             "--dag-divider",
+             default=lambda: os.environ.get("AS_DAG_DIVIDER",
+                                            "PARENT_FOLDER"),
+             help="Which field in Job Definition should be used to divide up DAGS.",
+             show_default="{}".format(
+                 os.environ.get("AS_DAG_DIVIDER",
+                                "PARENT_FOLDER")))
 @click.option("-r",
-              "--report",
-              is_flag=True,
-              default=False,
-              help="Generate report in txt and json format which \
-                gives an overview of job_types converted")
+             "--report",
+             is_flag=True,
+             default=False,
+             help="Generate report in txt and json format which \
+               gives an overview of job_types converted")
 def dagify(source_path, output_path, config_file, templates, dag_divider, report):
     """Run dagify."""
     print("Run DAGify Engine")
+
 
     Engine(
         source_path=source_path,
@@ -86,6 +91,5 @@ def dagify(source_path, output_path, config_file, templates, dag_divider, report
             dag_divider=dag_divider,
         )
 
-
 if __name__ == '__main__':
-    dagify()
+   dagify()

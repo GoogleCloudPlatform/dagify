@@ -1,8 +1,19 @@
-"""Module providing function to manipulate yaml files"""
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import xml.etree.ElementTree as ET
 import yaml
-
-
 from .utils import (
     is_directory,
     generate_report_utils,
@@ -51,7 +62,6 @@ class Report():
         rows = []
         prev_divider = None
         dag_schedule = None
-
         universal_format = self.uf
         tasks = universal_format.get_tasks()
         for tIdx, task in enumerate(tasks):
@@ -69,11 +79,10 @@ class Report():
                 if not dag_schedule:
                     dag_schedule = "@daily"
 
-            if current_divider == prev_divider:
+            if current_divider == prev_divider: # Tabulate if schedule varies or not for a job under same dag_divider 
                 current_schedule = calculate_cron_schedule(task)
                 job_name = task.get_attribute("JOBNAME")
                 if current_schedule != dag_schedule:
-
                     rows.append((job_name, current_divider, "YES", current_schedule, dag_schedule))
                 else:
                     rows.append((job_name, current_divider, "NO", current_schedule, dag_schedule))
@@ -147,8 +156,8 @@ class Report():
         ]
 
         warning_line = "NOTE: \n \
-        1. If the job_type is not defined in the config.yaml or if the job_type does not have a matching template defined,it would be by default converted into a DUMMYOPERATOR\n \
-        2. Jobs_Requiring_Manual_Approval - indicates that the job has CONFIRM PARAMTER defined in job, meaning the workflow has to be changed for manual approval for these jobs/job"
+       1. If the job_type is not defined in the config.yaml or if the job_type does not have a matching template defined,it would be by default converted into a DUMMYOPERATOR\n \
+       2. Jobs_Requiring_Manual_Approval - indicates that the job has CONFIRM PARAMTER defined in job, meaning the workflow has to be changed for manual approval for these jobs/job"
 
         return title, columns, rows, statistics, warning_line
 
@@ -157,7 +166,7 @@ class Report():
         report_tables = []
         if not directory_exists(self.output_path):
             create_directory(self.output_path)
-            
+
         job_title, job_columns, job_rows, job_statistics, job_warning = self.generate_report()
         job_conversion_table = generate_table(job_title, job_columns, job_rows)
 
