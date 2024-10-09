@@ -6,6 +6,8 @@ import subprocess
 import os
 import shutil
 import zipfile
+import uuid  
+import json
 
 app = FastAPI()
 
@@ -19,24 +21,37 @@ async def main():
 @app.post("/", response_class=HTMLResponse)
 async def process_file(source_file: UploadFile = File(...)):
     download_link = None
-    error_message = None
+    report_data = {}
 
-    # if source_file.filename == "":
-        # error_message = "Please upload a file"
     if source_file.filename :
         with open(source_file.filename, "wb") as buffer:
             buffer.write(await source_file.read())
 
         source_path = source_file.filename
-        subprocess.run(["python3", "DAGify.py", "--source-path", source_path])
+        output_path = "output-path"
 
-        output_path = "output"
+        # Clear the output directory
+        if os.path.exists(output_path):
+            shutil.rmtree(output_path)  # This removes the directory and its contents
+        os.makedirs(output_path)  # Recreate an empty directory
+
+        subprocess.run(["python3", "DAGify.py", "--source-path", source_path,"--output-path",output_path, "-r"])
+
         if os.listdir(output_path):
-            # Create a ZIP archive of the output folder
-            zip_filename = "dagify_output.zip"
+            # Generate a unique ID
+            unique_id = uuid.uuid4() 
+            source_xml_name = source_path.split("/")[-1].split(".")[0]
+
+            # Create a ZIP archive with the unique ID in the filename
+            zip_filename = f"dagify_{source_xml_name}_{unique_id}.zip"
             with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
                 for root, dirs, files in os.walk(output_path):
                     for file in files:
+                        if file.endswith(".json"):
+                            file_path = os.path.join(root, file)
+                            with open(file_path, 'r') as f:
+                                report_data = json.load(f)
+
                         zipf.write(os.path.join(root, file), 
                                    os.path.relpath(os.path.join(root, file), output_path))
 
@@ -44,7 +59,7 @@ async def process_file(source_file: UploadFile = File(...)):
 
         os.remove(source_file.filename)
 
-    return templates.TemplateResponse("index.html", {"request": {}, "download_link": download_link, "error_message": error_message})
+    return templates.TemplateResponse("index.html", {"request": {}, "download_link": download_link,"report_data": report_data})
 
 
 @app.get("/download/{filename}")

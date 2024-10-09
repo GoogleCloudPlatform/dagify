@@ -1,69 +1,99 @@
 body {
     font-family: sans-serif;
-    background-color: #a1d5ed; /* Light blue background */
-    flex-direction: column;
+    background-color: whitesmoke;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    padding: 40px;
+    padding-bottom: 0px; 
+
 }
 
+footer {
+  position: fixed ;
+  width:100%;
+  bottom: 0px;
+  align-items: center;
+  background-color: rgb(211, 223, 231);
+  text-align: center;
+  padding: 2rem; 
+  margin: 1rem; 
+  margin-bottom:0px
+}
+
+
 h1 {
-    margin-bottom: 20px;
-    font-size: 2.5rem; /* Example Bootstrap heading size */
-    font-weight: bold;
+  font-family: sans-serif;
+  font-size: 2.5rem; /* Example Bootstrap heading size */
+  font-weight: bold;
+  background: -webkit-linear-gradient(rgb(14, 152, 221), rgb(20, 35, 239));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+p{
+  font-family: sans-serif;
+  font-weight: bold;
+  padding: 15uv;
+  margin: 15uv;
+}
+
+h3 {
+  font-family: sans-serif;
 }
 
 form {
-    display: flex;
-    margin-top: 40%;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .custom-file-input {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .custom-file-input label {
-    margin-bottom: 10px; /* Adjust for spacing */
+  margin-bottom: 1rem; /* Adjust for spacing */
 }
 
 .btn {
-    margin-bottom: 10px; /* Consistent margin for all buttons */
+  margin-bottom: 1rem; /* Consistent margin for all buttons */
 }
 
-.download-box {
-    /* background-color: rgb(242, 230, 150);
-    border: 1px solid rgb(214, 92, 204); */
-    border-radius: 10px;
-    padding: 5px; /* Increased padding for aesthetics */
-    margin-top: 20px; /* Increased margin for better separation */
-    text-align: center; /* Center content within the box */
-}
-
-.download-box a {
-    color: #080211;
-    text-decoration: none;
-}
-
-.card-content {
-    padding: 20px;
-    background-color: antiquewhite;
-}
-
-.btn-light-green {
-    background-color: #42db6b; /* Darker shade of green */
-    color: #333; /* Adjust text color for contrast if needed */
-    border-color: #42db6b; /* Optional: Match border color */
+@media (min-width: 768px) {
+  .card {
+    max-width: 60vw;
   }
-  
-  .btn-light-green:hover {
-    background-color: #52b388; /* Even darker on hover */
-    border-color: #52b388; 
+}
+
+.card {
+  padding: 2rem;
+  background-color: #fff;
+  box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border: 1px solid #ccc; 
+  border-radius: 5px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 90vw; 
+  align-self: center; 
+  margin: 2rem;
   }
+
   
 
+td {
+  white-space: pre-line;
+}
+
+ul {
+  list-style-position: inside;
+  list-style-type: none;
+}
+
+
+  p {
+    text-align: center;
+    align-self: center;
+    white-space: pre-line;
+  }
