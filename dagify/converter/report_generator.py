@@ -135,7 +135,7 @@ class Report():
         title = "Job Conversion Details"
         columns = ["TASK", "INFO", "COUNT"]
         rows = [
-            ["Source File", "\n".join(source_file_info) , source_files_count],
+            ["Source File", "\n".join(source_file_info), source_files_count],
             ["Source File Job Types", "\n".join(job_types_source), job_types_source_count],
             ["Config File Job Types", "\n".join(config_job_types), config_job_types_count],
             ["Job Types Converted", "\n".join(job_types_converted), len(job_types_converted)],
@@ -157,7 +157,7 @@ class Report():
         report_tables = []
         if not directory_exists(self.output_path):
             create_directory(self.output_path)
-            
+
         job_title, job_columns, job_rows, job_statistics, job_warning = self.generate_report()
         job_conversion_table = generate_table(job_title, job_columns, job_rows)
 
@@ -170,4 +170,4 @@ class Report():
         # json_generation
         formatted_job_table_data = format_table_json(job_title, job_columns, job_rows)
         formatted_schedule_table_data = format_table_json(schedules_title, schedules_columns, schedules_rows)
-        generate_json(job_statistics, formatted_job_table_data, formatted_schedule_table_data,job_warning, self.output_path)
+        generate_json(job_statistics, formatted_job_table_data, formatted_schedule_table_data, job_warning, self.output_path)

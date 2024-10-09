@@ -410,7 +410,7 @@ def airflow_task_build(task, template):
     trigger_rule = "all_success"
     for in_condition in task.get_in_conditions():
         if in_condition.get_attribute("AND_OR") == 'O':
-            trigger_rule =  'one_success'
+            trigger_rule = 'one_success'
     values["trigger_rule"] = trigger_rule
 
     # Construct Output Python Object Text
