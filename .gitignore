@@ -21,4 +21,3 @@ venv/
 .env.local
 static/assets/.DS_Store
 .gitignore
-dagify/converter/utils.py
