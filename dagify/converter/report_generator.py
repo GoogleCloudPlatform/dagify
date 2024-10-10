@@ -1,3 +1,4 @@
+"""Module providing function to manipulate yaml files"""
 # Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,10 +59,11 @@ class Report():
     def check_schedules(self, dag_divider):
         """Function to check schedules exist and generate reprot table"""
         title = "Updated Job Schedules"
-        columns = ["JOB NAME", "DAG DIVIDER", "SCHEDULE CHANGE", "ORIGINAL SCHEDULE", "DAG SCHEDULE"]
+        columns = ["JOB NAME", "DAG DIVIDER", "CHANGE IN SCHEDULE", "ORIGINAL JOB SCHEDULE", "DAG SCHEDULE"]
         rows = []
         prev_divider = None
         dag_schedule = None
+
         universal_format = self.uf
         tasks = universal_format.get_tasks()
         for tIdx, task in enumerate(tasks):
@@ -134,30 +136,30 @@ class Report():
 
         # Table Info
         statistics = [
-            f"Jobtypes converted: {len(job_types_converted)}/{len(job_types_source)}",
-            f"Percentage of Jobtypes converted: {converted_percentage}%",
-            f"Percentage of Jobtypes not converted: {non_converted_percentage}%",
-            f"Jobs converted: {conv_job_count}/{len(job_info)}",
-            f"Percentage of Jobs converted: {converted_job_percent}%",
-            f"Percentage of Jobs not converted: {non_converted_job_percent}%",
+            f"Job Types Converted: {len(job_types_converted)}/{len(job_types_source)}",
+            f"Percentage of Job Types Converted: {converted_percentage}%",
+            f"Percentage of Job Types not Converted: {non_converted_percentage}%",
+            f"Jobs Converted: {conv_job_count}/{len(job_info)}",
+            f"Percentage of Jobs Converted: {converted_job_percent}%",
+            f"Percentage of Jobs not Converted: {non_converted_job_percent}%",
         ]
-        title = "DAGIFY REPORT"
+        title = "Job Conversion Details"
         columns = ["TASK", "INFO", "COUNT"]
         rows = [
-            ["Source_files", source_file_info, source_files_count],
-            ["Source_File_Job_Types", job_types_source, job_types_source_count],
-            ["Config_File_Job_Types", config_job_types, config_job_types_count],
-            ["Job_Types_Converted", job_types_converted, len(job_types_converted)],
-            ["Job_types_Not_Converted", job_types_not_converted, len(job_types_not_converted)],
-            ["Jobs_Converted", converted_job_name, len(converted_job_name)],
-            ["Jobs_Not_Converted", unconverted_job_name, len(unconverted_job_name)],
-            ["Jobs_Requiring_Manual_Approval", manual_job_names, len(manual_job_names)],
-            ["Templates_Validated", templates_to_validate, len(templates_to_validate)]
+            ["Source File", "\n".join(source_file_info), source_files_count],
+            ["Source File Job Types", "\n".join(job_types_source), job_types_source_count],
+            ["Config File Job Types", "\n".join(config_job_types), config_job_types_count],
+            ["Job Types Converted", "\n".join(job_types_converted), len(job_types_converted)],
+            ["Job Types not Converted", "\n".join(job_types_not_converted) if job_types_not_converted else "-", len(job_types_not_converted)],
+            ["Jobs Converted", "\n".join(converted_job_name) if converted_job_name else "-", len(converted_job_name)],
+            ["Jobs not Converted", "\n".join(unconverted_job_name) if unconverted_job_name else "-", len(unconverted_job_name)],
+            ["Jobs Requiring Manual Approval", "\n".join(manual_job_names) if manual_job_names else "-", len(manual_job_names)],
+            ["Templates Validated", "\n".join(templates_to_validate), len(templates_to_validate)]
         ]
 
         warning_line = "NOTE: \n \
-       1. If the job_type is not defined in the config.yaml or if the job_type does not have a matching template defined,it would be by default converted into a DUMMYOPERATOR\n \
-       2. Jobs_Requiring_Manual_Approval - indicates that the job has CONFIRM PARAMTER defined in job, meaning the workflow has to be changed for manual approval for these jobs/job"
+        1. If \"Job Type\" is not defined in the config.yaml, or it does not have a matching template defined, it will be converted into a DUMMYOPERATOR by default\n \
+        2. \"Jobs Requiring Manual Approval\" - indicates that the job(s) has a CONFIRM PARAMTER defined, implying the workflow should be changed for manual approval for these job(s)"
 
         return title, columns, rows, statistics, warning_line
 
@@ -179,4 +181,4 @@ class Report():
         # json_generation
         formatted_job_table_data = format_table_json(job_title, job_columns, job_rows)
         formatted_schedule_table_data = format_table_json(schedules_title, schedules_columns, schedules_rows)
-        generate_json(job_statistics, formatted_job_table_data, formatted_schedule_table_data, self.output_path)
+        generate_json(job_statistics, formatted_job_table_data, formatted_schedule_table_data, job_warning, self.output_path)

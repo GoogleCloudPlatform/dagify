@@ -308,13 +308,14 @@ def format_table_json(title, columns, rows):
     return table_data
 
 
-def generate_json(statistics, job_table_data, schedule_table_data, output_file_path):
+def generate_json(statistics, job_table_data, schedule_table_data, warning_line, output_file_path):
     """Creates a JSON file with intro text, table data, and conclusion text"""
 
     data = {
         "High_Level_Info": statistics,
         "Job_info_table": job_table_data,
-        "Schedule_info_table": schedule_table_data
+        "Schedule_info_table": schedule_table_data,
+        "Note": warning_line
     }
     json_file_path = f"{output_file_path}/report.json"
     with open(json_file_path, "w") as json_file:
