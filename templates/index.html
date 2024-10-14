@@ -13,14 +13,13 @@
 <body>
     <!-- Header Content -->
     <nav class="navbar navbar-light shadow">
-        <div class="container-fluid container">
-            <div class="navbar-brand">
-                <a class="navbar-brand" href="https://sites.google.com/corp/google.com/dagify/home?authuser=0">
-                    <span class="logo">go/dagify</span>    
+        <div class=" container">
+                <a class="navbar-brand" target="_blank" style="font-family: sans-serif; font-size: medium;"
+                    href="https://opensource.googleblog.com/2024/07/dagify-accelerate-your-journey-from-control-m-to-apache-airflow.html">
+                    <span class="logo">About</span>    
                 </a>
-            </div>
-            <div class="feedback"><span>Feedback&nbsp;&nbsp;</span>
-                <a target="_blank" href="" class="material-icons link-underline-opacity-0">feedback</a>
+            <div class="navbar-brand feedback" style="font-family: sans-serif; font-size: medium;"><span>Feedback&nbsp;&nbsp;</span>
+                <a target="_blank" href="https://github.com/GoogleCloudPlatform/dagify/issues" class="material-icons link-underline-opacity-0">feedback</a>
             </div>
         </div>
     </nav>
@@ -28,28 +27,44 @@
     <div class="container"> 
         <div class="row justify-content-center">
 
-            <h1 class="text-center mt-5 mb-3 py-3 fs-1">Convert your jobs to Airflow DAGs!</h1>
-
+            <h1 class="text-center fs-1  mt-5 mb-3 py-2 "><strong>Convert your jobs to Airflow DAGs!</strong></h1>
+            
             <form id="upload-form" method="post" enctype="multipart/form-data" class="my-1">
-                <div class="my-2">
-                    <input type="file" name="source_file" id="file-input" class="form-control">
-                </div>
-
-                <div id="alertContainer" class="my-3"></div> 
-
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-arrow-repeat me-2"></i> 
-                    Convert & Download</button>
+                <card class=" card border-light  my-4  py-5 " >
+                   
+                    <div class="row my-2  align-items-center ">
+                        <div class="col-md-4"> 
+                          <label for="file-input">Upload Source XML</label> 
+                        </div>
+                        <div class="col-md-8">
+                          <input type="file" name="source_file" id="file-input" class="form-control">
+                        </div>
+                      </div>
+                      <div class="row my-2 align-items-center">  
+                        <div class="col-md-4">
+                          <label for="dag_divider">Select DAG Divider</label> 
+                        </div>
+                        <div class="col-md-8">
+                        <input type="text" name="dag_divider" id="dag_divider" class="form-control">
+                        </div>
+                      </div>
+                    
+                    <div id="alertContainer" class="my-3"></div> 
+                    
+                    <button type="submit" class="btn btn-primary ">
+                        <i class="bi bi-arrow-repeat me-2"></i> 
+                        Convert & Download</button>
+                </card>
             </form>
 
-            <!-- {% if download_link %}
+            {% if download_link %}
                 <meta http-equiv="refresh" content="3;url={{ download_link }}">
                 <p class="text-break fw-medium fs-5 lh-base" >Thank you! Your output will be downloaded soon. If not, click <a href="{{ download_link }}">here</a> to download it.</p> 
                 <br>
-            {% endif %} -->
+            {% endif %}
 
             {% if report_data %}
-            <div class="card">
+            <div class="card border-success  my-4  py-5 ">
                 <h3>Conversion Summary</h3> 
                 <list >
                     <ul>
@@ -62,7 +77,7 @@
                 {% for table_name in ["Job_info_table", "Schedule_info_table"] %}
                     <h3>{{ report_data[table_name]["title"]}}</h3>
                     <br>    
-                    <table class = "table table-sm table-responsive-md caption-top table-bordered border border-dark">
+                    <table class = "table table-sm table-responsive-md caption-top rounded-3 table-bordered border border-dark">
                         <thead>
                             <tr>
                                 {% for column in report_data[table_name]["columns"] %}
@@ -97,18 +112,18 @@
     </div>
 
     <!-- Footer Content -->
-    <div class="fs-5">
-        <footer class="d-flex align-items-center py-2 ">
-            <ul class="nav justify-content-center gap-4 col-md-11">
-                <li class="nav-item py-1" >
+    <div class="fs-6">
+        <footer class="d-flex align-items-center py-1">
+            <ul class="nav justify-content-center align-items-center col-md-11">
+                <li class="nav-item py-1 px-1" >
                     <a  class="nav-link  text-muted">
                     &copy; <img src="./static/assets/img/google_logo.svg" class="google_logo" alt="Google Logo" /></a></li>
-                <li class="nav-item py-1">
-                    <a  href="https://github.com/GoogleCloudPlatform/dagify" class="nav-link  text-muted">
-                    <img src="./static/assets/img/github_logo.svg" class="github_logo" alt="Github Logo" /> Dagify</a></li>
-                <li class="nav-item py-1"><a   href="https://policies.google.com/privacy" 
+                <li class="nav-item py-1 px-1">
+                    <a  href="https://github.com/GoogleCloudPlatform/dagify" class="nav-link text-muted">
+                    <img src="./static/assets/img/github_logo.svg" class="github_logo px-1" alt="Github Logo" /> Dagify</a></li>
+                <li class="nav-item py-1 px-1"><a   href="https://policies.google.com/privacy" 
                     class="nav-link   text-muted">Privacy</a></li>
-                <li class="nav-item py-1"><a href="https://policies.google.com/terms?hl=en" 
+                <li class="nav-item py-1 px-1"><a href="https://policies.google.com/terms?hl=en" 
                     class="nav-link   text-muted">Terms</a></li>
             </ul>
         </footer>

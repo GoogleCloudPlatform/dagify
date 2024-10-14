@@ -19,7 +19,7 @@ async def main():
     return templates.TemplateResponse("index.html", {"request": {}, "download_link": None})
 
 @app.post("/", response_class=HTMLResponse)
-async def process_file(source_file: UploadFile = File(...)):
+async def process_file(source_file: UploadFile = File(...), dag_divider: str = Form(...)):
     download_link = None
     report_data = {}
 
@@ -34,8 +34,7 @@ async def process_file(source_file: UploadFile = File(...)):
         if os.path.exists(output_path):
             shutil.rmtree(output_path)  # This removes the directory and its contents
         os.makedirs(output_path)  # Recreate an empty directory
-
-        subprocess.run(["python3", "DAGify.py", "--source-path", source_path,"--output-path",output_path, "-r"])
+        subprocess.run(["python3", "DAGify.py", "--source-path", source_path,"--dag-divider",dag_divider,"--output-path",output_path,  "-r"])
 
         if os.listdir(output_path):
             # Generate a unique ID

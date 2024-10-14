@@ -81,7 +81,7 @@ class Report():
                 if not dag_schedule:
                     dag_schedule = "@daily"
 
-            if current_divider == prev_divider: # Tabulate if schedule varies or not for a job under same dag_divider 
+            if current_divider == prev_divider:  # Tabulate if schedule varies or not for a job under same dag_divider
                 current_schedule = calculate_cron_schedule(task)
                 job_name = task.get_attribute("JOBNAME")
                 if current_schedule != dag_schedule:
