@@ -11,8 +11,8 @@ import json
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/ui/static", StaticFiles(directory="ui/static"), name="static")
+templates = Jinja2Templates(directory="ui/templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def main():
