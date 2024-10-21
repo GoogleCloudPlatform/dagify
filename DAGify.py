@@ -18,7 +18,7 @@ import os
 import click
 from dagify.converter import Engine
 from dagify.converter.report_generator import Report
-
+from dagify.converter.automic_converter.automic_engine import Automicengine
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -70,18 +70,32 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
              default=False,
              help="Generate report in txt and json format which \
                gives an overview of job_types converted")
-def dagify(source_path, output_path, config_file, templates, dag_divider, report):
+@click.option("-tl",
+              "--tool",
+              type=click.Choice(['ctrlm', 'automic']),  # Restrict input to these choices
+              default=lambda: os.environ.get("AS_TYPE", "ctrlm"),  # Default to 'ctrl-m'
+              help="Type of conversion ('ctrlm' or 'automic')",
+              show_default="{}".format(os.environ.get("AS_TYPE", "ctrlm")))
+def dagify(source_path, output_path, config_file, templates, dag_divider, report, tool):
     """Run dagify."""
     print("Run DAGify Engine")
 
-
-    Engine(
-        source_path=source_path,
-        output_path=output_path,
-        config_file=config_file,
-        templates_path=templates,
-        dag_divider=dag_divider,
-    )
+    if tool=="ctrlm":
+        Engine(
+            source_path=source_path,
+            output_path=output_path,
+            config_file=config_file,
+            templates_path=templates,
+            dag_divider=dag_divider,
+        )
+    if tool=="automic":
+        Automicengine(
+            source_path=source_path,
+            output_path=output_path,
+            config_file=config_file,
+            templates_path=templates,
+            dag_divider=dag_divider,
+        )
     if report:
         Report(
             source_path=source_path,
@@ -92,4 +106,4 @@ def dagify(source_path, output_path, config_file, templates, dag_divider, report
         )
 
 if __name__ == '__main__':
-   dagify()
+    dagify()
