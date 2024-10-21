@@ -34,6 +34,13 @@ async def process_file(source_file: UploadFile = File(...), dag_divider: str = F
         if os.path.exists(output_path):
             shutil.rmtree(output_path)  # This removes the directory and its contents
         os.makedirs(output_path)  # Recreate an empty directory
+        current_dir = os.getcwd()
+        
+        # Run the subprocess from parent directory where DAGify.py is located
+        os.chdir('..')
+
+        # source_path is at current directory, this must be specified when running the subprocess
+        source_path = os.path.join(current_dir, source_file.filename)
         subprocess.run(["python3", "DAGify.py", "--source-path", source_path,"--dag-divider",dag_divider,"--output-path",output_path,  "-r"])
 
         if os.listdir(output_path):
@@ -55,7 +62,9 @@ async def process_file(source_file: UploadFile = File(...), dag_divider: str = F
                                    os.path.relpath(os.path.join(root, file), output_path))
 
             download_link = f"/download/{zip_filename}"
-
+        
+        # Change directory to current directory after subprocess completes
+        os.chdir(current_dir)
         os.remove(source_file.filename)
 
     return templates.TemplateResponse("index.html", {"request": {}, "download_link": download_link,"report_data": report_data})
@@ -63,5 +72,7 @@ async def process_file(source_file: UploadFile = File(...), dag_divider: str = F
 
 @app.get("/download/{filename}")
 async def download_file(filename: str):
-    file_path = filename 
+    # File Path is updated as output is downloaded in parent directory, 
+    # where DAGify.py is located. 
+    file_path = os.path.join(os.pardir, filename)
     return FileResponse(file_path, media_type='application/zip', filename=filename)

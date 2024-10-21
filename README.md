@@ -228,6 +228,13 @@ Conversion Details: A comprehensive table outlining specific TASKTYPE conversion
 Schedule Adjustments: A separate table detailing any changes made to job schedules during the conversion.
 
 ---
+## Run DAGify with the interactive UI
+The DAGify UI allows you to upload your Control-M XML file and choose your preferred DAG divider. It generates the Python DAG files along with the detailed conversion report. 
+```bash
+cd ui
+uvicorn app:app --reload
+```
+---
 
 </br>
 
