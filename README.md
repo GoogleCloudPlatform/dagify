@@ -13,6 +13,8 @@
 **[Supported Features](#supported-features)**<br>
 **[Supported Schedulers](#supported-schedulers)**<br>
 **[Generate Report](#generate-report)**<br>
+**[Run DAGify with an interactive UI](#run-dagify-with-an-interactive-ui)**<br>
+
 
 ## DAGify Overview 
 DAGify is a highly extensible, template driven, enterprise scheduler migration accelerator that helps organizations speed up their migration from Control-M to Apache Airflow & Google Cloud Composer. It aims to heavily reduce the effort it takes for developers to convert their native enterprise scheduler formats into native Python code in a Apache Airflow DAG format.  
@@ -228,7 +230,7 @@ Conversion Details: A comprehensive table outlining specific TASKTYPE conversion
 Schedule Adjustments: A separate table detailing any changes made to job schedules during the conversion.
 
 ---
-## Run DAGify with the interactive UI
+## Run DAGify with an interactive UI
 The DAGify UI allows you to upload your Control-M XML file and choose your preferred DAG divider. It generates the Python DAG files along with the detailed conversion report. 
 ```bash
 cd ui
