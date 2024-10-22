@@ -40,6 +40,7 @@ class Report():
         self,
         source_path=None,
         output_path=None,
+        tool=None,
         templates_path="./templates",
         config_file="./config.yaml",
         dag_divider="PARENT_FOLDER"
@@ -52,7 +53,8 @@ class Report():
         self.output_path = f"{output_path}/{source_xml_name}"
         self.templates_path = templates_path
         self.dag_divider = dag_divider
-        self.uf = load_source(self.source_path)
+        self.tool = tool
+        self.uf = load_source(self.source_path,tool)
         # Run the Proccess
         self.write_report()
 

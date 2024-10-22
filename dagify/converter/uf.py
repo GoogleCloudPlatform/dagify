@@ -199,6 +199,7 @@ class UF():
 
 
 class UFTask(UF):
+    "Class for defining and filling out UF objects"
     T = TypeVar('T', bound='UFTask')
 
     def __init__(self):
@@ -305,6 +306,21 @@ class UFTaskOutCondition(UFTask):
 
 class UFTaskShout(UFTask):
     T = TypeVar('T', bound='UFTaskShout')
+
+    def __init__(self):
+        return
+
+#Automic related classes
+class UFJobP(UFTask):
+    "Inherited special class for JOBP tags"
+    T = TypeVar('T', bound='UFJobP')
+
+    def __init__(self):
+        return
+
+class UFJobPTask(UFTask):
+    "Inherited special class for JOBP-tasks tags"
+    T = TypeVar('T', bound='UFJobPTask')
 
     def __init__(self):
         return

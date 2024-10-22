@@ -38,9 +38,11 @@ class Engine():
         self,
         source_path=None,
         output_path=None,
+        tool=None,
         templates_path="./templates",
         config_file="./config.yaml",
         dag_divider="PARENT_FOLDER",
+
     ):
         self.DAGs = []
         self.baseline_imports = []
@@ -50,11 +52,12 @@ class Engine():
         self.config = {}
         self.config_file = config_file
         self.source_path = source_path
+        self.tool = tool
         source_xml_name = self.source_path.split("/")[-1].split(".")[0]
         self.output_path = f"{output_path}/{source_xml_name}"
         self.dag_divider = dag_divider
         self.schema = "./dagify/converter/yaml_validator/schema.yaml"
-        self.uf = load_source(self.source_path)
+        self.uf = load_source(self.source_path,tool)
 
         # Run the Proccess
         self.set_baseline_imports()

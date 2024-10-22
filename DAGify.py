@@ -87,6 +87,7 @@ def dagify(source_path, output_path, config_file, templates, dag_divider, report
             config_file=config_file,
             templates_path=templates,
             dag_divider=dag_divider,
+            tool=tool
         )
     if tool=="automic":
         Automicengine(
@@ -95,6 +96,7 @@ def dagify(source_path, output_path, config_file, templates, dag_divider, report
             config_file=config_file,
             templates_path=templates,
             dag_divider=dag_divider,
+            tool=tool
         )
     if report:
         Report(
@@ -103,6 +105,7 @@ def dagify(source_path, output_path, config_file, templates, dag_divider, report
             config_file=config_file,
             templates_path=templates,
             dag_divider=dag_divider,
+            tool=tool
         )
 
 if __name__ == '__main__':

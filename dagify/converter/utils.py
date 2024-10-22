@@ -27,10 +27,12 @@ from .uf import (
     UFTaskInCondition,
     UFTaskOutCondition,
     UFTaskShout,
+    UFJobP,
+    UFJobPTask
 )
 
 
-def load_source(source_path):
+def load_source(source_path,tool):
     """ Read the Source File
         Parse into dagify Universial Format
         Output the dagify Universial Format Back to the Class"""
@@ -41,8 +43,13 @@ def load_source(source_path):
             "dagify: source file not found at {}".format(
                 source_path))
 
-    root = ET.parse(source_path).getroot()
-    uf = parse_universal_format(root)
+    if tool == "automic":
+        root = ET.parse(source_path).getroot()
+        uf = parse_automic_universal_format(root)
+    else:
+        root = ET.parse(source_path).getroot()
+        uf = parse_universal_format(root)
+
     return uf
 
 
@@ -51,7 +58,6 @@ def parse_universal_format(source):
     uf = UF()
     uf = parse_controlm_tree(source, uf)
     return uf
-
 
 def parse_controlm_tree(root_node, parent):
     """Function to parse control m"""
@@ -92,6 +98,30 @@ def parse_controlm_tree(root_node, parent):
 
     return parent
 
+def parse_automic_universal_format(source):
+    """Function to parse uf"""
+    uf = UF()
+    uf = parse_automic_tree(source, uf)
+    return uf
+
+def parse_automic_tree(root_node, parent):
+    """Function to parse automic xml"""
+    for node in root_node:
+        match node.tag:
+            case "uc-export":
+                parse_controlm_tree(node, parent)
+            case "JOBP":
+                ufTask = UFJobP()
+                ufTask.from_controlm_xml(node)
+                parent.add_task(ufTask)
+                parse_controlm_tree(node, ufTask)
+            case "task":
+                ufTask = UFJobPTask()
+                ufTask.from_controlm_xml(node)
+                parent.add_task(ufTask)
+                parse_controlm_tree(node, ufTask)
+
+    return parent
 
 def clean_converter_type(converter_type):
     """Cleans a converter type string by removing all non-alphanumeric characters and converting it to uppercase.
