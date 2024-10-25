@@ -109,17 +109,17 @@ def parse_automic_tree(root_node, parent):
     for node in root_node:
         match node.tag:
             case "uc-export":
-                parse_controlm_tree(node, parent)
+                parse_automic_tree(node, parent)
             case "JOBP":
-                ufTask = UFJobP()
-                ufTask.from_controlm_xml(node)
-                parent.add_task(ufTask)
-                parse_controlm_tree(node, ufTask)
+                ufJobp = UFJobP()
+                ufJobp.from_controlm_xml(node)
+                parent.add_uf_jobp(ufJobp)
+                parse_automic_tree(node, ufJobp)
             case "task":
-                ufTask = UFJobPTask()
-                ufTask.from_controlm_xml(node)
-                parent.add_task(ufTask)
-                parse_controlm_tree(node, ufTask)
+                ufJobpTask = UFJobPTask()
+                ufJobpTask.from_controlm_xml(node)
+                parent.add_uf_task(ufJobpTask)
+                parse_automic_tree(node, ufJobpTask)
 
     return parent
 

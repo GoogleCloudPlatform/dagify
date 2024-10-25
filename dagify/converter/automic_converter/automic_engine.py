@@ -169,14 +169,13 @@ class Automicengine(Engine):
             raise ValueError("dagify: No output path provided")
         if directory_exists(self.output_path) is False:
             create_directory(self.output_path)
-
         return
 
     def convert(self):
         if self.uf is None:
             raise ValueError(
                 "dagify: no data in universal format. nothing to convert!")
-    
+
     # def generate_airflow_dags(self):
 
     #     if self.uf is None:

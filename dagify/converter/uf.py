@@ -160,8 +160,8 @@ class UF():
             statement = statement.replace(", ]", "]")
         return statement
 
-    def get_dag_dependencies(self):
-        return self.dag_dependencies
+    # def get_dag_dependencies(self):
+    #     return self.dag_dependencies
 
     def print_dag_dependencies(self):
         for task in self.get_tasks():
@@ -208,6 +208,9 @@ class UFTask(UF):
         self.out_conditions = []
         self.shouts = []
         self.dep_tasks = []
+        #Automic variables
+        self.uf_jobp = []
+        self.uf_task = []
         return
 
     # Handle Variables
@@ -282,6 +285,28 @@ class UFTask(UF):
         self.dep_tasks.append({"dag_name": dag_name, "task_name": task_name})
         return
 
+    #Automic related functions
+    #Handle JOBP
+    def add_uf_jobp(self, UFJobP):
+        "Function to add JOBP to uf object"
+        self.uf_jobp.append(UFJobP)
+
+    def get_uf_jobp(self):
+        return self.uf_jobp
+
+    def get_uf_jobp_count(self):
+        return len(self.uf_jobp)
+    
+    #Handle task within JOBP
+    def add_uf_task(self, UFJobPTask):
+        "Function to add JOBP to uf object"
+        self.uf_task.append(UFJobPTask)
+
+    def get_uf_task(self):
+        return self.uf_task
+
+    def get_uf_task_count(self):
+        return len(self.uf_task)
 
 class UFTaskVariable(UFTask):
     T = TypeVar('T', bound='UFTaskVariable')

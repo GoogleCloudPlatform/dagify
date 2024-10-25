@@ -168,9 +168,9 @@ class Engine():
         self.uf.calculate_dag_dependencies()
         return
 
-    def generate_dag_dependency_statements(self):
-        self.uf.generate_dag_dependency_statements(self.dag_divider)
-        return
+    # def generate_dag_dependency_statements(self):
+    #     self.uf.generate_dag_dependency_statements(self.dag_divider)
+    #     return
 
     def generate_ext_task_marker_statement(self, task, ext_dag_id, ext_task_id):
         pass
