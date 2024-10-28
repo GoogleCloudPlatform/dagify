@@ -69,22 +69,26 @@ python3 DAGify.py --help
 
 ### Run DAGify (From Source Container)
 You can run DAGify via the CLI or the UI by setting the RUN_MODE environment variable.
-When you run either of the below commands you will mount your current working directory to the container for execution.
 
 #### With CLI
 First you should update your .env.example file to use the environment variables you need. 
 ```bash
 
 docker build -t localhost/dagify:source . 
-docker run -p 8000:8000 -it --env-file=.env.example -v $(pwd):/app -e RUN_MODE=cli localhost/dagify:source;
+docker run -p 8000:8000 -it --env-file=.env.example -v $(pwd):/app localhost/dagify:source
 
+```
+##### To generate the report, add the -r flag 
+
+```bash
+docker run -p 8000:8000 -it --env-file=.env.example -v $(pwd):/app localhost/dagify:source -r
 ```
 
 #### With User Interface
 ```bash
 
 docker build -t localhost/dagify:source . 
-docker run -p 8000:8000 -it --env-file=.env.example -v $(pwd):/app -e RUN_MODE=ui localhost/dagify:source
+docker run -p 8000:8000 -it localhost/dagify:source -e RUN_MODE=UI
 
 ```
 ---
