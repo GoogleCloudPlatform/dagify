@@ -22,6 +22,7 @@ class UF():
 
     def __init__(self):
         self.tasks = []
+        #self.uf_jobp = []
 
     def from_controlm_xml(self: Type[T], node: xml.etree.ElementTree.Element):
         for key, value in node.attrib.items():
@@ -67,6 +68,7 @@ class UF():
 
     def get_raw_xml(self):
         return self.raw_xml_element
+
 
     def calculate_dag_dependencies(self):
         for task in self.get_tasks():
@@ -208,9 +210,6 @@ class UFTask(UF):
         self.out_conditions = []
         self.shouts = []
         self.dep_tasks = []
-        #Automic variables
-        self.uf_jobp = []
-        self.uf_task = []
         return
 
     # Handle Variables
@@ -285,29 +284,6 @@ class UFTask(UF):
         self.dep_tasks.append({"dag_name": dag_name, "task_name": task_name})
         return
 
-    #Automic related functions
-    #Handle JOBP
-    def add_uf_jobp(self, UFJobP):
-        "Function to add JOBP to uf object"
-        self.uf_jobp.append(UFJobP)
-
-    def get_uf_jobp(self):
-        return self.uf_jobp
-
-    def get_uf_jobp_count(self):
-        return len(self.uf_jobp)
-    
-    #Handle task within JOBP
-    def add_uf_task(self, UFJobPTask):
-        "Function to add JOBP to uf object"
-        self.uf_task.append(UFJobPTask)
-
-    def get_uf_task(self):
-        return self.uf_task
-
-    def get_uf_task_count(self):
-        return len(self.uf_task)
-
 class UFTaskVariable(UFTask):
     T = TypeVar('T', bound='UFTaskVariable')
 
@@ -331,21 +307,6 @@ class UFTaskOutCondition(UFTask):
 
 class UFTaskShout(UFTask):
     T = TypeVar('T', bound='UFTaskShout')
-
-    def __init__(self):
-        return
-
-#Automic related classes
-class UFJobP(UFTask):
-    "Inherited special class for JOBP tags"
-    T = TypeVar('T', bound='UFJobP')
-
-    def __init__(self):
-        return
-
-class UFJobPTask(UFTask):
-    "Inherited special class for JOBP-tasks tags"
-    T = TypeVar('T', bound='UFJobPTask')
 
     def __init__(self):
         return

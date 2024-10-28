@@ -27,9 +27,15 @@ from .uf import (
     UFTaskInCondition,
     UFTaskOutCondition,
     UFTaskShout,
-    UFJobP,
-    UFJobPTask
 )
+
+from .automic_converter.automic_uf import (
+    AutomicUF,
+    AutomicParentUFJobP,
+    AutomicJobpStruct,
+    AutomicChildUFJobP,
+    AutomicUFJobPTask
+    )
 
 
 def load_source(source_path,tool):
@@ -100,9 +106,9 @@ def parse_controlm_tree(root_node, parent):
 
 def parse_automic_universal_format(source):
     """Function to parse uf"""
-    uf = UF()
-    uf = parse_automic_tree(source, uf)
-    return uf
+    atomic_uf = AutomicUF()
+    atomic_uf = parse_automic_tree(source, atomic_uf)
+    return atomic_uf
 
 def parse_automic_tree(root_node, parent):
     """Function to parse automic xml"""
@@ -111,21 +117,31 @@ def parse_automic_tree(root_node, parent):
             case "uc-export":
                 parse_automic_tree(node, parent)
             case "JOBP":
-                ufJobp = UFJobP()
-                ufJobp.from_controlm_xml(node)
-                parent.add_uf_jobp(ufJobp)
-                parse_automic_tree(node, ufJobp)
+                if isinstance(parent, AutomicParentUFJobP):
+                    ufChildJobp = AutomicChildUFJobP()
+                    ufChildJobp.from_automic_xml(node)
+                    parent.add_child_jobp(ufChildJobp)  # Add to the child JOBP
+                    parse_automic_tree(node, ufChildJobp)
+                else:  # Top-level JOBP
+                    ufParentJobp = AutomicParentUFJobP()
+                    ufParentJobp.from_automic_xml(node)
+                    parent.add_parent_jobp(ufParentJobp)
+                    parse_automic_tree(node, ufParentJobp)
+            case "JobpStruct":
+                ufJobpStruct = AutomicJobpStruct()
+                ufJobpStruct.from_automic_xml(node)
+                parent.add_jobp_struct(ufJobpStruct)
+                parse_automic_tree(node,ufJobpStruct)
             case "task":
-                ufJobpTask = UFJobPTask()
-                ufJobpTask.from_controlm_xml(node)
-                parent.add_uf_task(ufJobpTask)
+                ufJobpTask = AutomicUFJobPTask()
+                ufJobpTask.from_automic_xml(node)
+                parent.add_tasks(ufJobpTask)
                 parse_automic_tree(node, ufJobpTask)
 
     return parent
 
 def clean_converter_type(converter_type):
     """Cleans a converter type string by removing all non-alphanumeric characters and converting it to uppercase.
-
     Args:
         converter_type (str): The converter type to clean.
 
