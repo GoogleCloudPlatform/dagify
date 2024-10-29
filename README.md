@@ -68,13 +68,27 @@ python3 DAGify.py --help
 ---
 
 ### Run DAGify (From Source Container)
+You can run DAGify via the CLI or the UI by setting the RUN_MODE environment variable.
+
+#### With CLI
 First you should update your .env.example file to use the environment variables you need. 
-When you run the below commands you will mount your current working directory to the container for execution.
-#### With Defaults
 ```bash
 
 docker build -t localhost/dagify:source . 
-docker run -it --env-file=.env.example -v $(pwd):/app localhost/dagify:source
+docker run -p 8000:8000 -it --env-file=.env.example -v $(pwd):/app localhost/dagify:source
+
+```
+##### To generate the report, add the -r flag 
+
+```bash
+docker run -p 8000:8000 -it --env-file=.env.example -v $(pwd):/app localhost/dagify:source -r
+```
+
+#### With User Interface
+```bash
+
+docker build -t localhost/dagify:source . 
+docker run -p 8000:8000 -it localhost/dagify:source -e RUN_MODE=UI
 
 ```
 ---
@@ -230,7 +244,7 @@ Conversion Details: A comprehensive table outlining specific TASKTYPE conversion
 Schedule Adjustments: A separate table detailing any changes made to job schedules during the conversion.
 
 ---
-## Run DAGify with an interactive UI
+## Run DAGify with the interactive UI
 The DAGify UI allows you to upload your Control-M XML file and choose your preferred DAG divider. It generates the Python DAG files along with the detailed conversion report. 
 ```bash
 cd ui
