@@ -17,6 +17,6 @@ tzdata==2024.2
 yamale==5.2.1
 requests==2.32.3
 fastapi==0.115.4
-prettytable==3.11.0
+prettytable==3.12.0
 uvicorn==0.32.0
 python-multipart==0.0.16
