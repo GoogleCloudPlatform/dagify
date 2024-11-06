@@ -23,7 +23,7 @@ class UF():
     def __init__(self):
         self.tasks = []
 
-    def from_controlm_xml(self: Type[T], node: xml.etree.ElementTree.Element):
+    def from_xml(self: Type[T], node: xml.etree.ElementTree.Element):
         for key, value in node.attrib.items():
             # Set Original Attribute Version
             self.set_attribute_original(key, value)
@@ -68,7 +68,22 @@ class UF():
     def get_raw_xml(self):
         return self.raw_xml_element
 
-    def calculate_dag_dependencies(self):
+    def calculate_dag_dependencies_automic(self):
+        # remove later
+        # lnr_task = {}
+        # for task in self.get_tasks():
+        #     lnr_task[task.get_attribute("Object")] = task.get_attribute("Lnr")
+
+        for task in self.get_tasks():
+            for task_dep in self.get_tasks():
+                if not task == task_dep:
+                    for inconds in task_dep.get_in_conditions():
+                        if inconds.get_attribute("PreLnr") == task.get_attribute("Lnr"):
+                           task.add_dependent_task(task.get_dag_name(), task_dep.get_attribute("Object"))
+        return
+
+
+    def calculate_dag_dependencies_controlm(self):
         for task in self.get_tasks():
             out_conds = task.get_out_conditions()
             out_conds_positive = []
@@ -84,7 +99,7 @@ class UF():
                                 task.add_dependent_task(obj.get_dag_name(), obj.get_attribute("JOBNAME_ORIGINAL"))
         return
 
-    def generate_dag_dependencies_by_divider(self, dag_divider):
+    def generate_dag_dependencies_by_divider(self, dag_divider, task_name):
         """
         the following structure for dependencies will be created by this method:
         dependencies = {
@@ -118,7 +133,7 @@ class UF():
             deps = []
             tasks = []
             for tIdx, task in enumerate(self.get_tasks()):
-                current_task_name = task.get_attribute("JOBNAME_ORIGINAL")
+                current_task_name = task.get_attribute(task_name)
                 dependencies.setdefault(dag_divider_value, {}).setdefault(current_task_name, {"internal": [], "external": []})
 
                 # Capture the airflow tasks for each dag divider

@@ -30,7 +30,7 @@ from .uf import (
 )
 
 
-def load_source(source_path):
+def load_source(source_path, tool):
     """ Read the Source File
         Parse into dagify Universial Format
         Output the dagify Universial Format Back to the Class"""
@@ -42,16 +42,36 @@ def load_source(source_path):
                 source_path))
 
     root = ET.parse(source_path).getroot()
-    uf = parse_universal_format(root)
+    uf = parse_universal_format(root, tool)
     return uf
 
 
-def parse_universal_format(source):
+def parse_universal_format(source, tool):
     """Function to parse uf"""
     uf = UF()
-    uf = parse_controlm_tree(source, uf)
+
+    function = "parse_" + tool + "_tree"
+    globals()[function](source, uf)
+
     return uf
 
+def parse_automic_tree(root_node, parent):
+    for node in root_node:
+        match node.tag:
+            case "task":
+                ufTask = UFTask()
+                ufTask.from_xml(node)
+                parent.add_task(ufTask)
+                parse_automic_tree(node, ufTask)
+            case "pre":
+                ufTaskInCondition = UFTaskInCondition()
+                ufTaskInCondition.from_xml(node)
+                parent.add_in_condition(ufTaskInCondition)
+                parse_automic_tree(node, ufTaskInCondition)
+            case _:
+                parse_automic_tree(node, parent)
+
+    return parent
 
 def parse_controlm_tree(root_node, parent):
     """Function to parse control m"""
@@ -59,32 +79,32 @@ def parse_controlm_tree(root_node, parent):
         match node.tag:
             case "FOLDER" | "SMART_FOLDER":
                 # ufFolder = UFFolder()
-                # ufFolder.from_controlm_xml(node)
+                # ufFolder.from_xml(node)
                 # parent.add_folder(ufFolder)
                 parse_controlm_tree(node, parent)
             case "JOB":
                 ufTask = UFTask()
-                ufTask.from_controlm_xml(node)
+                ufTask.from_xml(node)
                 parent.add_task(ufTask)
                 parse_controlm_tree(node, ufTask)
             case "VARIABLE":
                 ufTaskVariable = UFTaskVariable()
-                ufTaskVariable.from_controlm_xml(node)
+                ufTaskVariable.from_xml(node)
                 parent.add_variable(ufTaskVariable)
                 parse_controlm_tree(node, ufTaskVariable)
             case "INCOND":
                 ufTaskInCondition = UFTaskInCondition()
-                ufTaskInCondition.from_controlm_xml(node)
+                ufTaskInCondition.from_xml(node)
                 parent.add_in_condition(ufTaskInCondition)
                 parse_controlm_tree(node, ufTaskInCondition)
             case "OUTCOND":
                 ufTaskOutCondition = UFTaskOutCondition()
-                ufTaskOutCondition.from_controlm_xml(node)
+                ufTaskOutCondition.from_xml(node)
                 parent.add_out_condition(ufTaskOutCondition)
                 parse_controlm_tree(node, ufTaskOutCondition)
             case "SHOUT":
                 ufTaskShout = UFTaskShout()
-                ufTaskShout.from_controlm_xml(node)
+                ufTaskShout.from_xml(node)
                 parent.add_shout(ufTaskShout)
                 parse_controlm_tree(node, ufTaskShout)
             case _:
