@@ -1,22 +1,9 @@
-# Copyright 2024 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import os
 import random
 import yamale
 from .yaml_validator.custom_validator import validators
 import yaml
+import xml.etree.ElementTree as ET
 from jinja2 import Environment, FileSystemLoader
 import autopep8
 from .utils import (
@@ -26,329 +13,283 @@ from .utils import (
     is_directory,
     read_yaml_to_dict,
     calculate_cron_schedule,
-    load_source
 )
 from .rules import (
     Rule
 )
 
+def load_config(object):
+    # Validate Template Path Provided
+    if object.config_file is None:
+        raise ValueError("dagify: config file not provided")
+    if file_exists(object.config_file) is False:
+        raise FileNotFoundError("dagify: config file does not exist")
 
-class Engine():
-    def __init__(
-        self,
-        source_path=None,
-        output_path=None,
-        templates_path="./templates",
-        config_file="./config.yaml",
-        dag_divider="PARENT_FOLDER",
-    ):
-        self.DAGs = []
-        self.baseline_imports = []
-        self.templates = {}
-        self.templates_count = 0
-        self.templates_path = templates_path
-        self.config = {}
-        self.config_file = config_file
-        self.source_path = source_path
-        source_xml_name = self.source_path.split("/")[-1].split(".")[0]
-        self.output_path = f"{output_path}/{source_xml_name}"
-        self.dag_divider = dag_divider
-        self.schema = "./dagify/converter/yaml_validator/schema.yaml"
-        self.uf = load_source(self.source_path)
+    with open(object.config_file) as stream:
+        try:
+            object.config = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            raise exc
 
-        # Run the Proccess
-        self.set_baseline_imports()
-        self.load_config()
-        self.load_templates()
-        self.validate()
-        self.convert()
-        self.cal_dag_dividers()
-        self.calc_dag_dependencies()
-        self.generate_airflow_dags()
+    if object.config is None:
+        raise ValueError("dagify: No configuration has been loaded")
 
-    def load_config(self):
-        # Validate Template Path Provided
-        if self.config_file is None:
-            raise ValueError("dagify: config file not provided")
-        if file_exists(self.config_file) is False:
-            raise FileNotFoundError("dagify: config file does not exist")
+    if object.config["config"]["mappings"] is None:
+        raise ValueError(
+            "dagify: Configuration loaded with error, no Operator/JobType Mappings loaded")
 
-        with open(self.config_file) as stream:
-            try:
-                self.config = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                raise exc
+    # Modify Configration for Standardization:
+    templatesToValidate = []
+    for idx, config in enumerate(object.config["config"]["mappings"]):
+        # Set Command Uppercase
+        object.config["config"]["mappings"][idx]["job_type"] = \
+            object.config["config"]["mappings"][idx]["job_type"].upper()
+        templatesToValidate.append(object.config["config"]["mappings"][idx]["template_name"])
 
-        if self.config is None:
-            raise ValueError("dagify: No configuration has been loaded")
+    for root, dirs, files in os.walk(object.templates_path):
+        for file in files:
+            if file.endswith(".yaml"):
+                template_name = file.split(".")[0]
+                if template_name in templatesToValidate:
+                    print(f"{template_name} ready for validation")
+                # Loads a Single Template into a Dictionary from .yaml file
 
-        if self.config["config"]["mappings"] is None:
-            raise ValueError(
-                "dagify: Configuration loaded with error, no Operator/JobType Mappings loaded")
+                    file_path = os.path.join(root, file)
+                    template = yamale.make_data(file_path)
+                    schema = yamale.make_schema(object.schema, validators=validators)
 
-        # Modify Configration for Standardization:
-        templatesToValidate = []
-        for idx, config in enumerate(self.config["config"]["mappings"]):
-            # Set Command Uppercase
-            self.config["config"]["mappings"][idx]["job_type"] = \
-                self.config["config"]["mappings"][idx]["job_type"].upper()
-            templatesToValidate.append(self.config["config"]["mappings"][idx]["template_name"])
-
-        for root, dirs, files in os.walk(self.templates_path):
-            for file in files:
-                if file.endswith(".yaml"):
-                    template_name = file.split(".")[0]
-                    if template_name in templatesToValidate:
-                        print(f"{template_name} ready for validation")
-                    # Loads a Single Template into a Dictionary from .yaml file
-
-                        file_path = os.path.join(root, file)
-                        template = yamale.make_data(file_path)
-                        schema = yamale.make_schema(self.schema, validators=validators)
-
-                        if template is not None:
-
-                            try:
-
-                                yamale.validate(schema, template)
-                                print(f"Validation succeeded for {file}!")
-
-                            except yamale.YamaleError as e:
-                                print(f"Validation failed for {file}!\n")
-                                for result in e.results:
-                                    for error in result.errors:
-                                        print(error)
-                                raise ValueError(f"Template {file_path} incompatible")
-
-        return
-
-    def validate(self):
-        # TODO
-        # Check that every Job in the Source has a Configured Mapping in Config
-        # Check that every JobType in Config has a Template Name and that that
-        # Template Name is in Templates;
-
-        if self.output_path is None:
-            raise ValueError("dagify: No output path provided")
-        if directory_exists(self.output_path) is False:
-            create_directory(self.output_path)
-
-        return
-
-    def load_templates(self):
-        # This will load all templates from the provide path into a universal
-        # HashMap for Direct Referencing
-
-        # Validate Template Path Provided
-        if self.templates_path is None:
-            raise ValueError("dagify: Templates path not provided")
-        if is_directory(self.templates_path) is False:
-            raise NotADirectoryError(
-                "dagify: Templates path is not a directory")
-
-        # Load Templates
-        for root, dirs, files in os.walk(self.templates_path):
-            for file in files:
-                if file.endswith(".yaml"):
-                    # Loads a Single Template into a Dictionary from .yaml file
-                    template = read_yaml_to_dict(os.path.join(root, file))
                     if template is not None:
-                        # if the dict it not empty
-                        self.templates_count += 1
-                        self.templates[template["metadata"]["name"]] = template
-        return
 
-    def get_template_count(self):
-        return self.templates_count
+                        try:
 
-    def calc_dag_dependencies(self):
-        self.uf.calculate_dag_dependencies()
-        return
+                            yamale.validate(schema, template)
+                            print(f"Validation succeeded for {file}!")
 
-    def generate_dag_dependency_statements(self):
-        self.uf.generate_dag_dependency_statements(self.dag_divider)
-        return
+                        except yamale.YamaleError as e:
+                            print(f"Validation failed for {file}!\n")
+                            for result in e.results:
+                                for error in result.errors:
+                                    print(error)
+                            raise ValueError(f"Template {file_path} incompatible")
 
-    def generate_ext_task_marker_statement(self, task, ext_dag_id, ext_task_id):
-        pass
+    return
 
-    def cal_dag_dividers(self):
-        dag_dividers = []
-        for tIdx, task in enumerate(self.uf.get_tasks()):
-            td = task.get_attribute(self.dag_divider)
-            if td is not None and td not in dag_dividers:
-                dag_dividers.append(td)
-            task.set_dag_name(td)
-        self.dag_dividers = dag_dividers
+def validate(object):
+    # TODO
+    # Check that every Job in the Source has a Configured Mapping in Config
+    # Check that every JobType in Config has a Template Name and that that
+    # Template Name is in Templates;
 
-        return
+    if object.output_path is None:
+        raise ValueError("dagify: No output path provided")
+    if directory_exists(object.output_path) is False:
+        create_directory(object.output_path)
 
-    def get_dag_dividers(self):
-        return self.dag_dividers
+    return
 
-    def convert(self):
-        if self.uf is None:
+def load_templates(object):
+    # This will load all templates from the provide path into a universal
+    # HashMap for Direct Referencing
+
+    # Validate Template Path Provided
+    if object.templates_path is None:
+        raise ValueError("dagify: Templates path not provided")
+    if is_directory(object.templates_path) is False:
+        raise NotADirectoryError(
+            "dagify: Templates path is not a directory")
+
+    # Load Templates
+    for root, dirs, files in os.walk(object.templates_path):
+        for file in files:
+            if file.endswith(".yaml"):
+                # Loads a Single Template into a Dictionary from .yaml file
+                template = read_yaml_to_dict(os.path.join(root, file))
+                if template is not None:
+                    # if the dict it not empty
+                    object.templates_count += 1
+                    object.templates[template["metadata"]["name"]] = template
+    return
+
+def calc_dag_dependencies(uf, tool):
+    function = "calculate_dag_dependencies_" + tool
+    getattr(uf, function)()
+
+def cal_dag_dividers(object):
+    dag_dividers = []
+    for tIdx, task in enumerate(object.uf.get_tasks()):
+        td = task.get_attribute(object.dag_divider)
+        if td is not None and td not in dag_dividers:
+            dag_dividers.append(td)
+        task.set_dag_name(td)
+    object.dag_dividers = dag_dividers
+    return
+
+def get_dag_dividers(object):
+    return object.dag_dividers
+
+def convert(object, tool, type, name):
+    if object.uf is None:
+        raise ValueError(
+            "dagify: no data in universal format. nothing to convert!")
+
+    # process the conversion of all universal format items
+    for tIdx, task in enumerate(object.uf.get_tasks()):
+        # process a single task
+        task_type = task.get_attribute(type)
+        task_name = task.get_attribute(name)
+        if task_type is None:
             raise ValueError(
-                "dagify: no data in universal format. nothing to convert!")
+                f"dagify: no task/OType in source for task {task_name}")
+        template_name = get_template_name(object, task_type)
+        print(template_name)
+        # get the template from the template name
+        # [0][0] as the template dictionary is the first element of a tuple, in turn first element of a list
+        template = get_template(object, template_name, tool)
+        if template is None:
+            raise ValueError(
+                f"dagify: no template name provided that matches job type {task_type}")
 
-        # process the conversion of all universal format items
-        for tIdx, task in enumerate(self.uf.get_tasks()):
-            # process a single task
-            task_type = task.get_attribute("TASKTYPE")
-            task_name = task.get_attribute("JOBNAME")
-            if task_type is None:
-                raise ValueError(
-                    f"dagify: no task/job_type in source for task {task_name}")
-            template_name = self.get_template_name(task_type)
-            # get the template from the template name
-            # [0][0] as the template dictionary is the first element of a tuple, in turn first element of a list
-            template = self.get_template(template_name)
-            if template is None:
-                raise ValueError(
-                    f"dagify: no template name provided that matches job type {task_type}")
-
-            src_platform_name = template["source"]["platform"].get(
-                "name", "UNKNOWN_SOURCE_PLATFORM")
-            src_operator_name = template["source"]["operator"].get(
-                "id", "UNKNOWN_SOURCE_PLATFORM")
-            tgt_platform_name = template["target"]["platform"].get(
-                "name", "UNKNOWN_TARGET_PLATFORM")
-            tgt_operator_name = template["target"]["operator"].get(
-                "name", "UNKNOWN_TARGET_PLATFORM")
-            print(
-                f" --> Converting Job number {str(tIdx)}: {task_name}, \n \
+        src_platform_name = template["source"]["platform"].get(
+            "name", "UNKNOWN_SOURCE_PLATFORM")
+        src_operator_name = template["source"]["operator"].get(
+            "id", "UNKNOWN_SOURCE_PLATFORM")
+        tgt_platform_name = template["target"]["platform"].get(
+            "name", "UNKNOWN_TARGET_PLATFORM")
+        tgt_operator_name = template["target"]["operator"].get(
+            "name", "UNKNOWN_TARGET_PLATFORM")
+        print(
+            f" --> Converting Job number {str(tIdx)}: {task_name}, \n \
 \t from Source Platform {src_platform_name} to Target Platform: {tgt_platform_name}\n \
 \t from Source Operator {src_operator_name} to Target Operator: {tgt_operator_name}\n \
 \t with template: {template_name}\n")
 
-            output = airflow_task_build(task, template)
-            task.set_airflow_task_output(output)
+        output = airflow_task_build(task, template)
+        task.set_airflow_task_output(output)
 
-            python_imports = airflow_task_python_imports_build(task, template)
-            task.set_airflow_task_python_imports(python_imports)
+        python_imports = airflow_task_python_imports_build(task, template)
+        task.set_airflow_task_python_imports(python_imports)
+    
+    return
 
-    def get_template(self, template_name):
-        # Validate template_name is Provided
-        if template_name is None:
-            # raise ValueError("dagify: template name must be provided")
-            template = self.templates.get("control-m-dummy-to-airflow-dummy", None)
-        else:
-            template = self.templates.get(template_name, None)
-        if template is None:
-            raise ValueError(
-                f"dagify: no template with name: '{template_name}' was not found among loaded templates.")
-        return template
+def get_template(object, template_name, tool):
+    dummy_template = tool + "-dummy-to-airflow-dummy"
+    # Validate template_name is Provided
+    if template_name is None:
+        # raise ValueError("dagify: template name must be provided")
+        template = object.templates.get(dummy_template, None)
+    else:
+        template = object.templates.get(template_name, None)
+    if template is None:
+        raise ValueError(
+            f"dagify: no template with name: '{template_name}' was not found among loaded templates.")
+    return template
 
-    # TODO Add Filter Support (Multiple Templates by Filters)
+def get_template_name(object, job_type):
+    for mapping in object.config["config"]["mappings"]:
+        if mapping["job_type"] == job_type.upper():
+            return mapping["template_name"]
+    # no match found
+    return None
 
-    def get_template_name(self, job_type):
-        for mapping in self.config["config"]["mappings"]:
-            if mapping["job_type"] == job_type.upper():
-                return mapping["template_name"]
-        # no match found
-        return None
+def generate_airflow_dags(object, task_name):
+    if object.uf is None:
+        raise ValueError("dagify: no data in universal format. nothing to convert!")
 
-    def generate_airflow_dags(self):
+    for tIdx, dag_divider_value in enumerate(get_dag_dividers(object)):
+        airflow_task_outputs = []
+        tasks = []
+        schedule_interval = None
+        for tIdx, task in enumerate(object.uf.get_tasks()):
+            # Capture the airflow tasks for each dag divider
+            if task.get_attribute(object.dag_divider) == dag_divider_value:
+                tasks.append(task.get_attribute(task_name))
+                airflow_task_outputs.append(task.get_airflow_task_output())
+                if not schedule_interval:
+                    schedule_interval = calculate_cron_schedule(task)
 
-        if self.uf is None:
-            raise ValueError("dagify: no data in universal format. nothing to convert!")
+        # Calculate DAG Specific Python Imports
+        dag_python_imports = object.uf.calculate_dag_python_imports(
+            dag_divider_key=object.dag_divider,
+            dag_divider_value=dag_divider_value
+        )
 
-        for tIdx, dag_divider_value in enumerate(self.get_dag_dividers()):
-            airflow_task_outputs = []
-            tasks = []
-            schedule_interval = None
-            for tIdx, task in enumerate(self.uf.get_tasks()):
-                # Capture the airflow tasks for each dag divider
-                if task.get_attribute(self.dag_divider) == dag_divider_value:
-                    tasks.append(task.get_attribute("JOBNAME_ORIGINAL"))
-                    airflow_task_outputs.append(task.get_airflow_task_output())
-                    if not schedule_interval:
-                        schedule_interval = calculate_cron_schedule(task)
+        # Calculate all internal and external task dependencies
+        dependencies = object.uf.generate_dag_dependencies_by_divider(object.dag_divider, task_name)
+        dependencies_in_dag_internal = []
+        dependencies_in_dag_external = []
+        for task in tasks:
+            if len(dependencies[dag_divider_value][task]['internal']) > 0:
+                dependencies_in_dag_internal.append(object.uf.generate_dag_dependency_statement(task, dependencies[dag_divider_value][task]['internal']))
 
-            # Calculate DAG Specific Python Imports
-            dag_python_imports = self.uf.calculate_dag_python_imports(
-                dag_divider_key=self.dag_divider,
-                dag_divider_value=dag_divider_value
-            )
+            for dep in dependencies[dag_divider_value][task]['external']:
+                ext_task_uf = object.uf.get_task_by_attr(task_name, dep)
+                dependencies_in_dag_external.append({
+                    'task_name': task,
+                    'ext_dag': ext_task_uf.get_attribute(object.dag_divider),
+                    'ext_dep_task': dep,
+                    "marker_name": dep + "_marker_" + ''.join(random.choices('0123456789abcdef', k=4))
+                })
 
-            # Calculate all internal and external task dependencies
-            dependencies = self.uf.generate_dag_dependencies_by_divider(self.dag_divider)
-            dependencies_in_dag_internal = []
-            dependencies_in_dag_external = []
-            for task in tasks:
-                if len(dependencies[dag_divider_value][task]['internal']) > 0:
-                    dependencies_in_dag_internal.append(self.uf.generate_dag_dependency_statement(task, dependencies[dag_divider_value][task]['internal']))
+        # Calculate external upstream dependencies where a task in the current dag depends on another dag's task
+        # Such a dependency will require a DAG Sensor
+        # The approach that is implemented is to iterate over all external dependencies in the dependencies dictionary and identify the tasks that
+        # are also in the current dag.
+        upstream_dependencies = []
 
-                for dep in dependencies[dag_divider_value][task]['external']:
-                    ext_task_uf = self.uf.get_task_by_attr("JOBNAME_ORIGINAL", dep)
-                    dependencies_in_dag_external.append({
-                        'task_name': task,
-                        'ext_dag': ext_task_uf.get_attribute(self.dag_divider),
-                        'ext_dep_task': dep,
-                        "marker_name": dep + "_marker_" + ''.join(random.choices('0123456789abcdef', k=4))
-                    })
+        for _, divider_tasks in dependencies.items():
+            for task, int_ext_deps in divider_tasks.items():
+                ext_deps = int_ext_deps["external"]
+                for ext_dep in ext_deps:
+                    if ext_dep in tasks:
+                        ext_task_uf = object.uf.get_task_by_attr(task_name, task)
+                        upstream_dag_name = ext_task_uf.get_attribute(object.dag_divider)
 
-            # Calculate external upstream dependencies where a task in the current dag depends on another dag's task
-            # Such a dependency will require a DAG Sensor
-            # The approach that is implemented is to iterate over all external dependencies in the dependencies dictionary and identify the tasks that
-            # are also in the current dag.
-            upstream_dependencies = []
+                        upstream_dependencies.append({
+                            "task_name": ext_dep,
+                            "task_in_upstream_dag": task,
+                            "upstream_dag_name": upstream_dag_name,
+                            "sensor_name": ext_dep + "_sensor_" + ''.join(random.choices('0123456789abcdef', k=4))
+                        })
 
-            for _, divider_tasks in dependencies.items():
-                for task, int_ext_deps in divider_tasks.items():
-                    ext_deps = int_ext_deps["external"]
-                    for ext_dep in ext_deps:
-                        if ext_dep in tasks:
-                            ext_task_uf = self.uf.get_task_by_attr("JOBNAME_ORIGINAL", task)
-                            upstream_dag_name = ext_task_uf.get_attribute(self.dag_divider)
+        # Get DAG Template
+        environment = Environment(
+            loader=FileSystemLoader("./dagify/converter/templates/"))
+        template = environment.get_template("dag.tmpl")
 
-                            upstream_dependencies.append({
-                                "task_name": ext_dep,
-                                "task_in_upstream_dag": task,
-                                "upstream_dag_name": upstream_dag_name,
-                                "sensor_name": ext_dep + "_sensor_" + ''.join(random.choices('0123456789abcdef', k=4))
-                            })
+        if directory_exists(object.output_path) is False:
+            create_directory(object.output_path)
 
-            # Get DAG Template
-            environment = Environment(
-                loader=FileSystemLoader("./dagify/converter/templates/"))
-            template = environment.get_template("dag.tmpl")
+        # Create DAG File by Folder
+        filename = f"{object.output_path}/{dag_divider_value}.py"
 
-            if directory_exists(self.output_path) is False:
-                create_directory(self.output_path)
+        content = template.render(
+            baseline_imports=get_baseline_imports(object),
+            custom_imports=dag_python_imports,
+            dag_id=dag_divider_value,
+            schedule_interval=schedule_interval,
+            tasks=airflow_task_outputs,
+            dependencies_int=dependencies_in_dag_internal,
+            dependencies_ext=dependencies_in_dag_external,
+            upstream_dependencies=upstream_dependencies
+        )
+        with open(filename, mode="w", encoding="utf-8") as dag_file:
+            content_linted = autopep8.fix_code(content)
+            dag_file.write(content_linted)
 
-            # Create DAG File by Folder
-            filename = f"{self.output_path}/{dag_divider_value}.py"
+    return
 
-            content = template.render(
-                baseline_imports=self.get_baseline_imports(),
-                custom_imports=dag_python_imports,
-                dag_id=dag_divider_value,
-                schedule_interval=schedule_interval,
-                tasks=airflow_task_outputs,
-                dependencies_int=dependencies_in_dag_internal,
-                dependencies_ext=dependencies_in_dag_external,
-                upstream_dependencies=upstream_dependencies
-            )
-            with open(filename, mode="w", encoding="utf-8") as dag_file:
-                content_linted = autopep8.fix_code(content)
-                dag_file.write(content_linted)
+def set_baseline_imports(object):
+    object.baseline_imports = [
+        "from airflow import DAG",
+        "from airflow.decorators import task",
+        "from airflow.sensors.external_task import ExternalTaskMarker",
+        "from airflow.sensors.external_task import ExternalTaskSensor",
+        "import datetime"
+    ]
+    return
 
-        return
-
-    def set_baseline_imports(self):
-        self.baseline_imports = [
-            "from airflow import DAG",
-            "from airflow.decorators import task",
-            "from airflow.sensors.external_task import ExternalTaskMarker",
-            "from airflow.sensors.external_task import ExternalTaskSensor",
-            "import datetime"
-        ]
-        return
-
-    def get_baseline_imports(self):
-        return self.baseline_imports
-
+def get_baseline_imports(object):
+    return object.baseline_imports
 
 def airflow_task_build(task, template):
     # Load the Template Output Structure
@@ -409,13 +350,12 @@ def airflow_task_build(task, template):
     trigger_rule = "all_success"
     for in_condition in task.get_in_conditions():
         if in_condition.get_attribute("AND_OR") == 'O':
-            trigger_rule = 'one_success'
+            trigger_rule =  'one_success'
     values["trigger_rule"] = trigger_rule
 
     # Construct Output Python Object Text
     output = template["structure"].format(**values)
     return output
-
 
 def airflow_task_python_imports_build(task, template):
     # Load the Template Output Structure

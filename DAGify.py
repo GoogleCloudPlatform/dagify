@@ -16,7 +16,7 @@
 
 import os
 import click
-from dagify.converter import Engine
+from dagify.converter import ControlM, Automic
 from dagify.converter.report_generator import Report
 
 
@@ -58,30 +58,42 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
                                 "./dagify/templates")))
 @click.option("-d",
              "--dag-divider",
-             default=lambda: os.environ.get("AS_DAG_DIVIDER",
-                                            "PARENT_FOLDER"),
-             help="Which field in Job Definition should be used to divide up DAGS.",
-             show_default="{}".format(
-                 os.environ.get("AS_DAG_DIVIDER",
-                                "PARENT_FOLDER")))
+             help="Which field in Job Definition should be used to divide up DAGS.")
+
 @click.option("-r",
              "--report",
              is_flag=True,
              default=False,
              help="Generate report in txt and json format which \
                gives an overview of job_types converted")
-def dagify(source_path, output_path, config_file, templates, dag_divider, report):
+
+@click.option("--tool",
+              type=click.Choice(['controlm', 'automic']),  # Restrict input to these choices
+              default=lambda: os.environ.get("AS_TYPE", "controlm"),  # Default to 'ctrl-m'
+              help="Type of conversion ('controlm' or 'automic')",
+              show_default="{}".format(os.environ.get("AS_TYPE", "controlm")))
+
+def dagify(source_path, output_path, config_file, templates, dag_divider, report, tool):
     """Run dagify."""
     print("Run DAGify Engine")
 
-
-    Engine(
-        source_path=source_path,
-        output_path=output_path,
-        config_file=config_file,
-        templates_path=templates,
-        dag_divider=dag_divider,
+    if tool == "controlm":
+        ControlM(
+            source_path=source_path,
+            output_path=output_path,
+            config_file=config_file,
+            templates_path=templates,
+            dag_divider=dag_divider,
+        )
+    elif tool == "automic":
+        Automic(
+            source_path=source_path,
+            output_path=output_path,
+            config_file=config_file,
+            templates_path=templates,
+            dag_divider=dag_divider,
     )
+        
     if report:
         Report(
             source_path=source_path,
