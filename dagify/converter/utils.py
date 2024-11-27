@@ -443,3 +443,61 @@ def filter_jobs_by_parameter_in_child(xml_file_path, parameter_name, child_eleme
                 matching_job_names.append(job.attrib['JOBNAME'])
 
     return matching_job_names
+
+def find_files_with_extension(folder_path, file_extension):
+    """
+    Searches for files with the given extension in a folder and its subfolders.
+    """
+    found_files = []
+    for root, _, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith(f".{file_extension}"):
+                found_files.append(os.path.join(root, file))
+    return found_files
+
+def find_sh_scripts_in_mscris(xml_file_path):
+    """
+    Finds .sh script filenames within <MSCRI> tags inside <SCRIPT> tags in an XML file.
+
+    Args:
+        xml_file_path (str): The path to the XML file.
+
+    Returns:
+        list: A list of .sh script filenames found.
+    """
+    tree = ET.parse(xml_file_path)
+    root = tree.getroot()
+
+    sh_scripts = []
+    for script_element in root.findall('.//SCRIPT'):
+        for mscri_element in script_element.findall('./MSCRI'):
+            mscri_text = mscri_element.text
+            # if mscri_text and mscri_text.endswith(".sh"):
+            #     sh_scripts.append(mscri_text)
+            if mscri_text:
+                # Split the text by whitespace and filter for .sh files
+                for item in mscri_text.split():
+                    if item.endswith(".sh"):
+                        sh_scripts.append(os.path.basename(item))  # Extract filename only
+
+    return sh_scripts
+
+def get_sh_scripts_from_jobs(sourcepath, file_extension="xml"):
+    """
+    Finds .sh script filenames within jobs XML file
+
+    Args:
+        sourcepath (str): The folderpath to the XML file.
+        file_extension(str): Optional parameter to search for particular file_extension
+
+    Returns:
+        list: A list of .sh script filenames found.
+    """
+    files = []
+    sh_scripts = []
+    files = find_files_with_extension(sourcepath,file_extension)
+    for file in files:
+        if find_sh_scripts_in_mscris(file):
+            sh_scripts.append(find_sh_scripts_in_mscris(file))
+
+    return sh_scripts

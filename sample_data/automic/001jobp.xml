@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<uc-export clientvers="21.0.9+hf.1.build.1706180414855">
+    <JOBP AllowExternal="1" name="001-sample-jobp">
+		<XHEADER state="1">
+			<Title>Sample jobp for testing</Title>
+			<ArchiveKey1/>
+			<ArchiveKey2/>
+			<Active>1</Active>
+			<OH_SubType/>
+            <ExtRepDef>1</ExtRepDef>
+            <ExtRepAll>0</ExtRepAll>
+            <ExtRepNone>0</ExtRepNone> 
+		</XHEADER>
+		<SYNCREF state="1">
+			<Syncs/>
+		</SYNCREF>
+		<ATTR_JOBP state="1">
+			<Queue>SAMPLE_QUEUE</Queue>
+			<ChildQueue/>
+			<StartType/>
+			<ExtRepDef>1</ExtRepDef>
+			<ExtRepAll>0</ExtRepAll>
+			<ExtRepNone>0</ExtRepNone>
+			<IntAccount/>
+			<AutoDeactNo>0</AutoDeactNo>
+			<AutoDeact1ErrorFree>0</AutoDeact1ErrorFree>
+			<AutoDeactErrorFree>0</AutoDeactErrorFree>
+			<DeactWhen/>
+			<AutoDeactAlways>1</AutoDeactAlways>
+			<DeactDelay>0</DeactDelay>
+			<ActAtRun>0</ActAtRun>
+			<UC4Priority>0</UC4Priority>
+			<PassPriority>0</PassPriority>
+			<MaxParallel2>0</MaxParallel2>
+			<ReuseHG>1</ReuseHG>
+			<MpElse1>1</MpElse1>
+			<MpElse2>0</MpElse2>
+			<TZ/>
+			<RWhen/>
+            <RExecute/>
+			<JPA_SubType/>
+		</ATTR_JOBP>
+		<JOBP state="1">
+			<JobpStruct mode="design">
+                <task Alias="" BranchType="0" Col="1" Lnr="1" OType="&lt;START&gt;" Object="START" ParentAlias="" ParentObject="" Row="1" Text2="">
+                    <checkpoint RollbackFlag="0" RunPerPatch="0" RunPerTarget="0" TcpADays="0" TcpATime="00:00" TcpATimeTZ="" TcpExecute="" TcpOn="0" promptatgen="0" showprompt="0"/>
+                    <after ActFlg="1" AtimOn="0" ErlstStDays="0" ErlstStTime="00:00" ErlstStTimeTZ="" HoldFlg="0"/>
+                    <when ChkWhenExec="0" LtstEnd="0" LtstEndDays="0" LtstEndTime="00:00" LtstSt="0" LtstStDays="0" LtstStTime="00:00" LtstTimeTZ="" WCTypeAND="1" WCTypeOR="0" WElseA="0" WElseH="0" WElseS="1" WElseX="0" WhenExecute="" WtimOn="0"/>  
+                    <preconditions>
+                        <PreCon>
+                            <conditions id="MY_PRECONDITIONS"/> 
+                        </PreCon>
+                    </preconditions>
+                    <predecessors/>
+                    <runtime MrtCancel="1" MrtDays="2" MrtErt="30" MrtExecute="1" MrtExecuteObj="CleanupJob" MrtFix="1" MrtMethodDate="1" MrtMethodErt="1" MrtMethodFix="0" MrtMethodNone="0" MrtOn="0" MrtTZ="UTC" MrtTime="23:59" SrtErt="60" SrtFix="1" SrtMethodErt="0" SrtMethodFix="1" SrtMethodNone="0"/>
+                    <result ChkRExec="1" RElseHalt="1" RElseIgn="1" RElseJPAbend="1" RExecFlag="1" RExecute="YetAnotherJob" RRepMTimes="5" RRepOn="1" RRepWait="60" RWhen="ENDED_OK"/> 
+                    <dynvalues>
+                        <dyntree>
+                            <node input="prompt" name="MyPrompt" text="Enter a value:"/> 
+                        </dyntree>
+                    </dynvalues>
+                    <CIT>
+                        <group name="MyGroup"/> 
+                    </CIT>
+                    <calendars CCTypeAll="1" CCTypeExt="1" CCTypeNone="1" CCTypeOne="0" CaleOn="1"/>
+                    <postconditions>
+                        <PostCon>
+                            <conditions id="MY_POSTCONDITIONS"/> 
+                        </PostCon>
+                    </postconditions>
+                </task>
+				<task Alias="" BranchType="0" Col="2" Lnr="2" OType="SCRI" Object="SECOND_OBJECT" ParentAlias="" ParentObject="" Row="1" Text2="">
+					<checkpoint RollbackFlag="1" RunPerPatch="1" RunPerTarget="0" TcpADays="2" TcpATime="14:30" TcpATimeTZ="Asia/Kolkata" TcpExecute="CheckJob" TcpOn="1" promptatgen="1" showprompt="0"/> 
+                    <after ActFlg="0" AtimOn="1" ErlstStDays="1" ErlstStTime="10:00" ErlstStTimeTZ="America/Los_Angeles" HoldFlg="1"/> 
+                    <when ChkWhenExec="1" LtstEnd="1" LtstEndDays="3" LtstEndTime="18:00" LtstSt="0" LtstStDays="0" LtstStTime="00:00" LtstTimeTZ="" WCTypeAND="0" WCTypeOR="1" WElseA="1" WElseH="0" WElseS="1" WElseX="0" WhenExecute="AnotherJob" WtimOn="1"/> 
+                    <preconditions>
+                        <PreCon>
+                            <conditions id="MY_PRECONDITIONS"/> 
+                        </PreCon>
+                    </preconditions>
+                    <predecessors>
+                        <pre BranchType="1" Lnr="2" PreLnr="0" When="ANY_OK" type="job"/> 
+                    </predecessors>
+                    <runtime MrtCancel="1" MrtDays="1" MrtErt="30" MrtExecute="1" MrtExecuteObj="CleanupJob" MrtFix="1" MrtMethodDate="0" MrtMethodErt="1" MrtMethodFix="0" MrtMethodNone="0" MrtOn="0" MrtTZ="UTC" MrtTime="16:00" SrtErt="60" SrtFix="1" SrtMethodErt="0" SrtMethodFix="1" SrtMethodNone="0"/> 
+                    <result ChkRExec="1" RElseHalt="1" RElseIgn="0" RElseJPAbend="0" RExecFlag="1" RExecute="HandleResultJob" RRepMTimes="2" RRepOn="1" RRepWait="30" RWhen="ENDED_NOTOK"/> 
+                    <dynvalues>
+                        <dyntree>
+                            <node content="1" id="VALUE" name="Variables" parent="" type="TASKVALUE">
+                                <VALUE state="1"> 
+                                    <Values>
+                                        <V name="MyVariable" value="MyValue"/> 
+                                    </Values>
+                                    <Mode>1</Mode> 
+                                </VALUE>
+                            </node>
+                            <node content="0" id="PVALUE" name="Parent Variables" parent="" type="TASKVALUE"> 
+                                <VALUE state="2">
+                                    <Values/>
+                                    <Mode>0</Mode>
+                                </VALUE>
+                            </node>
+                            <node content="1" id="PRPTS" name="PromptSets" parent="" pref="0" type="PROMPTSET"/> 
+                            <node content="1" id="PPRPTS" name="Parent PromptSets" parent="" type="PPROMPTSET"/> 
+                        </dyntree>
+                    </dynvalues>
+                    <CIT>
+                        <group name="MyGroup"/>
+                    </CIT>
+                    <calendars CCTypeAll="1" CCTypeExt="0" CCTypeNone="1" CCTypeOne="0" CaleOn="1"/> 
+                    <postconditions>
+                        <PostCon>
+                            <conditions id="MY_POSTCONDITIONS"/>
+                        </PostCon>
+                    </postconditions>
+                </task>
+				<task Alias="" BranchType="0" Col="3" Lnr="3" OType="JOBS" Object="Object_3_third" ParentAlias="" ParentObject="" Row="1" Text2="">
+					<checkpoint RollbackFlag="0" RunPerPatch="1" RunPerTarget="1" TcpADays="3" TcpATime="10:15" TcpATimeTZ="Europe/Paris" TcpExecute="Input_text" TcpOn="1" promptatgen="0" showprompt="1"/> 
+                    <after ActFlg="0" AtimOn="1" ErlstStDays="2" ErlstStTime="08:00" ErlstStTimeTZ="America/Chicago" HoldFlg="1"/> 
+                    <when ChkWhenExec="0" LtstEnd="1" LtstEndDays="1" LtstEndTime="22:00" LtstSt="1" LtstStDays="2" LtstStTime="14:00" LtstTimeTZ="Asia/Singapore" WCTypeAND="0" WCTypeOR="1" WElseA="1" WElseH="0" WElseS="1" WElseX="1" WhenExecute="" WtimOn="1"/>
+                    <preconditions>
+                        <PreCon>
+                            <conditions id="PRECHECK_CONDITIONS"/> 
+                        </PreCon>
+                    </preconditions>
+                    <predecessors>
+                        <pre BranchType="1" Lnr="2" PreLnr="1" When="ENDED_OK" type="job"/> 
+                    </predecessors>
+                    <runtime MrtCancel="1" MrtDays="1" MrtErt="120" MrtExecute="1" MrtExecuteObj="SAMPLE_EXECUTE" MrtFix="0" MrtMethodDate="1" MrtMethodErt="0" MrtMethodFix="1" MrtMethodNone="0" MrtOn="0" MrtTZ="Australia/Sydney" MrtTime="06:00" SrtErt="30" SrtFix="1" SrtMethodErt="1" SrtMethodFix="0" SrtMethodNone="0"/> 
+                    <result ChkRExec="1" RElseHalt="1" RElseIgn="1" RElseJPAbend="0" RExecFlag="1" RExecute="SAMPLE_REXECUTE" RRepMTimes="3" RRepOn="1" RRepWait="15" RWhen="ANY_NOTOK"/> 
+                    <dynvalues>
+                        <dyntree>
+                            <node content="1" id="VALUE" name="Variables" parent="" type="TASKVALUE">
+                                <VALUE state="1"> 
+                                    <Values>
+                                        <V name="AssetSaleFlag" value="N"/> 
+                                    </Values>
+                                    <Mode>1</Mode> 
+                                </VALUE>
+                            </node>
+                            <node content="0" id="PVALUE" name="Parent Variables" parent="" type="TASKVALUE"> 
+                                <VALUE state="2">
+                                    <Values/>
+                                    <Mode>0</Mode>
+                                </VALUE>
+                            </node>
+                            <node content="0" id="PRPTS" name="PromptSets" parent="" pref="1" type="PROMPTSET"/> 
+                            <node content="1" id="PPRPTS" name="Parent PromptSets" parent="" type="PPROMPTSET"/> 
+                        </dyntree>
+                    </dynvalues>
+                    <CIT>
+                        <group name="Finance_Group"/> 
+                    </CIT>
+                    <calendars CCTypeAll="1" CCTypeExt="1" CCTypeNone="0" CCTypeOne="0" CaleOn="1"/> 
+                    <postconditions>
+                        <PostCon>
+                            <conditions id="POSTCHECK_CONDITIONS"/> 
+                        </PostCon>
+                    </postconditions>
+                </task>
+				<task Alias="" BranchType="0" Col="4" Lnr="4" OType="&lt;END&gt;" Object="END" ParentAlias="" ParentObject="" Row="1" Text2="">
+					<checkpoint RollbackFlag="1" RunPerPatch="0" RunPerTarget="0" TcpADays="0" TcpATime="00:00" TcpATimeTZ="" TcpExecute="" TcpOn="0" promptatgen="0" showprompt="0"/>
+                    <after ActFlg="1" AtimOn="0" ErlstStDays="0" ErlstStTime="00:00" ErlstStTimeTZ="" HoldFlg="0"/>
+                    <when ChkWhenExec="1" LtstEnd="0" LtstEndDays="0" LtstEndTime="00:00" LtstSt="0" LtstStDays="0" LtstStTime="00:00" LtstTimeTZ="" WCTypeAND="1" WCTypeOR="0" WElseA="0" WElseH="1" WElseS="0" WElseX="0" WhenExecute="CO.0010_NL01" WtimOn="0"/>
+                    <preconditions>
+                        <PreCon>
+                            <conditions id="CONDITIONS"/>
+                        </PreCon>
+                    </preconditions>
+                    <predecessors>
+                        <pre BranchType="0" Lnr="1" PreLnr="2" When="ANY_OK" type="container"/>
+                    </predecessors>
+                    <runtime MrtCancel="0" MrtDays="0" MrtErt="0" MrtExecute="0" MrtExecuteObj="" MrtFix="0" MrtMethodDate="0" MrtMethodErt="0" MrtMethodFix="0" MrtMethodNone="1" MrtOn="1" MrtTZ="" MrtTime="00:00" SrtErt="0" SrtFix="0" SrtMethodErt="0" SrtMethodFix="0" SrtMethodNone="1"/>
+                    <result ChkRExec="0" RElseHalt="0" RElseIgn="0" RElseJPAbend="0" RExecFlag="0" RExecute="" RRepMTimes="0" RRepOn="0" RRepWait="0" RWhen=""/>
+                    <dynvalues>
+                        <dyntree>
+                            <node content="1" id="VALUE" name="Variables" parent="" type="TASKVALUE">
+                                <VALUE state="2">
+                                    <Values/>
+                                    <Mode>0</Mode>
+                                </VALUE>
+                            </node>
+                            <node content="1" id="PVALUE" name="Parent Variables" parent="" type="TASKVALUE">
+                                <VALUE state="2">
+                                    <Values/>
+                                    <Mode>0</Mode>
+                                </VALUE>
+                            </node>
+                            <node content="1" id="PRPTS" name="PromptSets" parent="" pref="1" type="PROMPTSET"/>
+                            <node content="0" id="PPRPTS" name="Parent PromptSets" parent="" type="PPROMPTSET"/>
+                        </dyntree>
+                    </dynvalues>
+                    <CIT/>
+                    <calendars CCTypeAll="0" CCTypeExt="0" CCTypeNone="0" CCTypeOne="1" CaleOn="0"/>
+                    <postconditions>
+                        <PostCon>
+                            <conditions id="CONDITIONS"/>
+                        </PostCon>
+                    </postconditions>
+                </task>
+				<OPTIONS/>
+			</JobpStruct>
+		</JOBP>
+		<RUNTIME state="1">
+			<MaxRetCode>0</MaxRetCode>
+			<MrcExecute/>
+			<MrcElseE>0</MrcElseE>
+			<FcstStatus>0| |</FcstStatus>
+			<Ert>3</Ert>
+			<ErtMethodDef>1</ErtMethodDef>
+			<ErtMethodFix>0</ErtMethodFix>
+			<ErtFix>0</ErtFix>
+			<ErtDynMethod>2|Average</ErtDynMethod>
+			<ErtMethodDyn>0</ErtMethodDyn>
+			<ErtCnt>0</ErtCnt>
+			<ErtCorr>0</ErtCorr>
+			<ErtIgn>0</ErtIgn>
+			<ErtIgnFlg>0</ErtIgnFlg>
+			<ErtMinCnt>0</ErtMinCnt>
+			<MrtMethodNone>1</MrtMethodNone>
+			<MrtMethodFix>0</MrtMethodFix>
+			<MrtFix>0</MrtFix>
+			<MrtMethodErt>0</MrtMethodErt>
+			<MrtErt>0</MrtErt>
+			<MrtMethodDate>0</MrtMethodDate>
+			<MrtDays>0</MrtDays>
+			<MrtTime>00:00</MrtTime>
+			<MrtTZ/>
+			<SrtMethodNone>1</SrtMethodNone>
+			<SrtMethodFix>0</SrtMethodFix>
+			<SrtFix>0</SrtFix>
+			<SrtMethodErt>0</SrtMethodErt>
+			<SrtErt>0</SrtErt>
+			<MrtCancel>0</MrtCancel>
+			<MrtExecute>0</MrtExecute>
+			<MrtExecuteObj/>
+		</RUNTIME>
+		<DYNVALUES state="1">
+			<dyntree>
+				<node content="1" id="VALUE" name="sample_name" parent="" type="VALUE">
+					<VALUE state="1">
+						<Values/>
+						<Mode>1</Mode>
+					</VALUE>
+				</node>
+			</dyntree>
+		</DYNVALUES>
+		<DEPLOYMENT state="1">
+			<DeploymentFlag>0</DeploymentFlag>
+			<WFTypeA>1</WFTypeA>
+			<WFTypeC>0</WFTypeC>
+			<AppName/>
+			<WFName/>
+			<ComponentName/>
+		</DEPLOYMENT>
+		<ROLLBACK state="1">
+			<RollbackFlag>0</RollbackFlag>
+			<CBackupObj/>
+			<CRollbackObj/>
+			<FBackupPath/>
+			<FDeleteBefore>0</FDeleteBefore>
+			<FInclSubDirs>0</FInclSubDirs>
+		</ROLLBACK>
+		<SCRIPT mode="1" state="1">
+			<MSCRI/>
+		</SCRIPT>
+		<DOCU_Docu state="1" type="text">
+			<DOC/>
+		</DOCU_Docu>
+		<DOCU_Link- state="1" type="xml">
+			<DOC>
+				<![CDATA[
+				<?xml version="1.0" encoding="ISO-8859-15" standalone="no"?>
+				<!DOCTYPE Content []>
+				<Content>SAMPLE CONTENT FILE</Content>]]>
+				</DOC>
+			</DOCU_Link->
+		</JOBP>
+</uc-export>

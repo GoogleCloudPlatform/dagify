@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from .utils import (
-    load_source
+    load_source,
 )
 
 from .engine import (
@@ -28,6 +28,9 @@ from .engine import (
 )
 
 class Automic():
+    """
+    Automic to aitflow_dag conversion class
+    """
     def __init__(
         self,
         source_path=None,
