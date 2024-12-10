@@ -1,0 +1,67 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+--- 
+metadata:
+  id: 0002
+  name: automic-to-airflow-gke-start-pod
+  version: "v0.0.1"
+  author:
+    name: "Google PSO"
+    email: "dagify-code@google.com"
+  description-short: "Automic to Airflow GKEStartPod Operator"
+  description: "This template allows for the conversion of Automic tasks into the Airflow GKEStartPod operator format."
+  tags:
+    - automic
+    - airflow
+    - gkestartpod
+source:
+  platform: 
+    id: "AUTOMIC"
+    name: "automic"
+  operator: 
+    id: "GKEStartPod"
+target:
+  platform: 
+      id: "APACHEAIRFLOW"
+      name: "Apache Airflow"
+  operator: 
+      id: "GKEStartPodoperator"
+      name: "GKEStartPod Operator"
+      docs: "https://airflow.apache.org/docs/apache-airflow-providers-google/stable/operators/cloud/kubernetes_engine.html#run-a-pod-on-a-gke-cluster"
+      imports: 
+        - package: "airflow.providers.google.cloud.operators.kubernetes_engine.GKEStartPodOperator"
+          imports:
+              - "GKEStartPodOperator"
+mappings:
+  - source: Object
+    target: task_id
+    rules:
+      - rule: python_variable_safe
+      - rule: make_unique
+  - source: CMDLINE
+    target: command
+    rules:
+      - rule: escape_quotes
+structure: |
+  {task_id} = GKEStartPodOperator(
+    task_id='{task_id}',
+    project_id=GCP_PROJECT_ID,
+    location=GCP_LOCATION,
+    cluster_name=CLUSTER_NAME,
+    namespace="default",
+    image="perl:5.34.0",
+    cmds=[{command}],
+    name="{task_id}",
+    trigger_rule="{trigger_rule}",
+  )

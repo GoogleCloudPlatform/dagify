@@ -17,14 +17,14 @@
 
 
 ## DAGify Overview 
-DAGify is a highly extensible, template driven, enterprise scheduler migration accelerator that helps organizations speed up their migration from Control-M to Apache Airflow & Google Cloud Composer. It aims to heavily reduce the effort it takes for developers to convert their native enterprise scheduler formats into native Python code in a Apache Airflow DAG format.  
+DAGify is a highly extensible, template driven, enterprise scheduler migration accelerator that helps organizations speed up their migration from Control-M or Automic code to Apache Airflow & Google Cloud Composer. It aims to heavily reduce the effort it takes for developers to convert their native enterprise scheduler formats into native Python code in a Apache Airflow DAG format.  
 
 DAGify's ambition is not to migrate 100% of existing scheduler workflows but rather reduce the number of human hours required to undertake the conversion and therefore speed up migrations!
 
 ---
 
 ## Disclaimer
-This is not an officially supported Google product. This tool is intended to help users to migrate their Control-M jobs to Apache Airflow.
+This is not an officially supported Google product. This tool is intended to help users to migrate their Control-M or Automic jobs to Apache Airflow.
 
 ---
 ## Running Locally
@@ -36,18 +36,18 @@ Here we outline how to run DAGify on your local machine.
 ```bash
 
 make clean
-python3 DAGify.py --source-path=[YOUR-SOURCE-XML-FILE]
+python3 DAGify.py --source-path=[YOUR-SOURCE-XML-FILE] --tool=[source_type]
 
 ```
 Make clean; will create a new virtual environment using Python3 and install all required DAGify dependencies using PIP into that virtual environment.
 
-The above commands will use the built in default templates and also use the original mapping configuration yaml file in the root directory of the repo to conduct a conversion of your source file.
+The above commands will use the built in default templates and also use the original mapping configuration yaml file in the root directory of the repo to conduct a conversion of your source file. the --tool parameter is requried to select the type of source file which must be either "ctrlm" or "automic"
 
 #### With Custom Output Path and Custom Configuration File
 ```bash
 
 make clean
-python3 DAGify.py --source-path=[YOUR-SOURCE-XML-FILE] --output-path=[YOUR-OUTPUT-PATH] --config-file=[YOUR-CUSTOM-CONFIGURATION-YAML]
+python3 DAGify.py --source-path=[YOUR-SOURCE-XML-FILE] --tool=[source_type] --output-path=[YOUR-OUTPUT-PATH] --config-file=[YOUR-CUSTOM-CONFIGURATION-YAML]
 
 ```
 `make clean` will create a new virtual environment using Python3 and install all required DAGify dependencies using PIP into that virtual environment.
@@ -138,7 +138,7 @@ or alternatively to seprate by sub-application:
 
 ---
 ## Templates
-DAGify employs a flexible template system that empowers you to define the mapping between Control-M jobs and Airflow operators. These user-defined YAML templates specify how Control-M attributes translate into Airflow operator parameters. For instance, the [control-m-command-to-airflow-ssh](./dagify/templates/control-m-command-to-airflow-ssh.yaml) template maps Control-M's "Command" task type to Airflow's SSHOperator, outlining how attributes like JOBNAME and CMDLINE are incorporated into the generated DAG.
+DAGify employs a flexible template system that empowers you to define the mapping between Control-M or Automic jobs and Airflow operators. These user-defined YAML templates specify how Control-M attributes translate into Airflow operator parameters. For instance, the [control-m-command-to-airflow-ssh](./dagify/templates/control-m-command-to-airflow-ssh.yaml) template maps Control-M's "Command" task type to Airflow's SSHOperator, outlining how attributes like JOBNAME and CMDLINE are incorporated into the generated DAG.
 The template's structure field utilizes Jinja2 templating to dynamically construct the Airflow operator code, seamlessly integrating Control-M job attributes.
 
 Example: Consider the following Control-M job in an XML file:
@@ -164,7 +164,7 @@ job_1 = SSHOperator(
 )
 ```
 
-The repository includes several pre-defined templates for common Control-M task types. The [config.yaml](./config.yaml) file allows you to customize which templates are applied during the conversion process.
+The repository includes several pre-defined templates for common task types. The [config.yaml](./config.yaml) file allows you to customize which templates are applied during the conversion process.
 
 A template has the following structure:
 
@@ -230,11 +230,11 @@ This table outlines the schedulers that are currently supported by DAGify and wh
 This table outlines the schedulers that are currently supported by DAGify and which versions are currently considered. 
 
 
-| Scheduler     | Status         | Supported Versions | Notes                       |
-|---------------|----------------|--------------------|-----------------------------|
-| BMC Control-M | Beta Release   | TBC                | Beta Release ready for testing |
-| UC4           | Roadmap        | TBC                | Only under consideration    |
-|               |                |                    |                             |
+| Scheduler     | Status              | Supported Versions | Notes                          |
+|---------------|---------------------|--------------------|--------------------------------|
+| BMC Control-M | Beta Release        | TBC                | Beta Release ready for testing |
+| UC4           | Beta Release        | TBC                | Only under consideration       |
+|               |                     |                    |                                |
 
 ## Generate Report
 To generate a detailed report on the conversion process, include the **-r** parameter in your command. The report will be saved in the same output folder (customizable using the -o parameter). Key information included in the report:
