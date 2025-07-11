@@ -7,7 +7,7 @@ MarkupSafe==3.0.2
 mccabe==0.7.0
 numpy==2.2.2
 pandas==2.3.1
-pycodestyle==2.12.1
+pycodestyle==2.14.0
 pyflakes==3.2.0
 python-dateutil==2.9.0.post0
 pytz==2024.2
