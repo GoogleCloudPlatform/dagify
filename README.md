@@ -96,6 +96,8 @@ docker run -p 8000:8000 -it localhost/dagify:source -e RUN_MODE=UI
 
 ### Run DAGify (From Published Container)
 
+*As of July 2025 Dagify is not published in a public container registry anymore. This paragraph provides guidance if you have built and pushed Dagify in a Docker container to your own container registry.*
+
 First you should create a ```data``` directory on your local machine. Place your xml file or files in that data directory.
 
 Then run the remote container while mounting the local ```data``` directory to the container (```-v ${PWD}/data:/app/data```) in addition you should pass the direct path to the XML file within the data directory to the environment variable ```AS_SOURCE_PATH``` for example: (```-e AS_SOURCE_PATH=./data/test.xml```). You should also set the output directory environment variable ```AS_SOURCE_PATH``` to a folder within the data directory (```-e AS_OUTPUT_PATH=./data/output```). 
