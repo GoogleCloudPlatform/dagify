@@ -18,5 +18,5 @@ yamale==6.0.0
 requests==2.32.4
 fastapi==0.116.1
 prettytable==3.16.0
-uvicorn==0.35.0
+uvicorn==0.38.0
 python-multipart==0.0.20
