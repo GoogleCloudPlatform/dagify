@@ -14,8 +14,10 @@
 ---
 config: 
   mappings: 
-    - job_type: "command"
-      template_name: "control-m-command-to-airflow-bash"
+    - job_type: "Command"
+      template_name: "control-m-command-to-airflow-gke-start-job-spec"
+    # - job_type: "command"
+    #   template_name: "control-m-command-to-airflow-bash"
     #- job_type: "command"
     #  template_name: "control-m-command-to-airflow-ssh"
     #- job_type: "command"

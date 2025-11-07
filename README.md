@@ -52,7 +52,25 @@ python3 DAGify.py --source-path=[YOUR-SOURCE-XML-FILE] --output-path=[YOUR-OUTPU
 ```
 `make clean` will create a new virtual environment using Python3 and install all required DAGify dependencies using PIP into that virtual environment.
 
-The above commands will use the built in default templates and also use your custom original template mapping configuration yaml file to conduct a conversion of your source file. Additionally it will output the converted Python DAG files to the output directory provided in the above command. 
+The above commands will use the built in default templates and also use your custom original template mapping configuration yaml file to conduct a conversion of your source file. Additionally it will output the converted Python DAG files to the output directory provided in the above command.
+
+#### With GKE Configuration File
+If you are converting to GKE operators, you can provide a GKE configuration file to set default values for your GKE cluster. Create a `gke_input.yaml` file with a `gke_defaults` section:
+```yaml
+gke_defaults:
+  NAMESPACE: "app"
+  KSA_NAME: "sa"
+  PVC_NAME: "gcsfuse-pvc"
+  MOUNT_PATH: "/data"
+  GCP_PROJECT_ID: "dev-project"
+  GCP_LOCATION: "europe-west1"
+  CLUSTER_NAME: "dev-cluster"
+```
+
+Then, run DAGify with the `--gke-config-file` flag:
+```bash
+python3 DAGify.py --source-path=[YOUR-SOURCE-XML-FILE] --gke-config-file=gke_input.yaml
+```
 
 #### Commandline help
 

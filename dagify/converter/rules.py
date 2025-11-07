@@ -92,6 +92,11 @@ class Rule:
         vals[0] = codecs.encode(vals[0], 'rot13')
         return vals[0]
 
+    def rule_replace_hyphen_with_underscore(self, vals):
+        print(f"Info: Rule Replace Hyphen with Underscore: {vals[0]}")
+        vals[0] = vals[0].replace("-", "_")
+        return vals[0]
+
     def rule_lookup_replace(self, vals):
         print(f"Info: Rule Lookup Replace: {vals[0]}")
         # vals[0] is Lookup Value

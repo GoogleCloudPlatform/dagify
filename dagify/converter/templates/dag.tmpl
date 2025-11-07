@@ -11,6 +11,13 @@ default_args = {
     'owner': 'airflow',
 }
 
+{% if gke_defaults %}
+# GKE Defaults
+{% for key, value in gke_defaults.items() %}
+{{ key }} = "{{ value }}"
+{% endfor %}
+{% endif %}
+
 with DAG(
     dag_id="{{dag_id}}",
     start_date=datetime.datetime(2024, 1, 1),
@@ -19,6 +26,74 @@ with DAG(
 ) as dag:
 
     # DAG Tasks
+
+    job_spec = k8s.V1Job(
+        metadata=k8s.V1ObjectMeta(name="pvc-backed-job"),
+        spec=k8s.V1JobSpec(
+            backoff_limit=0,
+            template=k8s.V1PodTemplateSpec(
+                metadata=k8s.V1ObjectMeta(annotations={"gke-gcsfuse/volumes": "true"}),
+                spec=k8s.V1PodSpec(
+                    restart_policy="Never",
+                    service_account_name=KSA_NAME,
+                    security_context=k8s.V1PodSecurityContext(fs_group=1000),
+                    volumes=[
+                        k8s.V1Volume(
+                            name="gcsfuse-pv",
+                            persistent_volume_claim=k8s.V1PersistentVolumeClaimVolumeSource(
+                                claim_name=PVC_NAME,
+                                read_only=False,
+                            ),
+                        )
+                    ],
+                    containers=[
+                        k8s.V1Container(
+                            name="main",
+                            image="artifactory-image",
+                            volume_mounts=[
+                                k8s.V1VolumeMount(
+                                    name="gcsfuse-pv",
+                                    mount_path=MOUNT_PATH,
+                                    read_only=False,
+                                )
+                            ],
+                            env=[
+                                k8s.V1EnvVar(
+                                    name="password-decryption-algo",
+                                    value_from=k8s.V1EnvVarSource(
+                                        secret_key_ref=k8s.V1SecretKeySelector(
+                                            name="password-decryption-algo",
+                                            key="password-decryption-algo",
+                                        )
+                                    )
+                            # (optional) resources, env, etc.
+                            # resources=k8s.V1ResourceRequirements(
+                            #     requests={"cpu": "250m", "memory": "512Mi"},
+                            #     limits={"cpu": "1", "memory": "1Gi"},
+                            # ),
+                                ),
+                                k8s.V1EnvVar(
+                                    name="password-decryption-key",
+                                    value_from=k8s.V1EnvVarSource(
+                                        secret_key_ref=k8s.V1SecretKeySelector(
+                                            name="password-decryption-key",
+                                            key="password-decryption-key",
+                                        )
+                                    )
+                                    # (optional) resources, env, etc.
+                                    # resources=k8s.V1ResourceRequirements(
+                                    #     requests={"cpu": "250m", "memory": "512Mi"},
+                                    #     limits={"cpu": "1", "memory": "1Gi"},
+                                    # ),
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        ),
+    )
+
     {%- for task in tasks %}
     {{task | indent(4)}}
     {%- endfor %}

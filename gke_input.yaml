@@ -1,0 +1,8 @@
+gke_defaults:
+  NAMESPACE: "app"
+  KSA_NAME: "sa"
+  PVC_NAME: "gcsfuse-pvc"
+  MOUNT_PATH: "/data"
+  GCP_PROJECT_ID: "dev-project"
+  GCP_LOCATION: "europe-west1"
+  CLUSTER_NAME: "dev-cluster"

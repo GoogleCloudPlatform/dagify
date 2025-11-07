@@ -68,12 +68,17 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
                gives an overview of job_types converted")
 
 @click.option("--tool",
-              type=click.Choice(['controlm', 'automic']),  # Restrict input to these choices
-              default=lambda: os.environ.get("AS_TYPE", "controlm"),  # Default to 'ctrl-m'
-              help="Type of conversion ('controlm' or 'automic')",
-              show_default="{}".format(os.environ.get("AS_TYPE", "controlm")))
-
-def dagify(source_path, output_path, config_file, templates, dag_divider, report, tool):
+             type=click.Choice(['controlm', 'automic']),  # Restrict input to these choices
+             default=lambda: os.environ.get("AS_TYPE", "controlm"),  # Default to 'ctrl-m'
+             help="Type of conversion ('controlm' or 'automic')",
+             show_default="{}".format(os.environ.get("AS_TYPE", "controlm")))
+@click.option("--gke-config-file",
+             default=lambda: os.environ.get("AS_GKE_CONFIG_FILE", None),
+             help="Path to GKE configuration file.",
+             show_default="{}".format(
+                 os.environ.get("AS_GKE_CONFIG_FILE",
+                                "None")))
+def dagify(source_path, output_path, config_file, templates, dag_divider, report, tool, gke_config_file):
     """Run dagify."""
     print("Run DAGify Engine")
 
@@ -84,6 +89,7 @@ def dagify(source_path, output_path, config_file, templates, dag_divider, report
             config_file=config_file,
             templates_path=templates,
             dag_divider=dag_divider,
+            gke_config_file=gke_config_file
         )
     elif tool == "automic":
         Automic(

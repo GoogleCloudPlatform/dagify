@@ -19,6 +19,7 @@ import xml.etree.ElementTree as ET
 import json
 import yaml
 from prettytable import PrettyTable
+import pendulum
 
 from .uf import (
     UF,
@@ -443,3 +444,13 @@ def filter_jobs_by_parameter_in_child(xml_file_path, parameter_name, child_eleme
                 matching_job_names.append(job.attrib['JOBNAME'])
 
     return matching_job_names
+
+
+def calculate_london_odate():
+    """Calculates the London odate."""
+    london = pendulum.timezone('Europe/London')
+    now = pendulum.now(london)
+    if now.hour >= 15:
+        return now.format('YYYY-MM-DD')
+    else:
+        return now.subtract(days=1).format('YYYY-MM-DD')

@@ -24,7 +24,8 @@ from .engine import (
     convert,
     cal_dag_dividers,
     calc_dag_dependencies,
-    generate_airflow_dags
+    generate_airflow_dags,
+    load_gke_config
 )
 
 
@@ -36,9 +37,11 @@ class ControlM():
         templates_path="./templates",
         config_file="./config.yaml",
         dag_divider="PARENT_FOLDER",
+        gke_config_file=None
     ):
         self.DAGs = []
         self.baseline_imports = []
+        self.gke_config_file = gke_config_file
         self.templates = {}
         self.templates_count = 0
         self.templates_path = templates_path
@@ -53,10 +56,11 @@ class ControlM():
 
         set_baseline_imports(self)
         load_config(self)
+        load_gke_config(self)
         load_templates(self)
         validate(self)
         convert(self, "control-m", "TASKTYPE", "JOBNAME")
         cal_dag_dividers(self)
         calc_dag_dependencies(self.uf, "controlm")
-        generate_airflow_dags(self, "JOBNAME_ORIGINAL")
+        generate_airflow_dags(self, "JOBNAME_ORIGINAL", self.gke_defaults)
         

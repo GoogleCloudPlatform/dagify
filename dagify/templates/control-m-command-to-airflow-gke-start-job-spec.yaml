@@ -1,0 +1,77 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+--- 
+metadata:
+  id: 5
+  name: control-m-command-to-airflow-gke-start-job-spec
+  version: "v0.0.1"
+  author:
+    name: "Google PSO"
+    email: "dagify-code@google.com"
+  description-short: "Control-M Command Job to Apache Airflow GKE Start Job Operator with Job Spec"
+  description: "This template allows for the conversion of Control-M Jobs of type Command into the Apache Airflow GKE Start Job Operator format, including a job_spec."
+  tags:
+    - control-m
+    - airflow
+    - gke
+    - google-cloud
+    - kubernetes
+source:
+  platform: 
+    id: "CONTROLM"
+    name: "Control-M"
+  operator: 
+    id: "Command"
+target:
+  platform: 
+      id: "APACHEAIRFLOW"
+      name: "Apache Airflow"
+  operator: 
+      id: "GKEStartJobOperator"
+      name: "Apache Airflow GKE Start Job Operator"
+      docs: "https://airflow.apache.org/docs/apache-airflow-providers-google/stable/operators/cloud/kubernetes_engine.html#run-a-job-on-a-gke-cluster"
+      imports:
+        - package: "airflow.providers.google.cloud.operators.kubernetes_engine"
+          imports:
+            - "GKEStartJobOperator"
+            - "kubernetes.client.models as k8s"
+mappings:
+  - source: JOBNAME
+    target: task_id
+    rules:
+      - rule: python_variable_safe
+      - rule: make_unique
+  - source: CMDLINE
+    target: command
+    rules:
+      - rule: escape_quotes
+
+structure: |
+  {task_id} = GKEStartJobOperator(
+    task_id="{task_id}",
+    project_id=GCP_PROJECT_ID,
+    location=GCP_LOCATION,
+    cluster_name=CLUSTER_NAME,
+    namespace=NAMESPACE,
+    full_job_spec=job_spec,
+    wait_until_job_complete=True,
+    do_xcom_push=False,
+    labels={{"sidecar.istio.io/inject": "false"}},
+    image_pull_secrets=[{{"name": "image-pull-secret"}}],
+    service_account_name="sa",
+    cmds=[{command}],
+    params={params},
+    name="{task_id}",
+    trigger_rule="{trigger_rule}",
+  )

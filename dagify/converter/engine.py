@@ -13,6 +13,7 @@ from .utils import (
     is_directory,
     read_yaml_to_dict,
     calculate_cron_schedule,
+    calculate_london_odate,
 )
 from .rules import (
     Rule
@@ -73,6 +74,29 @@ def load_config(object):
                             raise ValueError(f"Template {file_path} incompatible")
 
     return
+
+def load_gke_config(object):
+    if not hasattr(object, 'gke_config_file') or object.gke_config_file is None:
+        print("dagify: GKE config file not provided, skipping GKE defaults.")
+        object.gke_defaults = {}
+        return
+    if not os.path.exists(object.gke_config_file):
+        print(f"dagify: GKE config file '{object.gke_config_file}' does not exist, skipping GKE defaults.")
+        object.gke_defaults = {}
+        return
+
+    with open(object.gke_config_file) as stream:
+        try:
+            gke_config = yaml.safe_load(stream)
+            if gke_config and "gke_defaults" in gke_config:
+                object.gke_defaults = gke_config["gke_defaults"]
+                print(f"dagify: Loaded GKE defaults from {object.gke_config_file}")
+            else:
+                object.gke_defaults = {}
+                print(f"dagify: No 'gke_defaults' section found in {object.gke_config_file}, skipping GKE defaults.")
+        except yaml.YAMLError as exc:
+            print(f"dagify: Error loading GKE config file {object.gke_config_file}: {exc}")
+            raise exc
 
 def validate(object):
     # TODO
@@ -191,7 +215,7 @@ def get_template_name(object, job_type):
     # no match found
     return None
 
-def generate_airflow_dags(object, task_name):
+def generate_airflow_dags(object, task_name, gke_defaults=None):
     if object.uf is None:
         raise ValueError("dagify: no data in universal format. nothing to convert!")
 
@@ -260,7 +284,7 @@ def generate_airflow_dags(object, task_name):
             create_directory(object.output_path)
 
         # Create DAG File by Folder
-        filename = f"{object.output_path}/{dag_divider_value}.py"
+        filename = f"{object.output_path}/{dag_divider_value.replace('-', '_')}.py"
 
         content = template.render(
             baseline_imports=get_baseline_imports(object),
@@ -270,7 +294,8 @@ def generate_airflow_dags(object, task_name):
             tasks=airflow_task_outputs,
             dependencies_int=dependencies_in_dag_internal,
             dependencies_ext=dependencies_in_dag_external,
-            upstream_dependencies=upstream_dependencies
+            upstream_dependencies=upstream_dependencies,
+            gke_defaults=gke_defaults
         )
         with open(filename, mode="w", encoding="utf-8") as dag_file:
             content_linted = autopep8.fix_code(content)
@@ -336,6 +361,12 @@ def airflow_task_build(task, template):
             # Update the Current Object Value
             task.set_attribute(mapping.get("source", ""), targetValue)
 
+        # Also apply to JOBNAME_ORIGINAL if it exists
+        if task.get_attribute("JOBNAME_ORIGINAL"):
+            r = Rule()
+            args = ["replace_hyphen_with_underscore", task.get_attribute("JOBNAME_ORIGINAL")]
+            task.set_attribute("JOBNAME_ORIGINAL", r.run(args))
+
         if targetValue is None:
             # TODO - Log That we are going to use the defaults
             targetValue = mapping.get("default", None)
@@ -344,6 +375,40 @@ def airflow_task_build(task, template):
             targetValue = "!!UNKNOWN!!"
         # Construct Values for Output!
         values[targetKey] = targetValue
+
+    # Add params dictionary for variables
+    params = {}
+    for var in task.get_variables():
+        variable_name = var.get_attribute("NAME").replace("%%", "")
+        if variable_name == "FRDATE":
+            params[variable_name] = calculate_london_odate()
+        else:
+            params[variable_name] = var.get_attribute("VALUE")
+    
+    # Format params for template
+    if params:
+        params_str = "{\n"
+        for key, value in params.items():
+            params_str += f'        "{key}": "{value}",\n'
+        params_str += "    }"
+        values["params"] = params_str
+    else:
+        values["params"] = "{}"
+
+    # Process CMDLINE for variable substitution
+    cmdline = task.get_attribute("CMDLINE")
+    if cmdline:
+        import re
+        cmds = re.findall(r'(?:[^\s,"]|"(?:\\.|[^"])*")+', cmdline)
+        formatted_cmds = []
+        for cmd in cmds:
+            if cmd.startswith("%%"):
+                var_name = cmd.replace("%%", "")
+                formatted_cmds.append(f'"{{{{ params.{var_name} }}}}"')
+            else:
+                formatted_cmds.append(f'"{cmd}"')
+        values["command"] = ",\n        ".join(formatted_cmds)
+
 
     # Explicit Trigger Rule Handling
     # By default, the trigger rule will be all_success unless there is an in-condition with "OR" relationship
