@@ -382,6 +382,13 @@ def airflow_task_build(task, template):
         variable_name = var.get_attribute("NAME").replace("%%", "")
         if variable_name == "FRDATE":
             params[variable_name] = calculate_london_odate()
+        elif "RUN_REPORT" in variable_name:
+            # Extract the script path from the ssh command
+            value = var.get_attribute("VALUE")
+            if value and ' ' in value:
+                params[variable_name] = value.split(' ')[-1]
+            else:
+                params[variable_name] = value
         else:
             params[variable_name] = var.get_attribute("VALUE")
     
@@ -399,14 +406,17 @@ def airflow_task_build(task, template):
     cmdline = task.get_attribute("CMDLINE")
     if cmdline:
         import re
+        # Use regex to split the command line into arguments, respecting quotes
         cmds = re.findall(r'(?:[^\s,"]|"(?:\\.|[^"])*")+', cmdline)
         formatted_cmds = []
         for cmd in cmds:
-            if cmd.startswith("%%"):
-                var_name = cmd.replace("%%", "")
-                formatted_cmds.append(f'"{{{{ params.{var_name} }}}}"')
-            else:
-                formatted_cmds.append(f'"{cmd}"')
+            # Find all variable-like patterns (e.g., %%VARNAME)
+            variables_found = re.findall(r'%%(\w+)', cmd)
+            if variables_found:
+                # Replace each found variable with its Jinja2 equivalent
+                for var_name in variables_found:
+                    cmd = cmd.replace(f'%%{var_name}', f'{{{{ params.{var_name} }}}}')
+            formatted_cmds.append(f'"{cmd}"')
         values["command"] = ",\n        ".join(formatted_cmds)
 
 

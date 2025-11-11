@@ -52,10 +52,11 @@ mappings:
     rules:
       - rule: python_variable_safe
       - rule: make_unique
+      - rule: replace_hyphen_with_underscore
   - source: CMDLINE
     target: command
     rules:
-      - rule: escape_quotes
+      - rule: remove_back_ticks
 
 structure: |
   {task_id} = GKEStartJobOperator(

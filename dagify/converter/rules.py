@@ -78,6 +78,49 @@ class Rule:
             if char in vals[0]:
                 vals = self.rule_replace([vals[0], char, f"\\{char}"])
         return vals[0]
+    
+    def rule_remove_back_ticks(self, vals):
+        """Removes backticks from a string."""
+        print(f"Info: Rule Remove Back Ticks applied to: {vals[0]}")
+        if vals[0] and isinstance(vals[0], str):
+            vals[0] = vals[0].replace('"', '')
+            vals[0] = vals[0].replace("`", '')
+            vals[0] = vals[0].replace("'", '')
+        return vals[0]
+
+    def rule_format_cmd_params(self, vals):
+        """Formats command parameters, splitting them into separate arguments."""
+        print(f"Info: Rule Format CMD Params applied to: {vals[0]}")
+        if not vals[0] or not isinstance(vals[0], str):
+            return vals[0]
+
+        import re
+        # Use regex to find patterns like 'date=value' and split them from the rest of the string
+        # This regex will find assignments and the following variable
+        pattern = r"([a-zA-Z0-9_]+=`.*?`)|(%%[A-Z0-9_]+%%)"
+        parts = re.split(pattern, vals[0])
+        
+        # Filter out None and empty strings from the parts list
+        parts = [p for p in parts if p and p.strip()]
+        
+        # The final command should be a list of strings
+        formatted_parts = []
+        temp_str = ""
+        for p in parts:
+            p = p.strip()
+            if re.match(pattern, p):
+                if temp_str:
+                    formatted_parts.append(temp_str.strip())
+                formatted_parts.append(p)
+                temp_str = ""
+            else:
+                temp_str += " " + p
+        
+        if temp_str:
+            formatted_parts.append(temp_str.strip())
+
+        # For dagify, we return a string that will be split later
+        return " ".join(formatted_parts)
 
     def rule_make_unique(self, vals):
         print(f"Info: Rule Make Unique: {vals[0]}")
@@ -96,6 +139,41 @@ class Rule:
         print(f"Info: Rule Replace Hyphen with Underscore: {vals[0]}")
         vals[0] = vals[0].replace("-", "_")
         return vals[0]
+
+    def rule_format_cmd_params(self, vals):
+        print(f"Info: Rule Format CMD Params: {vals[0]}")
+        import re
+        
+        # Pattern to find %%VARIABLES%%, including those inside strings
+        pattern = r"%%(\w+)%%"
+        
+        # Replace all occurrences with the Jinja2 syntax
+        def replace_var(match):
+            var_name = match.group(1)
+            return f"{{{{ params.{var_name} }}}}"
+
+        # Use re.sub with a function for replacement
+        formatted_cmd = re.sub(pattern, replace_var, vals[0])
+
+        # Handle cases where the whole cmd is a variable that wasn't caught
+        if vals[0].startswith("%%"):
+            var_name = vals[0].replace("%%", "")
+            return f"{{{{ params.{var_name} }}}}"
+
+        # Split the command into parts, format them, and then join them back
+        cmds = re.findall(r'(?:[^\s,"]|"(?:\\.|[^"])*")+', formatted_cmd)
+        formatted_cmds = []
+        for cmd in cmds:
+            # remove quotes from start and end of string
+            if cmd.startswith('"') and cmd.endswith('"'):
+                cmd = cmd[1:-1]
+            
+            if cmd.startswith("{{"):
+                formatted_cmds.append(cmd)
+            else:
+                formatted_cmds.append(f'"{cmd}"')
+        
+        return ",\n        ".join(formatted_cmds)
 
     def rule_lookup_replace(self, vals):
         print(f"Info: Rule Lookup Replace: {vals[0]}")
