@@ -96,7 +96,7 @@ class UF():
                     for obj in self.get_tasks():
                         for in_conds in obj.get_in_conditions():
                             if in_conds.get_attribute("NAME") == poutcon.get_attribute("NAME"):
-                                task.add_dependent_task(obj.get_dag_name(), obj.get_attribute("JOBNAME_ORIGINAL"))
+                                task.add_dependent_task(obj.get_dag_name(), obj.get_attribute("JOBNAME"))
         return
 
     def generate_dag_dependencies_by_divider(self, dag_divider, task_name):
