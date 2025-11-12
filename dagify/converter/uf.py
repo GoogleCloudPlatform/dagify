@@ -206,9 +206,24 @@ class UF():
 
         # Process to Pythonic Statements
         for package, imports_list in dag_imps.items():
-            imports = ', '.join(imports_list)
-            python_imports.append(f"from {package} import {imports}")
-
+            from_imports = []
+            import_imports = []
+            for imp in imports_list:
+                # If the import uses 'as' (alias), treat as a direct import
+                if " as " in imp:
+                    import_imports.append(imp)
+                # If the package name does not contain a dot, treat as a direct import
+                elif "." not in package:
+                    import_imports.append(imp)
+                imports_str = ', '.join(from_imports)
+                python_imports.append(f"from {package} import {imports_str}")
+            
+            if from_imports:
+                imports = ', '.join(from_imports)
+                python_imports.append(f"from {package} import {imports}")
+            for imp in import_imports:
+                python_imports.append(f"import {imp}")
+ 
         # Set the Python Imports for the DAG
         return python_imports
 
