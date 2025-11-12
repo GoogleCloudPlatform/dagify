@@ -62,5 +62,5 @@ class ControlM():
         convert(self, "control-m", "TASKTYPE", "JOBNAME")
         cal_dag_dividers(self)
         calc_dag_dependencies(self.uf, "controlm")
-        generate_airflow_dags(self, "JOBNAME_ORIGINAL", self.gke_defaults)
+        generate_airflow_dags(self, "JOBNAME", self.gke_defaults)
         

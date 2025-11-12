@@ -11,11 +11,11 @@ default_args = {
     'owner': 'airflow',
 }
 
-{% if gke_defaults %}
+{% if gke_defaults -%}
 # GKE Defaults
-{% for key, value in gke_defaults.items() %}
+{% for key, value in gke_defaults.items() -%}
 {{ key }} = "{{ value }}"
-{% endfor %}
+{% endfor -%}
 {% endif %}
 
 with DAG(
@@ -28,7 +28,6 @@ with DAG(
     # DAG Tasks
 
     job_spec = k8s.V1Job(
-        metadata=k8s.V1ObjectMeta(name="pvc-backed-job"),
         spec=k8s.V1JobSpec(
             backoff_limit=0,
             template=k8s.V1PodTemplateSpec(
