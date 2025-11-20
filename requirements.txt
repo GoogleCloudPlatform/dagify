@@ -14,7 +14,7 @@ pytz==2025.2
 PyYAML==6.0.3
 six==1.17.0
 tzdata==2025.2
-yamale==6.0.0
+yamale==6.1.0
 requests==2.32.4
 fastapi==0.116.1
 prettytable==3.16.0
