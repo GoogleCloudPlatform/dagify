@@ -3,7 +3,7 @@ click==8.3.0
 flake8==7.3.0
 Jinja2==3.1.6
 lxml==6.0.2
-MarkupSafe==3.0.2
+MarkupSafe==3.0.3
 mccabe==0.7.0
 numpy==2.3.3
 pandas==2.3.3
