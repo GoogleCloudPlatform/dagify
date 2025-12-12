@@ -16,7 +16,7 @@ six==1.17.0
 tzdata==2025.2
 yamale==6.0.0
 requests==2.32.4
-fastapi==0.116.1
+fastapi==0.124.4
 prettytable==3.16.0
 uvicorn==0.35.0
 python-multipart==0.0.20
