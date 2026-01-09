@@ -14,18 +14,19 @@ class EmailValidator(Validator):
     def fail(self, value):
         return f'{value} is not a valid email address.'
 
-
+#K.S. edit: Removing URL validator for now to avoid broken URL links to crash the tool.
+#           Additionally, requiring internet access for the tool might not be a good idea.
 class URLValidator(Validator):
     tag = 'validURL'  # This is the tag you use in your schema
 
     def _is_valid(self, value):
 
-        try:
-            response = requests.get(value)
-            return response.status_code == 200
-        except requests.exceptions.RequestException as e:
-            print(f"Error checking URL: {e}")
-
+        #try:
+        #    response = requests.get(value)
+        #    return response.status_code == 200
+        #except requests.exceptions.RequestException as e:
+        #    print(f"Error checking URL: {e}")
+        return True
 
 # Extend default validators with your custom validators
 validators = DefaultValidators.copy()
