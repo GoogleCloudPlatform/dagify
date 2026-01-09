@@ -42,7 +42,8 @@ class Report():
         output_path=None,
         templates_path="./templates",
         config_file="./config.yaml",
-        dag_divider="PARENT_FOLDER"
+        dag_divider="PARENT_FOLDER",
+        tool=""
     ):
         self.config_file = config_file
         self.config = {}
@@ -52,7 +53,7 @@ class Report():
         self.output_path = f"{output_path}/{source_xml_name}"
         self.templates_path = templates_path
         self.dag_divider = dag_divider
-        self.uf = load_source(self.source_path)
+        self.uf = load_source(self.source_path, tool)
         # Run the Proccess
         self.write_report()
 
@@ -67,7 +68,10 @@ class Report():
         universal_format = self.uf
         tasks = universal_format.get_tasks()
         for tIdx, task in enumerate(tasks):
-            current_divider = task.get_attribute(dag_divider)
+            if dag_divider:
+                current_divider = task.get_attribute(dag_divider)
+            else:
+                current_divider = None
 
             if not prev_divider:
                 prev_divider = current_divider
