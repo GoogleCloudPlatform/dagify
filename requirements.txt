@@ -19,4 +19,4 @@ requests==2.32.4
 fastapi==0.116.1
 prettytable==3.16.0
 uvicorn==0.35.0
-python-multipart==0.0.20
+python-multipart==0.0.22
